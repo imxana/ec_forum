@@ -2,6 +2,7 @@ from flask import Flask, request, url_for
 
 app = Flask(__name__)
 
+import ec_forum.account as ac
 
 
 
