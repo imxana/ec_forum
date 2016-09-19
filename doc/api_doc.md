@@ -1,5 +1,5 @@
 # Acount
-## 注册 ./sign_up 
+## 注册 ./sign_up
 
 method:post
 
@@ -22,13 +22,9 @@ fail:
 
 字段|类型或值
 ------------ | -------------
-code|<=0
-msg| str
+code|!1
+codeState| str
 
-code|msg
------------- | -------------
-0| "username exised"
--1| "username illegal"
 
 ## 登录 ./sign_in
 
@@ -56,14 +52,8 @@ fail:
 
 字段|类型或值
 ------------ | -------------
-code|<=0
-msg| str
-
-code|msg
------------- | -------------
-0| "user not exists"
--1| "wrong psw"
--2| "user is on blanklist"
+code|!1
+codeState| str
 
 
 ## 删除用户（仅测试用） ./sign_del
@@ -89,11 +79,6 @@ fail:
 ------------ | -------------
 code|<=0
 msg| str
-
-code|msg
------------- | -------------
-0| "user not exists"
--1| "wrong psw"
 
 # User_info
 
@@ -123,11 +108,6 @@ fail:
 ------------ | -------------
 code|<=0
 msg| str
-
-code|msg
------------- | -------------
-0| "username existed"
--1| "wrong psw"
 
 
 ## ./u/email/confirm
@@ -160,8 +140,3 @@ code|msg
 ## ./a/edit
 ## ./q/repution
 ## ./a/del
-
-
-
-
-
