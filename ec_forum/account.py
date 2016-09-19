@@ -5,12 +5,14 @@ import ec_forum.db as db
 
 conn = pymysql.Connect(
     host = '127.0.0.1',
-    port = 3306,
+
     user = 'root',
     passwd = '',
     db = 'test',
     charset = 'utf8'
 )
+
+sqlQ = db.sqlQ()
 
 def run(app):
 
@@ -22,12 +24,20 @@ def run(app):
                 u_psw = request.values.get('u_psw', '')
                 if u_psw != '':
                     u_email = request.values.get('u_email', '')
+                    if sqlQ.signup_select('name'):
+                        if db.signup_insert(u_name, u_psw, u_email):
+                           return jsonify({
+                               'code':'1',
+                               'u_id':''
+                               })
+                    else:
+                        return jsonify(error.usernameExisted)
                     # Todo:
-                    return jsonify({
-                        'u_name':u_name,
-                        'u_psw':u_psw,
-                        'u_email':u_email
-                        })
+                    # return jsonify({
+                    #     'u_name':u_name,
+                    #     'u_psw':u_psw,
+                    #     'u_email':u_email
+                    #     })
                 else:
                     return jsonify(error.pswEmpty)
             else:
