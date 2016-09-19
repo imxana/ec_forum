@@ -1,15 +1,16 @@
-import MySQLdb
+import pymysql
 from flask import request,jsonify
-import error, db
+import ec_forum.error as error
+import ec_forum.db as db
 
-conn = MySQLdb.Connect(
-        host = '127.0.0.1',
-        port = 3306,
-        user = 'root',
-        passwd = '',
-        db = 'test',
-        charset = 'utf8'
-
+conn = pymysql.Connect(
+    host = '127.0.0.1',
+    port = 3306,
+    user = 'root',
+    passwd = '',
+    db = 'test',
+    charset = 'utf8'
+)
 
 def run(app):
 

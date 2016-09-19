@@ -1,2 +1,2 @@
-import error
-print error.userNotExisted
+import ec_forum.error as error
+print(error.userNotExisted)
