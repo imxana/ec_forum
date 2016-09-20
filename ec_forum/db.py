@@ -1,48 +1,76 @@
 # coding:utf8
 import pymysql
-
+from ec_forum.id_dealer import gene_id
 
 
 class sqlQ(object):
 
     def signup_insert(self,name,email,psw):
+        u_id = ''
         err = True
         cursor = conn.cursor()
         try:
-            sql = "insert into ec_user(u_name,u_email,u_psw) values(%s,%s,%s);" % (name,email,psw)
+            u_id = gene_id()
+            while self.id_search(u_id):
+                u_id = gene_id() 
+            sql = "insert into ec_user(u_name, u_email, u_psw, u_id, u_email_confirm, u_level, u_reputation) values(%s,%s,%s,%s,0,4,0);" % (name,email,psw,u_id)
             cursor.execute(sql)
-            if cursor.rowcount != 1:
-                raise Exception('sign_up failed')
+            if cursor.rowcount == 1:
+                # suc!!
                 err = False
         except Exception as e:
             raise e
-            err = False
         finally:
             cursor.close()
-        return True
+        return err, u_id
 
-    def signup_select(self, name, psw=''):
+    def signup_select(self, name, method='u_name'):
         cursor = conn.cursor()
+        exist = True
         try:
-            sql = "select * from ec_user where ec_name=%s"
+            sql = "select * from ec_user where %s=%s" % (method,name)
             cursor.execute(sql)
-        except Exception as e:
-            raise(e)
-        finally:
-            cursor.close()
-
-    def userid_search(self, id):
-        cursor = conn.cursor()
-        try:
-            pass
+            rs = cursor.fetchone()
+            if rs == ()
+               exist = False
         except Exception as e:
             raise e
         finally:
-            pass
+            cursor.close()
+        return exist
 
-    def sign_select():
+    def id_search(self, ec_id, table='ec_user'):
+        cursor = conn.cursor()
+        exist = True
+        try:
+            sql = "select * from %s where u_id=%s" % (table,ec_id)
+            cursor.execute(sql)
+            rs = cursor.fetchone()
+            if rs == ()
+               exist = False
+        except Exception as e:
+            raise e
+        finally:
+            cursor.close()
+        return exist
 
-        pass
+    def signin_select(self, loginname, method='u_id'):
+        cursor = conn.cursor()
+        err = True
+        info = ()
+        try:
+            sql = "select * from %s where %s=%s" % (u_id, loginname)
+            cursor.execute(sql)
+            rs = cursor.fetchone()
+            if rs =! ()
+                err = False
+                info = rs
+        except Exception as e:
+            raise e
+        finally:
+            cursor.close()
+        return err, info
+
 
     def selectAll():
         pass
@@ -54,14 +82,14 @@ class sqlQ(object):
 
 
 if __name__ == '__main__':
-    # conn = pymysql.Connect(
-    #         host = '127.0.0.1',
-    #         port = 3306,
-    #         user = 'root',
-    #         passwd = '',
-    #         db = 'test',
-    #         charset = 'utf8'
-    #         )
+    conn = pymysql.Connect(
+            host = '127.0.0.1',
+            port = 3306,
+            user = 'root',
+            passwd = '',
+            db = 'ec_forum',
+            charset = 'utf8'
+            )
     # cursor = conn.cursor()
     #
     # sql_insert = "insert into user(userid, username) values(9, 'nanako')"

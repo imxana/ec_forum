@@ -32,7 +32,7 @@ method:post
 
 字段|类型
 ------------ | -------------
-u_name/u_email| str
+u_loginname(u_name/u_email)| str
 u_psw| str
 
 suc:
