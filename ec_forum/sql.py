@@ -20,7 +20,6 @@ class sqlQ(object):
         while self.userid_search(u_id, table='ec_user'):
             u_id = gene_id()
         sql = "insert into ec_user(u_name, u_email, u_psw, u_id, u_email_confirm, u_level, u_reputation) values('%s','%s','%s',%s,0,4,0);" % (name,email,psw,u_id)
-        print(sql)
         try:
             if cursor.execute(sql) == 1:
                 if cursor.rowcount == 1:
@@ -85,13 +84,10 @@ class sqlQ(object):
         cursor = conn.cursor()
         err = True
         sql = "delete from ec_user where u_id='%s' and u_psw='%s';" % (uid,psw)
-        print(sql)
         try:
-            print(1)
             st = cursor.execute(sql)
             if st == 1:
             #if cursor.execute(sql) == 1:
-                print(2)
                 err = False
                 conn.commit()
         except Exception as e:
