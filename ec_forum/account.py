@@ -88,18 +88,17 @@ def run(app):
 
         '''exist'''
         if not sqlQ.signup_select(u_loginname, method=method):
-            if method == 'u_name':
-                return jsonify(error.usernameExisted)
             if method == 'u_email':
-                return jsonify(error.emailExisted)
+                return jsonify(error.emailNotExisted)
             return jsonify(error.userNotExisted) 
-
+    
         # str(encrypt(u_psw), encoding='utf8')
         err,res = sqlQ.signin_select(u_loginname, method)
         if err:
             return jsonify(error.normalError)
 
-        if decrypt(res[2].encode('utf8')) != u_psw:
+        decrypt_psw = decrypt(res[2].encode('utf8'))
+        if decrypt_psw != u_psw:
             return jsonify(error.pswWrong)
 
         return jsonify({
@@ -132,11 +131,21 @@ def run(app):
         '''exist'''
         if not sqlQ.userid_search(u_id):
             return jsonify(error.userNotExisted) 
+        
+        '''psw'''
+        err,res = sqlQ.signin_select(u_id, method='u_id')
+        if err:
+            return jsonify(error.normalError)
+        decrypt_psw = decrypt(res[2].encode('utf8'))
+        if decrypt_psw != u_psw:
+            return jsonify(error.pswWrong)
 
         '''err'''
-        encrypt_psw = str(encrypt(u_psw), encoding='utf8')
-        if sqlQ.sign_del(u_id, encrypt_psw):
+        if sqlQ.sign_del(u_id):
             return jsonify(error.normalError)
 
         return jsonify({'code':'1','u_id':u_id})
-    
+
+
+
+

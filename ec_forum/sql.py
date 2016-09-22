@@ -80,14 +80,13 @@ class sqlQ(object):
             cursor.close()
         return err,res
 
-    def sign_del(self, uid, psw):
+    def sign_del(self, uid):
         cursor = conn.cursor()
         err = True
-        sql = "delete from ec_user where u_id='%s' and u_psw='%s';" % (uid,psw)
+        sql = "delete from ec_user where u_id='%s';" % uid
         try:
             st = cursor.execute(sql)
             if st == 1:
-            #if cursor.execute(sql) == 1:
                 err = False
                 conn.commit()
         except Exception as e:
@@ -98,37 +97,3 @@ class sqlQ(object):
         return err
 
 
-
-
-if __name__ == '__main__':
-    conn = pymysql.Connect(
-            host = '127.0.0.1',
-            port = 3306,
-            user = 'root',
-            passwd = '',
-            db = 'ec_forum',
-            charset = 'utf8'
-            )
-    # cursor = conn.cursor()
-    #
-    # sql_insert = "insert into user(userid, username) values(9, 'nanako')"
-    # sql_update = "update user set username='nana' where userid=9"
-    # sql_delete = "delete from user where userid>8"
-    #
-    # try:
-    #     cursor.execute(sql_insert)
-    #     print (cursor.rowcount)
-    #
-    #     cursor.execute(sql_update)
-    #     print (cursor.rowcount)
-    #
-    #     cursor.execute(sql_delete)
-    #     print (cursor.rowcount)
-    #
-    #     conn.commit()
-    # except Exception as e:
-    #     print(e)
-    #     conn.rollback()
-    #
-    # cursor.close()
-    # conn.close()
