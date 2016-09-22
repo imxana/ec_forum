@@ -3,6 +3,7 @@ from flask import request,jsonify
 import ec_forum.error as error
 import ec_forum.sql as sql
 import ec_forum.expr as expr
+from ec_forum.salt import encrypt, decrypt
 
 conn = pymysql.Connect(
     host = '127.0.0.1',
@@ -41,6 +42,7 @@ def run(app):
         if not expr.validPsw(u_psw):
             return jsonify(error.pswIllegal)
 
+
         '''exist'''
         if sqlQ.signup_select(u_name, method='u_name'):
             return jsonify(error.usernameExisted)
@@ -48,9 +50,9 @@ def run(app):
             return jsonify(error.emailExisted)
 
 
-
         '''insert err'''
-        err, u_id = sqlQ.signup_insert(u_name, u_email, u_psw)
+        encrypt_psw = str(encrypt(u_psw), encoding='utf8')
+        err, u_id = sqlQ.signup_insert(u_name, u_email, encrypt_psw)
         if err:
             return jsonify(error.normalError)
 
@@ -92,11 +94,14 @@ def run(app):
                 return jsonify(error.emailExisted)
             return jsonify(error.userNotExisted) 
 
-        err,res = sqlQ.signin_select(u_loginname, u_psw, method)
+        # str(encrypt(u_psw), encoding='utf8')
+        err,res = sqlQ.signin_select(u_loginname, method)
         if err:
             return jsonify(error.normalError)
 
-        #return str(res)
+        if decrypt(res[2].encode('utf8')) != u_psw:
+            return jsonify(error.pswWrong)
+
         return jsonify({
             'code': '1',
             'u_id': res[0],
@@ -129,7 +134,8 @@ def run(app):
             return jsonify(error.userNotExisted) 
 
         '''err'''
-        if sqlQ.sign_del(u_id, u_psw):
+        encrypt_psw = str(encrypt(u_psw), encoding='utf8')
+        if sqlQ.sign_del(u_id, encrypt_psw):
             return jsonify(error.normalError)
 
         return jsonify({'code':'1','u_id':u_id})

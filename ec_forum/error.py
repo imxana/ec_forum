@@ -22,3 +22,4 @@ loginNameIllegal     = { 'code': '-52', 'codeState': 'login name illegal'      }
 noteNotExisted       = { 'code': '-6', 'codeState': 'note not existed'         }
 noteidEmpty          = { 'code': '-7', 'codeState': 'noteid empty'             }
 titleEmpty           = { 'code': '-8', 'codeState': 'title can\'t be empty'    }
+

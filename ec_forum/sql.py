@@ -65,11 +65,11 @@ class sqlQ(object):
             cursor.close()
         return exist
 
-    def signin_select(self, loginname, psw, method='u_name'):
+    def signin_select(self, loginname, method='u_name'):
         cursor = conn.cursor()
         err,res = True,()
         try:
-            sql = "select * from ec_user where %s='%s' and u_psw='%s';" % (method,loginname,psw)
+            sql = "select * from ec_user where %s='%s';" % (method,loginname)
             if cursor.execute(sql) == 1:
                 rs = cursor.fetchone()
                 if bool(rs):
