@@ -4,6 +4,7 @@ userNotExisted       = { 'code': '-20', 'codeState': 'user not existed'        }
 usernameEmpty        = { 'code': '-21', 'codeState': 'username empty'          }
 usernameExisted      = { 'code': '-22', 'codeState': 'username is existed'     }
 usernameIllegal      = { 'code': '-23', 'codeState': 'username illegal'        }
+useridEmpty          = { 'code': '-24', 'codeState': 'userid empty'            }
 
 pswEmpty             = { 'code': '-30', 'codeState': 'password empty'          }
 pswWrong             = { 'code': '-31', 'codeState': 'wrong password'          }

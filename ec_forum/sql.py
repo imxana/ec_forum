@@ -36,7 +36,7 @@ class sqlQ(object):
     def signup_select(self, name, method='u_name'):
         cursor = conn.cursor()
         exist = True
-        sql = "select * from ec_user where %s='%s'" % (method, name)
+        sql = "select * from ec_user where %s='%s';" % (method, name)
         try:
             cursor.execute(sql)
             rs = cursor.fetchone()
@@ -54,7 +54,7 @@ class sqlQ(object):
         cursor = conn.cursor()
         exist = True
         try:
-            sql = "select * from %s where u_id='%s'" % (table,ec_id)
+            sql = "select * from %s where u_id='%s';" % (table,ec_id)
             cursor.execute(sql)
             rs = cursor.fetchone()
             exist = bool(rs)
@@ -69,7 +69,7 @@ class sqlQ(object):
         cursor = conn.cursor()
         err,res = True,()
         try:
-            sql = "select * from ec_user where %s='%s' and u_psw='%s'" % (method,loginname,psw)
+            sql = "select * from ec_user where %s='%s' and u_psw='%s';" % (method,loginname,psw)
             if cursor.execute(sql) == 1:
                 rs = cursor.fetchone()
                 if bool(rs):
@@ -83,11 +83,17 @@ class sqlQ(object):
 
     def sign_del(self, uid, psw):
         cursor = conn.cursor()
-        err = False
-        sql = "delete * from ec_user where u_id='%s' and u_psw='%s'" % (uid,psw)
+        err = True
+        sql = "delete from ec_user where u_id='%s' and u_psw='%s';" % (uid,psw)
+        print(sql)
         try:
-            if cursor.execute(sql)==1:
-                err = True
+            print(1)
+            st = cursor.execute(sql)
+            if st == 1:
+            #if cursor.execute(sql) == 1:
+                print(2)
+                err = False
+                conn.commit()
         except Exception as e:
             raise e
             conn.rollback()

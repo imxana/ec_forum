@@ -90,19 +90,47 @@ def run(app):
                 return jsonify(error.usernameExisted)
             if method == 'u_email':
                 return jsonify(error.emailExisted)
-            return jsonify(error.loginNameNotExisted) 
+            return jsonify(error.userNotExisted) 
 
         err,res = sqlQ.signin_select(u_loginname, u_psw, method)
         if err:
             return jsonify(error.normalError)
 
-        return str(res)
+        #return str(res)
+        return jsonify({
+            'code': '1',
+            'u_id': res[0],
+            'u_name': res[1],
+            'u_email': res[3],
+            'u_email_confirm': res[4],
+            'u_level': res[5],
+            'u_reputation': res[6],
+            'u_realname': res[7]
+            })
 
 
 
     @app.route('/sign_del', methods=['POST'])
     def sign_del():
-        if request.method == 'POST':
-            return request.values.get('u_name', '')
-        else:
+        if request.method != 'POST':
             return jsonify(error.normalError)
+
+        u_id = request.values.get('u_id', '')
+        u_psw = request.values.get('u_psw', '')
+
+        '''empty'''
+        if u_id == '':
+            return jsonify(error.useridEmpty)
+        if u_psw == '':
+            return jsonify(error.pswEmpty)
+
+        '''exist'''
+        if not sqlQ.userid_search(u_id):
+            return jsonify(error.userNotExisted) 
+
+        '''err'''
+        if sqlQ.sign_del(u_id, u_psw):
+            return jsonify(error.normalError)
+
+        return jsonify({'code':'1','u_id':u_id})
+    
