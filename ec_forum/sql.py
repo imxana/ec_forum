@@ -22,11 +22,10 @@ class sqlQ(object):
         sql = "insert into ec_user(u_name, u_email, u_psw, u_id, u_email_confirm, u_level, u_reputation) values('%s','%s','%s',%s,0,4,0);" % (name,email,psw,u_id)
         print(sql)
         try:
-            cursor.execute(sql)
-            print(cursor.rowcount)
-            if cursor.rowcount == 1:
-                conn.commit()
-                err = False
+            if cursor.execute(sql) == 1:
+                if cursor.rowcount == 1:
+                    conn.commit()
+                    err = False
         except Exception as e:
             raise Exception('sign_up failed')
             conn.rollback()
@@ -68,21 +67,33 @@ class sqlQ(object):
 
     def signin_select(self, loginname, psw, method='u_name'):
         cursor = conn.cursor()
-        err = False
+        err,res = True,()
         try:
             sql = "select * from ec_user where %s='%s' and u_psw='%s'" % (method,loginname,psw)
-            cursor.execute(sql)
-            rs = cursor.fetchone()
-            exist = bool(rs)
+            if cursor.execute(sql) == 1:
+                rs = cursor.fetchone()
+                if bool(rs):
+                    err,res = False,rs
+        except Exception as e:
+            raise e
+            conn.rollback()
+        finally:
+            cursor.close()
+        return err,res
+
+    def sign_del(self, uid, psw):
+        cursor = conn.cursor()
+        err = False
+        sql = "delete * from ec_user where u_id='%s' and u_psw='%s'" % (uid,psw)
+        try:
+            if cursor.execute(sql)==1:
+                err = True
         except Exception as e:
             raise e
             conn.rollback()
         finally:
             cursor.close()
         return err
-
-    def delete():
-        pass
 
 
 

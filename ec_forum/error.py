@@ -16,7 +16,7 @@ emailIllegal         = { 'code': '-43', 'codeState': 'email illegal'           }
 
 loginNameNotExisted  = { 'code': '-50', 'codeState': 'login name not existed'  }
 loginNameEmpty       = { 'code': '-51', 'codeState': 'login name empty'        }
-
+loginNameIllegal     = { 'code': '-52', 'codeState': 'login name illegal'      }
 
 noteNotExisted       = { 'code': '-6', 'codeState': 'note not existed'         }
 noteidEmpty          = { 'code': '-7', 'codeState': 'noteid empty'             }

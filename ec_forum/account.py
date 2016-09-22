@@ -67,9 +67,10 @@ def run(app):
             return jsonify(error.normalError)
 
         u_loginname = request.values.get('u_loginname', '')
-        u_psw = request.values.get.get('u_psw', '')
+        u_psw = request.values.get('u_psw', '')
 
         '''empty'''
+        method = ''
         if u_loginname == '':
             return jsonify(error.loginNameEmpty)
         if u_psw == '':
@@ -77,13 +78,25 @@ def run(app):
 
         '''formate type'''
         if expr.validEmail(u_loginname):
-            pass
+            method = 'u_email'
         elif expr.validName(u_loginname.lower()):
-            pass
+            method = 'u_name'
         else:
-            return jsonify(error.loginNameNotExisted)
+            return jsonify(error.loginNameIllegal)
 
-        return jsonify({})
+        '''exist'''
+        if not sqlQ.signup_select(u_loginname, method=method):
+            if method == 'u_name':
+                return jsonify(error.usernameExisted)
+            if method == 'u_email':
+                return jsonify(error.emailExisted)
+            return jsonify(error.loginNameNotExisted) 
+
+        err,res = sqlQ.signin_select(u_loginname, u_psw, method)
+        if err:
+            return jsonify(error.normalError)
+
+        return str(res)
 
 
 
