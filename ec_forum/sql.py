@@ -16,19 +16,20 @@ class sqlQ(object):
         u_id = ''
         err = True
         cursor = conn.cursor()
-        try:
+        u_id = gene_id()
+        while self.userid_search(u_id, table='ec_user'):
             u_id = gene_id()
-            while self.userid_search(u_id, table='ec_user'):
-                u_id = gene_id()
-            sql = "insert into ec_user(u_name, u_email, u_psw, u_id, u_email_confirm, u_level, u_reputation) values('%s','%s','%s',%s,0,4,0);" % (name,email,psw,u_id)
-            print(sql)
+        sql = "insert into ec_user(u_name, u_email, u_psw, u_id, u_email_confirm, u_level, u_reputation) values('%s','%s','%s',%s,0,4,0);" % (name,email,psw,u_id)
+        print(sql)
+        try:
             cursor.execute(sql)
             print(cursor.rowcount)
             if cursor.rowcount == 1:
+                conn.commit()
                 err = False
         except Exception as e:
             raise Exception('sign_up failed')
-            err = False
+            conn.rollback()
         finally:
             cursor.close()
         return err, u_id
@@ -36,8 +37,8 @@ class sqlQ(object):
     def signup_select(self, name, method='u_name'):
         cursor = conn.cursor()
         exist = True
+        sql = "select * from ec_user where %s='%s'" % (method, name)
         try:
-            sql = "select * from ec_user where %s='%s'" % (method, name)
             cursor.execute(sql)
             rs = cursor.fetchone()
             # if not bool(rs):
@@ -45,6 +46,7 @@ class sqlQ(object):
             exist = bool(rs)
         except Exception as e:
             raise e
+            conn.rollback()
         finally:
             cursor.close()
         return exist
@@ -59,6 +61,7 @@ class sqlQ(object):
             exist = bool(rs)
         except Exception as e:
             raise e
+            conn.rollback()
         finally:
             cursor.close()
         return exist
@@ -72,7 +75,8 @@ class sqlQ(object):
             rs = cursor.fetchone()
             exist = bool(rs)
         except Exception as e:
-            raise
+            raise e
+            conn.rollback()
         finally:
             cursor.close()
         return err
