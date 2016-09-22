@@ -7,7 +7,7 @@ usernameIllegal      = { 'code': '-23', 'codeState': 'username illegal'        }
 
 pswEmpty             = { 'code': '-30', 'codeState': 'password empty'          }
 pswWrong             = { 'code': '-31', 'codeState': 'wrong password'          }
-pswIllegal           = { 'code': '-32', 'codeState': 'wrong illegal'           }
+pswIllegal           = { 'code': '-32', 'codeState': 'psw illegal'             }
 
 emailNotExisted      = { 'code': '-40', 'codeState': 'email not existed'       }
 emailEmpty           = { 'code': '-41', 'codeState': 'email empty'             }
@@ -21,4 +21,3 @@ loginNameEmpty       = { 'code': '-51', 'codeState': 'login name empty'        }
 noteNotExisted       = { 'code': '-6', 'codeState': 'note not existed'         }
 noteidEmpty          = { 'code': '-7', 'codeState': 'noteid empty'             }
 titleEmpty           = { 'code': '-8', 'codeState': 'title can\'t be empty'    }
-

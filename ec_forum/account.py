@@ -1,7 +1,7 @@
 import pymysql
 from flask import request,jsonify
 import ec_forum.error as error
-import ec_forum.db as db
+import ec_forum.sql as sql
 import ec_forum.expr as expr
 
 conn = pymysql.Connect(
@@ -12,7 +12,7 @@ conn = pymysql.Connect(
     charset = 'utf8'
 )
 
-sqlQ = db.sqlQ()
+sqlQ = sql.sqlQ()
 
 def run(app):
 
@@ -44,13 +44,13 @@ def run(app):
         '''exist'''
         if sqlQ.signup_select(u_name, method='u_name'):
             return jsonify(error.usernameExisted)
-        if sqlQ.signin_select(u_email, method='u_email'):
+        if sqlQ.signup_select(u_email, method='u_email'):
             return jsonify(error.emailExisted)
 
-        
-        
+
+
         '''insert err'''
-        err, u_id = sqlQ.signup_insert(u_name, u_psw, u_email)
+        err, u_id = sqlQ.signup_insert(u_name, u_email, u_psw)
         if err:
             return jsonify(error.normalError)
 
@@ -74,18 +74,18 @@ def run(app):
             return jsonify(error.loginNameEmpty)
         if u_psw == '':
             return jsonify(error.pswEmpty)
-        
+
         '''formate type'''
         if expr.validEmail(u_loginname):
-            if db.
+            pass
         elif expr.validName(u_loginname.lower()):
             pass
         else:
             return jsonify(error.loginNameNotExisted)
-        
+
         return jsonify({})
 
-        
+
 
     @app.route('/sign_del', methods=['POST'])
     def sign_del():

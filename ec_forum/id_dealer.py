@@ -1,6 +1,6 @@
 from random import randint
 
-def gene_id(num=12, letter=False, lower=False):
+def gene_id(num=6, letter=False, lower=False):
     origin = '1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM'
     rang = 10
     if letter:
