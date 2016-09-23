@@ -7,12 +7,17 @@ create table ec_user
 (
     u_id integer primary key,
     u_name text,
+    u_psw text,
     u_email text,
     u_email_confirm integer,
     u_level integer,
     u_reputation integer,
-    u_realname text
-
+    u_realname text,
+    u_blog text,
+    u_github text,
+    u_articles text,
+    u_questions text,
+    u_answers text,
 );
 
 create table ec_question

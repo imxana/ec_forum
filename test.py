@@ -39,6 +39,8 @@ class ECTestCase(unittest.TestCase):
         ),follow_redirects=True)
 
     def test_sign_up_fail(self):
+        rv = self.app.get('/sign_up?u_name=test.good.name&psw=222222&goodemail@gmail.com', follow_redirects=True)
+        assert b'The method is not allowed for the requested URL.' in rv.data
         rv = self.sign_up('test.good.name','222222','goodemail@gmail.com')
         assert b'username is existed' in rv.data
         rv = self.sign_up('te','222222','goodemail@gmail.com')
@@ -57,6 +59,8 @@ class ECTestCase(unittest.TestCase):
         assert b'email illegal' in rv.data
 
     def test_sign_in_failed(self):
+        rv = self.app.get('/sign_in?u_loginname=test.good.name&psw=222222', follow_redirects=True)
+        assert b'The method is not allowed for the requested URL.' in rv.data
         rv = self.sign_in('','222222')
         assert b'login name empty' in rv.data
         rv = self.sign_in('test.good.name','')
@@ -76,6 +80,8 @@ class ECTestCase(unittest.TestCase):
 
 
     def test_sign_del_fail(self):
+        rv = self.app.get('/sign_del?u_id=%s&u_psw=222222'%self.u_id, follow_redirects=True)
+        assert b'The method is not allowed for the requested URL.' in rv.data
         rv = self.sign_del('','222222')
         assert b'userid empty' in rv.data
         rv = self.sign_del('000000','222222')
