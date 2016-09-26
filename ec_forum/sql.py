@@ -13,6 +13,7 @@ conn = pymysql.Connect(
 class sqlQ(object):
 
     def signup_insert(self,name,email,psw):
+        '''insert without check'''
         u_id = ''
         err = True
         cursor = conn.cursor()
@@ -32,7 +33,9 @@ class sqlQ(object):
             cursor.close()
         return err, u_id
 
+
     def signup_select(self, name, method='u_name'):
+        '''check if some property exist'''
         cursor = conn.cursor()
         exist = True
         sql = "select * from ec_user where %s='%s';" % (method, name)
@@ -49,26 +52,13 @@ class sqlQ(object):
             cursor.close()
         return exist
 
-    def userid_search(self, ec_id, table='ec_user'):
-        cursor = conn.cursor()
-        exist = True
-        try:
-            sql = "select * from %s where u_id='%s';" % (table,ec_id)
-            cursor.execute(sql)
-            rs = cursor.fetchone()
-            exist = bool(rs)
-        except Exception as e:
-            raise e
-            conn.rollback()
-        finally:
-            cursor.close()
-        return exist
 
     def signin_select(self, loginname, method='u_name'):
+        '''sign in by name or email to get the tuple'''
         cursor = conn.cursor()
         err,res = True,()
+        sql = "select * from ec_user where %s='%s';" % (method,loginname)
         try:
-            sql = "select * from ec_user where %s='%s';" % (method,loginname)
             if cursor.execute(sql) == 1:
                 rs = cursor.fetchone()
                 if bool(rs):
@@ -80,7 +70,9 @@ class sqlQ(object):
             cursor.close()
         return err,res
 
+
     def sign_del(self, uid):
+        '''delelte account, just for test!!!'''
         cursor = conn.cursor()
         err = True
         sql = "delete from ec_user where u_id='%s';" % uid
@@ -97,3 +89,40 @@ class sqlQ(object):
         return err
 
 
+    def userid_search(self, ec_id, table='ec_user'):
+        '''search existense of an id'''
+        cursor = conn.cursor()
+        exist = True
+        sql = "select * from %s where u_id='%s';" % (table,ec_id)
+        try:
+            cursor.execute(sql)
+            rs = cursor.fetchone()
+            exist = bool(rs)
+        except Exception as e:
+            raise e
+            conn.rollback()
+        finally:
+            cursor.close()
+        return exist
+
+    def user_update(self, info):
+        '''update the infomation'''
+        cursor = conn.cursor()
+        err,res = True,()
+        if len(info) == 1:
+            return
+        sql = "update ec_user set "
+        for k,v in info.items():
+            sql += "%s=%s,"
+        sql = "select * from ec_user where %s='%s';" % (method,loginname)
+        try:
+            if cursor.execute(sql) == 1:
+                rs = cursor.fetchone()
+                if bool(rs):
+                    err,res = False,rs
+        except Exception as e:
+            raise e
+            conn.rollback()
+        finally:
+            cursor.close()
+        return err,res

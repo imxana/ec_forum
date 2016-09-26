@@ -14,6 +14,8 @@ emailNotExisted      = { 'code': '-40', 'codeState': 'email not existed'       }
 emailEmpty           = { 'code': '-41', 'codeState': 'email empty'             }
 emailExisted         = { 'code': '-42', 'codeState': 'email is existed'        }
 emailIllegal         = { 'code': '-43', 'codeState': 'email illegal'           }
+emailNotConfirm      = { 'code': '-44', 'codeState': 'email not confirm'       }
+emailConfirmed       = { 'code': '-45', 'codeState': 'email confirmed'         }
 
 loginNameNotExisted  = { 'code': '-50', 'codeState': 'login name not existed'  }
 loginNameEmpty       = { 'code': '-51', 'codeState': 'login name empty'        }
@@ -22,4 +24,3 @@ loginNameIllegal     = { 'code': '-52', 'codeState': 'login name illegal'      }
 noteNotExisted       = { 'code': '-6', 'codeState': 'note not existed'         }
 noteidEmpty          = { 'code': '-7', 'codeState': 'noteid empty'             }
 titleEmpty           = { 'code': '-8', 'codeState': 'title can\'t be empty'    }
-

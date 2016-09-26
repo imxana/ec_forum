@@ -46,6 +46,13 @@ u_email_confirm | int
 u_level |  int
 u_reputation |  int
 u_realname | str
+u_blog | str
+u_github | str
+u_articles | str
+u_questions | str
+u_answers | str
+u_watchusers | str
+u_tags | str
 
 
 fail:
@@ -77,23 +84,26 @@ fail:
 
 字段|类型或值
 ------------ | -------------
-code|<=0
-msg| str
+code | !1
+codeState | str
 
 # User_info
 
-## ./u/update_info
+## ./u/update
 
 method:post
 
 字段|类型|要求
 ------------ | ------------- | ------------
 u_id | str | 必填
+u_psw | str | 用于验证
 u_name| str | 非空
 u_email | str | 如地址变更，新地址需合法，并修改验证情况
 u_realname | str | 无要求
-u_psw | str | 用于验证
-
+u_blog | str | 无要求
+u_github | str | 无要求
+u_watchusers | str | 无要求
+u_tags | str | 无要求
 
 suc:
 
@@ -107,20 +117,54 @@ fail:
 字段|类型或值
 ------------ | -------------
 code|<=0
-msg| str
+codeState| str
 
 
 ## ./u/email/confirm
 
 ## ./u/email/change
 
+
+
 ## ./u/psw_change
+
+
 
 # Article
 
 ## ./t/add
-## ./t/edit
+
+method:post
+
+字段|类型|要求
+------------ | ------------- | ------------
+u_id | str | 必填
+u_psw | str | 用于验证
+u_title | str | 非空
+u_text | str | 非空
+u_tags | str | 无要求
+
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code | 1
+t_id | str
+
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code|<=0
+codeState| str
+
+## ./t/update
 ## ./t/del
+## ./t/show
+## ./t/display
+## ./t/query
 ## ./q/repution
 
 # Comment

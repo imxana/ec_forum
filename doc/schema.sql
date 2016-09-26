@@ -2,7 +2,6 @@ create database ec_forum;
 
 use ec_forum;
 
-
 create table ec_user
 (
     u_id integer primary key comment '用户ID',
@@ -15,9 +14,11 @@ create table ec_user
     u_realname text comment '真实姓名',
     u_blog text comment '博客地址',
     u_github text comment 'github地址',
-    u_articles text comment '文章ID组',
-    u_questions text comment '提问ID组',
-    u_answers text comment '回答ID组',
+    u_articles text comment '文章ID组，我的和收藏',
+    u_questions text comment '提问ID组，我的和关注',
+    u_answers text comment '回答ID组，我的和关注',
+    u_watchusers text comment '关注用户ID组',
+    u_tags text comment '关注标签'
 );
 
 create table ec_question
@@ -30,6 +31,7 @@ create table ec_question
     q_date date comment '提问日期',
     q_close integer comment '是否关闭',
     q_report integer comment '被举报次数',
+    q_answers text comment '回答ID组',
 );
 
 create table ec_answer
@@ -38,8 +40,8 @@ create table ec_answer
     u_id integer comment '回答用户id',
     a_text text comment '回答正文',
     a_date date comment '回答日期',
-    a_reputation integer comment '回答被赞数',
-
+    a_like integer comment '回答被赞数',
+    a_comments text comment '评论ID组',
 );
 
 create table ec_article
@@ -49,8 +51,8 @@ create table ec_article
     t_title text comment '文章标题',
     t_text text comment '文章正文',
     t_date date comment '文章发表日期',
-    t_reputation integer comment '文章获得声望',
-    a_like integer comment '文章被赞数',
+    t_like integer comment '文章被推荐数',
+    t_comments text comment '评论ID组',
 );
 
 create table ec_comment
@@ -66,9 +68,12 @@ create table ec_comment
 
 create table ec_reputaion
 (
-    r_id integer comment '声望变化id',
+    r_id integer primary key comment '声望变化事件id',
     type text comment '声望类型',
     id integer comment '对应事件id',
     ua_id integer comment '评价用户id',
     ub_id integer comment '接受用户id',
+    ua_req integer comment '评价用户声望变化',
+    ub_req integer comment '接受用户声望变化',
+    r_date date comment '事件日期',
 );

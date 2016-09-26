@@ -1,17 +1,17 @@
-import pymysql
+# import pymysql
 from flask import request,jsonify
 import ec_forum.error as error
 import ec_forum.sql as sql
 import ec_forum.expr as expr
 from ec_forum.salt import encrypt, decrypt
 
-conn = pymysql.Connect(
-    host = '127.0.0.1',
-    user = 'root',
-    passwd = '',
-    db = 'test',
-    charset = 'utf8'
-)
+# conn = pymysql.Connect(
+#     host = '127.0.0.1',
+#     user = 'root',
+#     passwd = '',
+#     db = 'test',
+#     charset = 'utf8'
+# )
 
 sqlQ = sql.sqlQ()
 
@@ -90,8 +90,8 @@ def run(app):
         if not sqlQ.signup_select(u_loginname, method=method):
             if method == 'u_email':
                 return jsonify(error.emailNotExisted)
-            return jsonify(error.userNotExisted) 
-    
+            return jsonify(error.userNotExisted)
+
         # str(encrypt(u_psw), encoding='utf8')
         err,res = sqlQ.signin_select(u_loginname, method)
         if err:
@@ -130,8 +130,8 @@ def run(app):
 
         '''exist'''
         if not sqlQ.userid_search(u_id):
-            return jsonify(error.userNotExisted) 
-        
+            return jsonify(error.userNotExisted)
+
         '''psw'''
         err,res = sqlQ.signin_select(u_id, method='u_id')
         if err:
@@ -145,7 +145,3 @@ def run(app):
             return jsonify(error.normalError)
 
         return jsonify({'code':'1','u_id':u_id})
-
-
-
-
