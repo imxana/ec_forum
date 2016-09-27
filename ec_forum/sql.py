@@ -105,24 +105,24 @@ class sqlQ(object):
             cursor.close()
         return exist
 
-    def user_update(self, info):
+    def user_update(self, u_id, info):
         '''update the infomation'''
         cursor = conn.cursor()
-        err,res = True,()
-        if len(info) == 1:
-            return
+        err = True
+        if len(info) == 0:
+            return err
         sql = "update ec_user set "
         for k,v in info.items():
-            sql += "%s=%s,"
-        sql = "select * from ec_user where %s='%s';" % (method,loginname)
+            sql += "%s='%s',"%(k,v)
+        sql = sql[:-1] + " where u_id='%s'"%u_id
+        print('sql.py 118',sql)
         try:
             if cursor.execute(sql) == 1:
-                rs = cursor.fetchone()
-                if bool(rs):
-                    err,res = False,rs
+                err = False
+                conn.commit()
         except Exception as e:
             raise e
             conn.rollback()
         finally:
             cursor.close()
-        return err,res
+        return err

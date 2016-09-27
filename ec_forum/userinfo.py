@@ -8,7 +8,7 @@ sqlQ = sql.sqlQ()
 def run(app):
 
     @app.route('/u/query', methods=['POST'])
-    def user_query(self):
+    def user_query():
         if request.method != 'POST':
             return jsonify(error.normalError)
         u_id = request.values.get('u_id', '')
@@ -25,18 +25,28 @@ def run(app):
         err,res = sqlQ.signin_select(u_id, method='u_id')
         if err:
             return jsonify(error.normalError)
+
+        # read the res
+        print('userinfo.py:30',res)
         return jsonify(res)
 
 
 
-    @app.route('/u/update', methods=['POST']):
-    def user_update(self):
+    @app.route('/u/update', methods=['POST'])
+    #self, uid, psw, rn, bl, gh, waus, tags)
+    def user_update():
         if request.method != 'POST':
             return jsonify(error.normalError)
 
         u_id = request.values.get('u_id', '')
         u_psw = request.values.get('u_psw', '')
-
+        u_info = {
+            'u_realname':request.values.get('u_realname',''),
+            'u_blog':request.values.get('u_blog',''),
+            'u_github':request.values.get('u_github',''),
+            'u_watchusers':request.values.get('u_watchusers',''),
+            'u_tags':request.values.get('u_tags',''),
+        }
         '''empty'''
         if u_id == '':
             return jsonify(error.useridEmpty)
@@ -55,8 +65,8 @@ def run(app):
         if decrypt_psw != u_psw:
             return jsonify(error.pswWrong)
 
+        err = sqlQ.user_update(u_id, u_info)
+        if err:
+            return jsonify(normalError)
 
-        
-        # '''err'''
-        # if sqlQ.sign_del(u_id):
-        #     return jsonify(error.normalError)
+        return jsonify({'code':'1','u_id':u_id})

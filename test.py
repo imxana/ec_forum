@@ -8,7 +8,6 @@ class ECTestCase(unittest.TestCase):
     def setUp(self):
         #ec.config['TESTING'] = True
         self.app = ec.app.test_client()
-
         '''sign_up suc'''
         rv = self.sign_up('test.good.name','222222','goodemail@gmail.com')
         assert b'u_id' in rv.data
@@ -37,6 +36,22 @@ class ECTestCase(unittest.TestCase):
             u_id=uid,
             u_psw=psw
         ),follow_redirects=True)
+
+    def user_update_info(self, uid, psw, rn, bl, gh, waus, tags):
+        return self.app.post('/u/update',data=dict(
+            u_id=uid,u_psw=psw,
+            u_realname=rn,
+            u_blog=bl,
+            u_github=gh,
+            u_watchusers=waus,
+            u_tags=tags
+        ),follow_redirects=True)
+
+    def user_query_info(self, uid):
+        return self.app.post('/u/query',data=dict(
+            u_id=uid
+        ),follow_redirects=True)
+
 
     def test_sign_up_fail(self):
         rv = self.app.get('/sign_up?u_name=test.good.name&psw=222222&goodemail@gmail.com', follow_redirects=True)
@@ -90,6 +105,13 @@ class ECTestCase(unittest.TestCase):
         assert b'wrong password' in rv.data
 
 
+    def test_user_update_query(self):
+        #self, uid, psw, rn, bl, gh, waus, tags
+        rv = self.user_update_info(self.u_id, '222222', 'Good Name', 'goodblog.com', 'github.com/good', '111111', 'node.js')
+        assert b'u_id' in rv.data
+        rv = self.user_query_info(self.u_id)
+        print('test:113:',json.loads(rv.data))
+        assert b'goodblog.com' in rv.data
 
 
 

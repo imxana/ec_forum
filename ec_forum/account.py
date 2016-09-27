@@ -5,14 +5,6 @@ import ec_forum.sql as sql
 import ec_forum.expr as expr
 from ec_forum.salt import encrypt, decrypt
 
-# conn = pymysql.Connect(
-#     host = '127.0.0.1',
-#     user = 'root',
-#     passwd = '',
-#     db = 'test',
-#     charset = 'utf8'
-# )
-
 sqlQ = sql.sqlQ()
 
 def run(app):

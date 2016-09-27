@@ -97,8 +97,6 @@ method:post
 ------------ | ------------- | ------------
 u_id | str | 必填
 u_psw | str | 用于验证
-u_name| str | 非空
-u_email | str | 如地址变更，新地址需合法，并修改验证情况
 u_realname | str | 无要求
 u_blog | str | 无要求
 u_github | str | 无要求

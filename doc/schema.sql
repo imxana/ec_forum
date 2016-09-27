@@ -31,7 +31,7 @@ create table ec_question
     q_date date comment '提问日期',
     q_close integer comment '是否关闭',
     q_report integer comment '被举报次数',
-    q_answers text comment '回答ID组',
+    q_answers text comment '回答ID组'
 );
 
 create table ec_answer
@@ -41,7 +41,7 @@ create table ec_answer
     a_text text comment '回答正文',
     a_date date comment '回答日期',
     a_like integer comment '回答被赞数',
-    a_comments text comment '评论ID组',
+    a_comments text comment '评论ID组'
 );
 
 create table ec_article
@@ -52,7 +52,7 @@ create table ec_article
     t_text text comment '文章正文',
     t_date date comment '文章发表日期',
     t_like integer comment '文章被推荐数',
-    t_comments text comment '评论ID组',
+    t_comments text comment '评论ID组'
 );
 
 create table ec_comment
@@ -63,7 +63,7 @@ create table ec_comment
     u_id integer comment '评论用户id',
     c_text text comment '评论正文',
     c_date date comment '评论日期',
-    c_like date comment '评论被赞数',
+    c_like date comment '评论被赞数'
 );
 
 create table ec_reputaion
@@ -75,5 +75,5 @@ create table ec_reputaion
     ub_id integer comment '接受用户id',
     ua_req integer comment '评价用户声望变化',
     ub_req integer comment '接受用户声望变化',
-    r_date date comment '事件日期',
+    r_date date comment '事件日期'
 );
