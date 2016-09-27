@@ -20,7 +20,7 @@ class sqlQ(object):
         u_id = gene_id()
         while self.userid_search(u_id, table='ec_user'):
             u_id = gene_id()
-        sql = "insert into ec_user(u_name, u_email, u_psw, u_id, u_email_confirm, u_level, u_reputation) values('%s','%s','%s',%s,0,4,0);" % (name,email,psw,u_id)
+        sql = "insert into ec_user(u_name, u_email, u_psw, u_id, u_email_confirm, u_level, u_reputation) values('%s','%s','%s',%s,0,2,0);" % (name,email,psw,u_id)
         try:
             if cursor.execute(sql) == 1:
                 if cursor.rowcount == 1:
@@ -115,7 +115,7 @@ class sqlQ(object):
         for k,v in info.items():
             sql += "%s='%s',"%(k,v)
         sql = sql[:-1] + " where u_id='%s'"%u_id
-        print('sql.py 118',sql)
+        # print('sql.py 118',sql)
         try:
             if cursor.execute(sql) == 1:
                 err = False

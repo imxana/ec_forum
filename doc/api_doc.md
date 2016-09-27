@@ -89,6 +89,41 @@ codeState | str
 
 # User_info
 
+## ./u/query
+
+method:post
+
+字段|类型|要求
+------------ | ------------- | ------------
+u_id | str | 必填
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code|1
+u_id|int
+u_email | str
+u_level |  int
+u_reputation |  int
+u_realname | str
+u_blog | str
+u_github | str
+u_articles | str
+u_questions | str
+u_answers | str
+u_watchusers | str
+u_tags | str
+
+
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code|<=0
+codeState| str
+
 ## ./u/update
 
 method:post

@@ -10,13 +10,18 @@ class ECTestCase(unittest.TestCase):
         self.app = ec.app.test_client()
         '''sign_up suc'''
         rv = self.sign_up('test.good.name','222222','goodemail@gmail.com')
-        assert b'u_id' in rv.data
         self.u_id = json.loads(rv.data).get('u_id','')
+        assert '1' in json.loads(rv.data).get('code','')
+        rv = self.sign_up('test.another.name','222222','anotheremail@gmail.com')
+        self.ua_id = json.loads(rv.data).get('u_id','')
+        assert '1' in json.loads(rv.data).get('code','')
 
     def tearDown(self):
         '''sign_del suc'''
         rv = self.sign_del(self.u_id,'222222')
-        assert b'u_id' in rv.data
+        assert '1' in json.loads(rv.data).get('code','')
+        rv = self.sign_del(self.ua_id,'222222')
+        assert '1' in json.loads(rv.data).get('code','')
 
     def sign_up(self, name, psw, email):
         return self.app.post('/sign_up', data=dict(
@@ -57,61 +62,65 @@ class ECTestCase(unittest.TestCase):
         rv = self.app.get('/sign_up?u_name=test.good.name&psw=222222&goodemail@gmail.com', follow_redirects=True)
         assert b'The method is not allowed for the requested URL.' in rv.data
         rv = self.sign_up('test.good.name','222222','goodemail@gmail.com')
-        assert b'username is existed' in rv.data
+        assert 'username is existed' in json.loads(rv.data).get('codeState','')
         rv = self.sign_up('te','222222','goodemail@gmail.com')
-        assert b'username illegal' in rv.data
+        assert 'username illegal' in json.loads(rv.data).get('codeState','')
         rv = self.sign_up('','222222','goodemail@gmail.com')
-        assert b'username empty' in rv.data
+        assert 'username empty' in json.loads(rv.data).get('codeState','')
         rv = self.sign_up('test.bad.name','','bad@gmail.com')
-        assert b'password empty' in rv.data
+        assert 'password empty' in json.loads(rv.data).get('codeState','')
         rv = self.sign_up('test.bad.name','22','bad@gmail.com')
-        assert b'psw illegal' in rv.data
+        assert 'psw illegal' in json.loads(rv.data).get('codeState','')
         rv = self.sign_up('test.bad.name','222222','')
-        assert b'email empty' in rv.data
+        assert 'email empty' in json.loads(rv.data).get('codeState','')
         rv = self.sign_up('test.bad.name','222222','goodemail@gmail.com')
-        assert b'email is existed' in rv.data
+        assert 'email is existed' in json.loads(rv.data).get('codeState','')
         rv = self.sign_up('test.bad.name','222222','test.bad.name.gmail.com')
-        assert b'email illegal' in rv.data
+        assert 'email illegal' in json.loads(rv.data).get('codeState','')
 
     def test_sign_in_failed(self):
         rv = self.app.get('/sign_in?u_loginname=test.good.name&psw=222222', follow_redirects=True)
         assert b'The method is not allowed for the requested URL.' in rv.data
         rv = self.sign_in('','222222')
-        assert b'login name empty' in rv.data
+        assert 'login name empty' in json.loads(rv.data).get('codeState','')
         rv = self.sign_in('test.good.name','')
-        assert b'password empty' in rv.data
+        assert 'password empty' in json.loads(rv.data).get('codeState','')
         rv = self.sign_in('test.bad.name','222222')
-        assert b'user not existed' in rv.data
+        assert 'user not existed' in json.loads(rv.data).get('codeState','')
         rv = self.sign_in('bad@gmail.com','222222')
-        assert b'email not existed' in rv.data
+        assert 'email not existed' in json.loads(rv.data).get('codeState','')
         rv = self.sign_in('test.good.name','222223')
-        assert b'wrong password' in rv.data
+        assert 'wrong password' in json.loads(rv.data).get('codeState','')
 
     def test_sign_in_suc(self):
         rv = self.sign_in('test.good.name','222222')
-        assert b'u_email_confirm' in rv.data
+        # print('test:92',json.loads(rv.data))
+        assert '1' in json.loads(rv.data).get('code','')
+        assert 'goodemail@gmail.com' in json.loads(rv.data).get('u_email','')
         rv = self.sign_in('goodemail@gmail.com','222222')
-        assert b'u_email_confirm' in rv.data
+        assert '1' in json.loads(rv.data).get('code','')
+        assert 'test.good.name' in json.loads(rv.data).get('u_name','')
+
 
 
     def test_sign_del_fail(self):
         rv = self.app.get('/sign_del?u_id=%s&u_psw=222222'%self.u_id, follow_redirects=True)
         assert b'The method is not allowed for the requested URL.' in rv.data
         rv = self.sign_del('','222222')
-        assert b'userid empty' in rv.data
+        assert 'userid empty' in json.loads(rv.data).get('codeState','')
         rv = self.sign_del('000000','222222')
-        assert b'user not existed' in rv.data
+        assert 'user not existed' in json.loads(rv.data).get('codeState','')
         rv = self.sign_del(self.u_id,'222223')
-        assert b'wrong password' in rv.data
+        assert 'wrong password' in json.loads(rv.data).get('codeState','')
 
 
     def test_user_update_query(self):
         #self, uid, psw, rn, bl, gh, waus, tags
-        rv = self.user_update_info(self.u_id, '222222', 'Good Name', 'goodblog.com', 'github.com/good', '111111', 'node.js')
-        assert b'u_id' in rv.data
+        rv = self.user_update_info(self.u_id, '222222', 'Good Name', 'goodblog.com', 'github.com/good', self.ua_id, 'node.js')
+        assert '1' in json.loads(rv.data).get('code','')
         rv = self.user_query_info(self.u_id)
-        print('test:113:',json.loads(rv.data))
-        assert b'goodblog.com' in rv.data
+        # print(118, rv.data)
+        assert 'goodblog.com' in json.loads(rv.data).get('u_blog','')
 
 
 

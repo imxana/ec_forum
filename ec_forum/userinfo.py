@@ -26,9 +26,23 @@ def run(app):
         if err:
             return jsonify(error.normalError)
 
-        # read the res
-        print('userinfo.py:30',res)
-        return jsonify(res)
+        return jsonify({
+            # 'u_id':res[0],
+            'u_name':res[1],
+            # 'u_psw':res[2],
+            'u_email':res[3],
+            # 'u_email_confirm':res[4],
+            # 'u_level':res[5],
+            'u_reputation':res[6],
+            'u_realname':res[7],
+            'u_blog':res[8],
+            'u_github':res[9],
+            'u_articles':res[10],
+            'u_questions':res[11],
+            'u_answers':res[12],
+            'u_watchusers':res[13],
+            'u_tags':res[14]
+        })
 
 
 
