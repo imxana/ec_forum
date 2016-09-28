@@ -119,7 +119,6 @@ class ECTestCase(unittest.TestCase):
         rv = self.user_update_info(self.u_id, '222222', 'Good Name', 'goodblog.com', 'github.com/good', self.ua_id, 'node.js')
         assert '1' in json.loads(rv.data).get('code','')
         rv = self.user_query_info(self.u_id)
-        # print(118, rv.data)
         assert 'goodblog.com' in json.loads(rv.data).get('u_blog','')
 
 

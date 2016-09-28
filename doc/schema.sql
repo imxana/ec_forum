@@ -52,7 +52,8 @@ create table ec_article
     t_text text comment '文章正文',
     t_date date comment '文章发表日期',
     t_like integer comment '文章被推荐数',
-    t_comments text comment '评论ID组'
+    t_comments text comment '评论ID组',
+    t_tags text comment '文章标签'
 );
 
 create table ec_comment
@@ -71,9 +72,9 @@ create table ec_reputaion
     r_id integer primary key comment '声望变化事件id',
     type text comment '声望类型',
     id integer comment '对应事件id',
-    ua_id integer comment '评价用户id',
+    ua_id integer comment '行为用户id',
     ub_id integer comment '接受用户id',
-    ua_req integer comment '评价用户声望变化',
+    ua_req integer comment '行为用户声望变化',
     ub_req integer comment '接受用户声望变化',
     r_date date comment '事件日期'
 );

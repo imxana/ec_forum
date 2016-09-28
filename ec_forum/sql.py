@@ -14,10 +14,8 @@ class sqlQ(object):
 
     def signup_insert(self,name,email,psw):
         '''insert without check'''
-        u_id = ''
-        err = True
+        err,u_id = True,gene_id()
         cursor = conn.cursor()
-        u_id = gene_id()
         while self.userid_search(u_id, table='ec_user'):
             u_id = gene_id()
         sql = "insert into ec_user(u_name, u_email, u_psw, u_id, u_email_confirm, u_level, u_reputation) values('%s','%s','%s',%s,0,2,0);" % (name,email,psw,u_id)
@@ -105,6 +103,7 @@ class sqlQ(object):
             cursor.close()
         return exist
 
+
     def user_update(self, u_id, info):
         '''update the infomation'''
         cursor = conn.cursor()
@@ -126,3 +125,41 @@ class sqlQ(object):
         finally:
             cursor.close()
         return err
+
+
+    def article_insert(self, u_id, u_psw, t_title, t_text, t_tags):
+        '''insert an article without check'''
+        cursor = conn.cursor()
+        err,t_id = True,gene_id()
+        while self.userid_search(t_id, table='ec_article'):
+            t_id = gene_id()
+        sql = "insert into ec_article(t_id, u_id, t_title, t_text, t_date, t_like, t_comments, t_tags) values(%s,%s,'%s','%s',curdate(),0,'','%s');"%(t_id, u_id, t_title, t_text, t_tags)
+        try:
+            if cursor.execute(sql) == 1:
+                if cursor.rowcount == 1:
+                    conn.commit()
+                    err = False
+        except Exception as e:
+            raise e
+            conn.rollback()
+        finally:
+            cursor.close()
+        return err,t_id
+        
+
+    def article_select(self, t_id):
+        '''select article just by t_id'''
+        cursor = conn.cursor()
+        err,res = True,()
+        sql = "select * from ec_article where t_id='%s';" % t_id
+        try:
+            if cursor.execute(sql) == 1:
+                rs = cursor.fetchone()
+                if bool(rs):
+                    err,res = False,rs
+        except Exception as e:
+            raise e
+            conn.rollback()
+        finally:
+            cursor.close()
+        return err,res

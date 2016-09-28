@@ -32,7 +32,7 @@ def run(app):
             # 'u_psw':res[2],
             'u_email':res[3],
             # 'u_email_confirm':res[4],
-            # 'u_level':res[5],
+            'u_level':res[5],
             'u_reputation':res[6],
             'u_realname':res[7],
             'u_blog':res[8],

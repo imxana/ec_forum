@@ -2,6 +2,12 @@ run:
 	python3 app.py
 test:
 	python3 test.py
+
+
+
+
+
+
 su:
 	@curl -d 'u_name=Ayase&u_psw=222222&u_email=2@2.com' 'http://localhost:5000/sign_up'
 si:
