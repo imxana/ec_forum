@@ -1,9 +1,9 @@
 from flask import request,jsonify
 import ec_forum.error as error
-import ec_forum.sql as sql
+from ec_forum.sql import sqlQ
 from ec_forum.salt import encrypt, decrypt
 
-sqlQ = sql.sqlQ()
+sqlQ = sqlQ()
 
 def run(app):
 

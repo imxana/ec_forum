@@ -53,7 +53,8 @@ create table ec_article
     t_date date comment '文章发表日期',
     t_like integer comment '文章被推荐数',
     t_comments text comment '评论ID组',
-    t_tags text comment '文章标签'
+    t_tags text comment '文章标签',
+    t_date_latest date comment '最后修改时间'
 );
 
 create table ec_comment

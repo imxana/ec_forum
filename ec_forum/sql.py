@@ -91,7 +91,10 @@ class sqlQ(object):
         '''search existense of an id'''
         cursor = conn.cursor()
         exist = True
-        sql = "select * from %s where u_id='%s';" % (table,ec_id)
+        query_name = 'u_id'
+        if table == 'ec_article':
+            query_name = 't_id'
+        sql = "select * from %s where %s='%s';" % (table,query_name,ec_id)
         try:
             cursor.execute(sql)
             rs = cursor.fetchone()
@@ -133,7 +136,7 @@ class sqlQ(object):
         err,t_id = True,gene_id()
         while self.userid_search(t_id, table='ec_article'):
             t_id = gene_id()
-        sql = "insert into ec_article(t_id, u_id, t_title, t_text, t_date, t_like, t_comments, t_tags) values(%s,%s,'%s','%s',curdate(),0,'','%s');"%(t_id, u_id, t_title, t_text, t_tags)
+        sql = "insert into ec_article(t_id, u_id, t_title, t_text, t_date, t_like, t_comments, t_tags, t_date_latest) values(%s,%s,'%s','%s',curdate(),0,'','%s', curdate());"%(t_id, u_id, t_title, t_text, t_tags)
         try:
             if cursor.execute(sql) == 1:
                 if cursor.rowcount == 1:
@@ -145,7 +148,7 @@ class sqlQ(object):
         finally:
             cursor.close()
         return err,t_id
-        
+
 
     def article_select(self, t_id):
         '''select article just by t_id'''
@@ -163,3 +166,21 @@ class sqlQ(object):
         finally:
             cursor.close()
         return err,res
+
+
+    def article_del(self, tid):
+        '''easy article delete'''
+        cursor = conn.cursor()
+        err = True
+        sql = "delete from ec_article where t_id='%s';" % tid
+        try:
+            st = cursor.execute(sql)
+            if st == 1:
+                err = False
+                conn.commit()
+        except Exception as e:
+            raise e
+            conn.rollback()
+        finally:
+            cursor.close()
+        return err
