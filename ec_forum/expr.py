@@ -8,4 +8,3 @@ def validName(name):
 
 def validPsw(psw):
     return 6<=len(psw)<=16
-

@@ -63,7 +63,7 @@ code|!1
 codeState| str
 
 
-## 删除用户（仅测试用） ./sign_del
+## 删除用户（仅测试用） ./safe/sign_del
 
 method:post
 
@@ -137,6 +137,7 @@ u_blog | str | 无要求
 u_github | str | 无要求
 u_watchusers | str | 无要求
 u_tags | str | 无要求
+u_intro | str | 无要求
 
 suc:
 
@@ -194,10 +195,66 @@ code|<=0
 codeState| str
 
 ## ./t/update
+
+
 ## ./t/del
+
+method:post
+
+字段|类型
+------------ | -------------
+u_name| str
+u_psw| str
+t_id | str
+
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code|1
+t_id|str
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code | !1
+codeState | str
+
+
 ## ./t/show
 ## ./t/display
 ## ./t/query
+
+method:post
+
+字段|类型
+------------ | -------------
+t_id | str
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code|1
+t_id|str
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code | !1
+t_id | int
+u_id | int
+t_title | str
+t_text | str
+t_date | date
+t_like | int
+t_comments | str
+t_tags | str
+t_date_latest | date
+
 ## ./q/repution
 
 # Comment

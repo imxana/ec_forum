@@ -18,7 +18,17 @@ class sqlQ(object):
         cursor = conn.cursor()
         while self.userid_search(u_id, table='ec_user'):
             u_id = gene_id()
-        sql = "insert into ec_user(u_name, u_email, u_psw, u_id, u_email_confirm, u_level, u_reputation) values('%s','%s','%s',%s,0,2,0);" % (name,email,psw,u_id)
+        # u_realname text comment '真实姓名',
+        # u_blog text comment '博客地址',
+        # u_github text comment 'github地址',
+        # u_articles text comment '文章ID组，我的和收藏',
+        # u_questions text comment '提问ID组，我的和关注',
+        # u_answers text comment '回答ID组，我的和关注',
+        # u_watchusers text comment '关注用户ID组',
+        # u_tags text comment '关注标签',
+        # u_intro text comment '个人签名'
+        sql = "insert into ec_user(u_name, u_email, u_psw, u_id, u_email_confirm, u_level, u_reputation, u_articles,u_questions,u_answers,u_watchusers) \
+            values('%s','%s','%s',%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
         try:
             if cursor.execute(sql) == 1:
                 if cursor.rowcount == 1:
@@ -94,6 +104,12 @@ class sqlQ(object):
         query_name = 'u_id'
         if table == 'ec_article':
             query_name = 't_id'
+        elif table == 'ec_question':
+            query_name = 'q_id'
+        elif table == 'ec_comment':
+            query_name = 'c_id'
+        elif table == 'ec_answer':
+            query_name = 'a_id'
         sql = "select * from %s where %s='%s';" % (table,query_name,ec_id)
         try:
             cursor.execute(sql)

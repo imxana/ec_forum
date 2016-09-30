@@ -18,7 +18,7 @@ def decrypt(encrypted_text, salt=origin_salt):
 def run(app):
     @app.route('/safe/secret_key')
     def get_secret_key():
-        return jsonify({'secret_key':secret_key})
+        return jsonify({'code':'1','secret_key':secret_key})
 
 # test..
 if __name__ == '__main__':

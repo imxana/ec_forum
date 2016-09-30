@@ -67,6 +67,7 @@ def run(app):
         if err:
             return jsonify(error.normalError)
 
+
         # print('article.py 65',res)
         # | t_id   | u_id   | t_title | t_text | t_date     | t_like | t_comments | t_tags  |
         # (66831, 981428, 'Title', 'Text', datetime.date(2016, 9, 28), 0, '', 'node.js')
@@ -115,12 +116,34 @@ def run(app):
         if decrypt_psw != u_psw:
             return jsonify(error.pswWrong)
 
+        '''Article owner'''
+        err,res = sqlQ.article_select(t_id)
+        if err:
+            return jsonify(error.normalError)
+        # print('_%s_%s_'%(res[1],u_id), res[1]==int(u_id),type(res[1]),type(u_id))
+        if res[1] != int(u_id):
+            return jsonify(error.articleAccess)
+
+        '''db'''
         err = sqlQ.article_del(t_id)
         if err:
             return jsonify(error.normalError)
 
         return jsonify({'code':'1','t_id':t_id})
-        # wait query done...
-        # err,t_id = sqlQ.article_insert(u_id, u_psw, t_title, t_text, t_tags)
-        # if err:
-        #     return jsonify(error.normalError)
+
+
+    @app.route('/t/display', methods=['POST'])
+    def article_show():
+        if request.method != 'POST':
+            return jsonify(error.normalError)
+
+        ec_tags = request.values.get('ec_tags', '')
+
+
+
+        return jsonify({'code':'1'})
+
+
+    # @app.route('/t/update', methods=['POST'])
+    # def article_update():
+    #     return jsonify({'code':'1'})

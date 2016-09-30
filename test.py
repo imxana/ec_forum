@@ -8,7 +8,6 @@ class ECTestCase(unittest.TestCase):
     def setUp(self):
         #ec.config['TESTING'] = True
         self.app = ec.app.test_client()
-
         '''sign_up suc'''
         rv = self.sign_up('test.good.name','222222','goodemail@gmail.com')
         self.u_id = json.loads(rv.data).get('u_id','')
@@ -23,7 +22,6 @@ class ECTestCase(unittest.TestCase):
         assert '1' in json.loads(rv.data).get('code','')
 
     def tearDown(self):
-
         '''article_del_suc'''
         rv = self.article_del(self.u_id, '222222', self.t_id)
         assert '1' in json.loads(rv.data).get('code','')
@@ -33,6 +31,7 @@ class ECTestCase(unittest.TestCase):
         assert '1' in json.loads(rv.data).get('code','')
         rv = self.sign_del(self.ua_id,'222222')
         assert '1' in json.loads(rv.data).get('code','')
+
 
 
 
@@ -50,19 +49,21 @@ class ECTestCase(unittest.TestCase):
         ),follow_redirects=True)
 
     def sign_del(self, uid, psw):
-        return self.app.post('/sign_del',data=dict(
+        return self.app.post('/safe/sign_del',data=dict(
             u_id=uid,
             u_psw=psw
         ),follow_redirects=True)
 
-    def user_update_info(self, uid, psw, rn, bl, gh, waus, tags):
+    def user_update_info(self, uid, psw, rn, bl, gh, tags, intro):
         return self.app.post('/u/update',data=dict(
-            u_id=uid,u_psw=psw,
+            u_id=uid,
+            u_psw=psw,
             u_realname=rn,
             u_blog=bl,
             u_github=gh,
-            u_watchusers=waus,
-            u_tags=tags
+            # u_watchusers=waus,
+            u_tags=tags,
+            u_intro=intro
         ),follow_redirects=True)
 
     def user_query_info(self, uid):
@@ -70,14 +71,13 @@ class ECTestCase(unittest.TestCase):
             u_id=uid
         ),follow_redirects=True)
 
-
     def article_add(self, uid, psw, title, text, tags):
         return self.app.post('/t/add',data=dict(
             u_id=uid,
             u_psw=psw,
             t_title=title,
             t_text=text,
-            t_tags=tags
+            t_tags=tags,
         ),follow_redirects=True)
 
     def article_query(self, tid):
@@ -91,6 +91,7 @@ class ECTestCase(unittest.TestCase):
             u_psw=psw,
             t_id=tid
         ),follow_redirects=True)
+
 
 
     def test_sign_up_fail(self):
@@ -135,9 +136,8 @@ class ECTestCase(unittest.TestCase):
         assert '1' in json.loads(rv.data).get('code','')
         assert 'test.good.name' in json.loads(rv.data).get('u_name','')
 
-
     def test_sign_del_fail(self):
-        rv = self.app.get('/sign_del?u_id=%s&u_psw=222222'%self.u_id, follow_redirects=True)
+        rv = self.app.get('/safe/sign_del?u_id=%s&u_psw=222222'%self.u_id, follow_redirects=True)
         assert b'The method is not allowed for the requested URL.' in rv.data
         rv = self.sign_del('','222222')
         assert 'userid empty' in json.loads(rv.data).get('codeState','')
@@ -146,13 +146,16 @@ class ECTestCase(unittest.TestCase):
         rv = self.sign_del(self.u_id,'222223')
         assert 'wrong password' in json.loads(rv.data).get('codeState','')
 
+    def test_get_key(self):
+        rv = self.app.get('/safe/secret_key', follow_redirects=True)
+        assert '1' in json.loads(rv.data).get('code','')
 
     def test_user_update_then_query(self):
         #self, uid, psw, rn, bl, gh, waus, tags
         '''user_update_info'''
-        rv = self.user_update_info(self.u_id, '222222', 'Good Name', 'goodblog.com', 'github.com/good', self.ua_id, 'node.js')
+        rv = self.user_update_info(self.u_id, '222222', 'Good Name', 'goodblog.com', 'github.com/good', 'node.js', 'I am good~')
         assert '1' in json.loads(rv.data).get('code','')
-        rv = self.user_update_info(self.u_id, '222223', 'Good Name', 'goodblog.com', 'github.com/good', self.ua_id, 'node.js')
+        rv = self.user_update_info(self.u_id, '222223', 'Good Name', 'goodblog.com', 'github.com/good', 'node.js', 'I am good~')
         assert 'wrong password' in json.loads(rv.data).get('codeState','')
 
         '''user_query_info'''
@@ -204,6 +207,9 @@ class ECTestCase(unittest.TestCase):
         assert 'article id empty' in json.loads(rv.data).get('codeState','')
         rv = self.article_del(self.u_id, '222222', '000000')
         assert 'article not existed' in json.loads(rv.data).get('codeState','')
+        rv = self.article_del(self.ua_id, '222222', self.t_id)
+        assert 'have no access to do it' in json.loads(rv.data).get('codeState','')
+
 
 
 if __name__ == '__main__':

@@ -12,7 +12,7 @@ def run(app):
     @app.route('/sign_up', methods=['POST'])
     def sign_up():
         if request.method != 'POST':
-            return jsonify(error.normalError)
+            return jsonify(error.requestError)
 
         u_name = request.values.get('u_name', '').lower()
         u_email = request.values.get('u_email', '')
@@ -46,7 +46,7 @@ def run(app):
         encrypt_psw = str(encrypt(u_psw), encoding='utf8')
         err, u_id = sqlQ.signup_insert(u_name, u_email, encrypt_psw)
         if err:
-            return jsonify(error.normalError)
+            return jsonify(error.serverError)
 
         return jsonify({'code':'1','u_id':u_id})
 
@@ -58,7 +58,7 @@ def run(app):
     @app.route('/sign_in', methods=['POST'])
     def sign_in():
         if request.method != 'POST':
-            return jsonify(error.normalError)
+            return jsonify(error.requestError)
 
         u_loginname = request.values.get('u_loginname', '')
         u_psw = request.values.get('u_psw', '')
@@ -87,7 +87,7 @@ def run(app):
         # str(encrypt(u_psw), encoding='utf8')
         err,res = sqlQ.signin_select(u_loginname, method)
         if err:
-            return jsonify(error.normalError)
+            return jsonify(error.serverError)
 
         decrypt_psw = decrypt(res[2].encode('utf8'))
         if decrypt_psw != u_psw:
@@ -97,19 +97,28 @@ def run(app):
             'code': '1',
             'u_id': res[0],
             'u_name': res[1],
+            # 'u_psw':res[2],
             'u_email': res[3],
             'u_email_confirm': res[4],
             'u_level': res[5],
             'u_reputation': res[6],
-            'u_realname': res[7]
+            'u_realname': res[7],
+            'u_blog': res[8],
+            'u_github': res[9],
+            'u_articles': res[10],
+            'u_questions': res[11],
+            'u_answers': res[12],
+            'u_watchusers': res[13],
+            'u_tags': res[14],
+            'u_intro': res[15],
             })
 
 
 
-    @app.route('/sign_del', methods=['POST'])
+    @app.route('/safe/sign_del', methods=['POST'])
     def sign_del():
         if request.method != 'POST':
-            return jsonify(error.normalError)
+            return jsonify(error.requestError)
 
         u_id = request.values.get('u_id', '')
         u_psw = request.values.get('u_psw', '')
@@ -127,13 +136,13 @@ def run(app):
         '''psw'''
         err,res = sqlQ.signin_select(u_id, method='u_id')
         if err:
-            return jsonify(error.normalError)
+            return jsonify(error.serverError)
         decrypt_psw = decrypt(res[2].encode('utf8'))
         if decrypt_psw != u_psw:
             return jsonify(error.pswWrong)
 
         '''err'''
         if sqlQ.sign_del(u_id):
-            return jsonify(error.normalError)
+            return jsonify(error.serverError)
 
         return jsonify({'code':'1','u_id':u_id})

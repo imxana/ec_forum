@@ -1,5 +1,7 @@
 normalError          = { 'code': '-10', 'codeState': 'something bad happended' }
-safeError            = { 'code': '-11', 'codeState': 'unsafe request'          }
+safeError            = { 'code': '-11', 'codeState': 'unsafe action, who are u'}
+requestError         = { 'code': '-12', 'codeState': 'method not allowed'      }
+serverError          = { 'code': '-13', 'codeState': 'server error, maybe db crash' }
 
 userNotExisted       = { 'code': '-20', 'codeState': 'user not existed'        }
 usernameEmpty        = { 'code': '-21', 'codeState': 'username empty'          }
@@ -27,6 +29,7 @@ articleTitleIllegal  = { 'code': '-61', 'codeState': 'article title illegal'   }
 articleTextEmpty     = { 'code': '-62', 'codeState': 'article text empty'      }
 articleNotExisted    = { 'code': '-63', 'codeState': 'article not existed'     }
 articleidEmpty       = { 'code': '-64', 'codeState': 'article id empty'        }
+articleAccess        = { 'code': '-65', 'codeState': 'have no access to do it' }
 
 noteNotExisted       = { 'code': '-6', 'codeState': 'note not existed'         }
 noteidEmpty          = { 'code': '-7', 'codeState': 'noteid empty'             }

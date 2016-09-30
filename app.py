@@ -6,12 +6,14 @@ import ec_forum.account as ac
 import ec_forum.salt as salt
 import ec_forum.userinfo as uinfo
 import ec_forum.article as article
+import ec_forum.public as public
 # import ec.forum.question as question
 
 ac.run(app)
 salt.run(app)
 uinfo.run(app)
 article.run(app)
+public.run(app)
 # question.run(app)
 
 if __name__ == '__main__':
