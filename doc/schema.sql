@@ -80,3 +80,5 @@ create table ec_reputaion
     ub_req integer comment '接受用户声望变化',
     r_date date comment '事件日期'
 );
+
+/* comment 2'(.*)' */

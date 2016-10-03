@@ -2,9 +2,12 @@ run:
 	python3 app.py
 test:
 	python3 test.py
-
-
-
+ssh:
+	@ssh root@139.129.24.151
+ssh2:
+	@ssh root@115.28.16.220
+ip:
+	@ifconfig | grep "inet " | grep -v 127.0.0.1
 
 
 
