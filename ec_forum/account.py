@@ -97,7 +97,7 @@ def run(app):
             'code': '1',
             'u_id': res[0],
             'u_name': res[1],
-            # 'u_psw':res[2],
+            #'u_psw':res[2],
             'u_email': res[3],
             'u_email_confirm': res[4],
             'u_level': res[5],

@@ -2,7 +2,7 @@ from flask import request,jsonify
 import ec_forum.error as error
 from ec_forum.sql import sqlQ
 from ec_forum.salt import encrypt, decrypt
-
+from ec_forum.public import mail_sender
 sqlQ = sqlQ()
 
 def run(app):
@@ -47,6 +47,9 @@ def run(app):
 
 
 
+
+
+
     @app.route('/u/update', methods=['POST'])
     #self, uid, psw, rn, bl, gh, waus, tags)
     def user_update():
@@ -86,3 +89,127 @@ def run(app):
             return jsonify(error.serverError)
 
         return jsonify({'code':'1','u_id':u_id})
+
+
+
+
+
+
+    @app.route('/u/email_confirm_request', methods=['POST'])
+    def email_confirm_request():
+        if request.method != 'POST':
+            return jsonify(error.requestError)
+
+        u_id = request.values.get('u_id', '')
+        u_email = request.values.get('u_email','')
+        u_verify = request.values.get('u_verify','')
+        
+        '''empty'''
+        if u_id == '':
+            return jsonify(error.useridEmpty)
+        if u_email == '':
+            return jsonify(error.emailEmpty)
+        if u_verify == '':
+            return jsonify(error.verifyEmpty)
+
+        '''exist'''
+        if not sqlQ.userid_search(u_id):
+            return jsonify(error.userNotExisted)
+
+        '''formate legal'''
+        if not expr.validEmail(u_email):
+            return jsonify(error.emailIllegal)
+
+        mail_title = '实验班问答交流平台邮箱验证' 
+        mail_subject = '以下是您的验证码：\n\n %s\n\n您好！我们收到了来自您的邮箱验证请求，请使用上述验证码来验证您的邮箱归属，如果你从未发送过相关请求，请忽略此邮件。\n\nhave a nice day!\n实验班问答交流平台'%u_verify
+        mail_sender(u_email, mail_title, mail_subject)
+
+        return jsonify({'code':'1'})
+
+ 
+
+
+
+
+    @app.route('/u/email_confirm_pass', methods=['POST'])
+    def email_confirm_pass():
+
+        if request.method != 'POST':
+            return jsonify(error.requestError)
+
+        u_id = request.values.get('u_id', '')
+        u_psw = request.values.get('u_psw', '')
+        
+        '''empty'''
+        if u_id == '':
+            return jsonify(error.useridEmpty)
+        if u_psw == '':
+            return jsonify(error.pswEmpty)
+
+        '''exist'''
+        if not sqlQ.userid_search(u_id):
+            return jsonify(error.userNotExisted)
+
+        '''psw'''
+        err,res = sqlQ.signin_select(u_id, method='u_id')
+        if err:
+            return jsonify(error.serverError)
+        decrypt_psw = decrypt(res[2].encode('utf8'))
+        if decrypt_psw != u_psw:
+            return jsonify(error.pswWrong)
+
+        '''update info, todo: add rep'''
+        err = sqlQ.user_update(u_id, {'u_email_confirm':'1'})
+        if err:
+            return jsonify(error.serverError)
+
+        return jsonify({'code':'1','u_id':u_id})
+
+
+
+
+
+
+    @app.route('/u/email_change', methods=['POST'])
+    def email_change():
+        if request.method != 'POST':
+            return jsonify(error.requestError)
+
+        u_id = request.values.get('u_id', '')
+        u_psw = request.values.get('u_psw', '')
+        u_info = {
+            'u_email':request.values.get('u_email',''),
+            'u_email_confirm':'0'
+        }
+        
+        '''empty'''
+        if u_id == '':
+            return jsonify(error.useridEmpty)
+        if u_psw == '':
+            return jsonify(error.pswEmpty)
+        if u_email == '':
+            return jsonify(error.emailEmpty)
+
+        '''exist'''
+        if not sqlQ.userid_search(u_id):
+            return jsonify(error.userNotExisted)
+
+        '''psw'''
+        err,res = sqlQ.signin_select(u_id, method='u_id')
+        if err:
+            return jsonify(error.serverError)
+        decrypt_psw = decrypt(res[2].encode('utf8'))
+        if decrypt_psw != u_psw:
+            return jsonify(error.pswWrong)
+
+        '''update info, todo: reduce rep'''
+        err = sqlQ.user_update(u_id, u_info)
+        if err:
+            return jsonify(error.serverError)
+
+        return jsonify({'code':'1','u_id':u_id})
+
+
+
+
+

@@ -31,6 +31,9 @@ articleNotExisted    = { 'code': '-63', 'codeState': 'article not existed'     }
 articleidEmpty       = { 'code': '-64', 'codeState': 'article id empty'        }
 articleAccess        = { 'code': '-65', 'codeState': 'have no access to do it' }
 
+verifyEmpty          = { 'code': '-70', 'codeState': 'verify code empty'       }
+verifyWrong          = { 'code': '-71', 'codeState': 'verify code wrong'       }
+
 noteNotExisted       = { 'code': '-6', 'codeState': 'note not existed'         }
 noteidEmpty          = { 'code': '-7', 'codeState': 'noteid empty'             }
 titleEmpty           = { 'code': '-8', 'codeState': 'title can\'t be empty'    }

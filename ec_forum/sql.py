@@ -200,3 +200,4 @@ class sqlQ(object):
         finally:
             cursor.close()
         return err
+
