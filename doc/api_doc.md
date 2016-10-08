@@ -41,6 +41,7 @@ suc:
 ------------ | -------------
 code|1
 u_id|int
+u_name|str
 u_email | str
 u_email_confirm | int
 u_level |  int
@@ -53,6 +54,7 @@ u_questions | str
 u_answers | str
 u_watchusers | str
 u_tags | str
+u_intro | str
 
 
 fail:
@@ -71,7 +73,6 @@ method:post
 ------------ | -------------
 u_name/u_email| str
 u_psw| str
-salt| str
 
 
 suc:
@@ -103,6 +104,7 @@ suc:
 ------------ | -------------
 code|1
 u_id|int
+u_name|str
 u_email | str
 u_level |  int
 u_reputation |  int
@@ -114,6 +116,7 @@ u_questions | str
 u_answers | str
 u_watchusers | str
 u_tags | str
+u_intro | str
 
 
 
@@ -135,7 +138,6 @@ u_psw | str | 用于验证
 u_realname | str | 无要求
 u_blog | str | 无要求
 u_github | str | 无要求
-u_watchusers | str | 无要求
 u_tags | str | 无要求
 u_intro | str | 无要求
 
@@ -154,9 +156,75 @@ code|<=0
 codeState| str
 
 
+
+## ./u/email/verify
+
+method:post
+
+字段|类型|要求
+------------ | ------------- | ------------
+u_id | str | 必填
+u_email| str | 必填
+u_verify | str| 必填
+ 
+suc:
+
+字段|类型或值
+------------ | -------------
+code|1
+
+
+
 ## ./u/email/confirm
 
+method:post
+
+字段|类型|要求
+------------ | ------------- | ------------
+u_id | str | 必填
+u_psw| str | 必填
+ 
+suc:
+
+字段|类型或值
+------------ | -------------
+code|1
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code|<=0
+codeState| str
+
+
+
+
 ## ./u/email/change
+
+method:post
+
+字段|类型|要求
+------------ | ------------- | ------------
+u_id | str | 必填
+u_psw| str | 必填
+u_email| str | 必填
+ 
+suc:
+
+字段|类型或值
+------------ | -------------
+code|1
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code|<=0
+codeState| str
+
+
+
 
 
 

@@ -132,8 +132,8 @@ class sqlQ(object):
         sql = "update ec_user set "
         for k,v in info.items():
             sql += "%s='%s',"%(k,v)
-        sql = sql[:-1] + " where u_id='%s'"%u_id
-        # print('sql.py 118',sql)
+        sql = sql[:-1] + " where u_id='%s';"%u_id
+        #print('sql.py 136',sql)
         try:
             if cursor.execute(sql) == 1:
                 err = False

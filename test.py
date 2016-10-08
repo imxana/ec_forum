@@ -12,7 +12,7 @@ class ECTestCase(unittest.TestCase):
         rv = self.sign_up('test.good.name','222222','goodemail@gmail.com')
         self.u_id = json.loads(rv.data).get('u_id','')
         assert '1' in json.loads(rv.data).get('code','')
-        rv = self.sign_up('test.another.name','222222','anotheremail@gmail.com')
+        rv = self.sign_up('test.another.name','222222','1401520070@qq.com')
         self.ua_id = json.loads(rv.data).get('u_id','')
         assert '1' in json.loads(rv.data).get('code','')
 
@@ -92,6 +92,28 @@ class ECTestCase(unittest.TestCase):
             t_id=tid
         ),follow_redirects=True)
 
+
+    def mail_send(self, uid, email, verify):
+        return self.app.post('/u/email/verify', data=dict(
+            u_id=uid,
+            u_email=email,
+            u_verify=verify
+        ),follow_redirects=True)
+
+    def mail_pass(self, uid, psw):
+        return self.app.post('/u/email/confirm', data=dict(
+            u_id=uid,
+            u_psw=psw
+        ),follow_redirects=True)
+
+    def mail_change(self, uid, psw, email):
+        return self.app.post('/u/email/change', data=dict(
+            u_id=uid,
+            u_psw=psw,
+            u_email=email
+        ),follow_redirects=True)
+
+    
 
 
     def test_sign_up_fail(self):
@@ -209,6 +231,28 @@ class ECTestCase(unittest.TestCase):
         assert 'article not existed' in json.loads(rv.data).get('codeState','')
         rv = self.article_del(self.ua_id, '222222', self.t_id)
         assert 'have no access to do it' in json.loads(rv.data).get('codeState','')
+
+#    def test_mail_send(self):
+#        '''send verified email, this test is annoying. once enough, i think'''
+#        rv = self.mail_send(self.ua_id, '1401520070@qq.com', 'FFFFF')
+#        assert '1' in json.loads(rv.data).get('code','')
+
+
+    def test_mail_confirm(self):
+        '''confirm user email'''
+        rv = self.mail_pass(self.ua_id,'222222')
+        assert '1' in json.loads(rv.data).get('code','')
+        rv = self.sign_in('test.another.name','222222')
+        assert 1 == json.loads(rv.data).get('u_email_confirm','')
+
+    def test_mail_change(self):
+        '''change email'''
+        rv = self.mail_change(self.ua_id,'222222','anotheremail@gmail.com')
+        assert '1' in json.loads(rv.data).get('code','')
+        rv = self.sign_in('anotheremail@gmail.com','222222')
+        assert 0 == json.loads(rv.data).get('u_email_confirm','')
+
+
 
 
 

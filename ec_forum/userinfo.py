@@ -1,8 +1,10 @@
 from flask import request,jsonify
 import ec_forum.error as error
+import ec_forum.expr as expr
 from ec_forum.sql import sqlQ
 from ec_forum.salt import encrypt, decrypt
 from ec_forum.public import mail_sender
+
 sqlQ = sqlQ()
 
 def run(app):
@@ -32,7 +34,7 @@ def run(app):
             # 'u_psw':res[2],
             'u_email':res[3],
             # 'u_email_confirm':res[4],
-            'u_level':res[5],
+            # 'u_level':res[5],
             'u_reputation':res[6],
             'u_realname':res[7],
             'u_blog':res[8],
@@ -95,7 +97,7 @@ def run(app):
 
 
 
-    @app.route('/u/email_confirm_request', methods=['POST'])
+    @app.route('/u/email/verify', methods=['POST'])
     def email_confirm_request():
         if request.method != 'POST':
             return jsonify(error.requestError)
@@ -131,7 +133,7 @@ def run(app):
 
 
 
-    @app.route('/u/email_confirm_pass', methods=['POST'])
+    @app.route('/u/email/confirm', methods=['POST'])
     def email_confirm_pass():
 
         if request.method != 'POST':
@@ -163,22 +165,23 @@ def run(app):
         if err:
             return jsonify(error.serverError)
 
-        return jsonify({'code':'1','u_id':u_id})
+        return jsonify({'code':'1'})
 
 
 
 
 
 
-    @app.route('/u/email_change', methods=['POST'])
+    @app.route('/u/email/change', methods=['POST'])
     def email_change():
         if request.method != 'POST':
             return jsonify(error.requestError)
 
         u_id = request.values.get('u_id', '')
         u_psw = request.values.get('u_psw', '')
+        u_email = request.values.get('u_email','')
         u_info = {
-            'u_email':request.values.get('u_email',''),
+            'u_email':u_email,
             'u_email_confirm':'0'
         }
         
@@ -207,8 +210,8 @@ def run(app):
         if err:
             return jsonify(error.serverError)
 
-        return jsonify({'code':'1','u_id':u_id})
-
+        return jsonify({'code':'1'})
+            
 
 
 
