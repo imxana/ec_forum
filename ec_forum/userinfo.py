@@ -223,7 +223,6 @@ def run(app):
         u_psw = request.values.get('u_psw', '')
         ua_id = request.values.get('ua_id','')
         u_act = request.values.get('u_act','')
-        u_info = {}
 
         '''empty'''
         if u_id == '' or ua_id == '':
@@ -245,22 +244,26 @@ def run(app):
 
         '''watchid'''
         watch_user_dic = unpack_id(res[13])
+        err,res = sqlQ.signin_select(ua_id, method='u_id')
+        if err:
+            return jsonify(error.serverError)
+        be_watched_user_dic = unpack_id(res[13])
         if u_act == '1':
-            if str(ua_id) in watch_user_dic[0]:
+            if str(ua_id) in watch_user_dic[0] or str(u_id) in be_watched_user_dic[1]:
                 return jsonify(error.userAlreadyWatched)
             watch_user_dic[0].append(ua_id)
+            be_watched_user_dic[1].append(u_id)
         elif u_act == '0':
-            if str(ua_id) not in watch_user_dic[0]:
+            if str(ua_id) not in watch_user_dic[0] or str(u_id) not in be_watched_user_dic[1]:
                 return jsonify(error.userAlreadyUnwatched)
             watch_user_dic[0].remove(ua_id)
+            be_watched_user_dic[1].remove(u_id)
         else:
             return jsonify(error.argsError)
-
-        u_info['u_watchusers'] = pack_id(watch_user_dic)
-
         '''update info'''
-        err = sqlQ.user_update(u_id, u_info)
-        if err:
+        if sqlQ.user_update(u_id, {'u_watchusers': pack_id(watch_user_dic)}):
+            return jsonify(error.serverError)
+        if sqlQ.user_update(ua_id, {'u_watchusers': pack_id(be_watched_user_dic)}):
             return jsonify(error.serverError)
 
         return jsonify({'code':'1'})

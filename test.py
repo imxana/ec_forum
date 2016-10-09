@@ -268,7 +268,15 @@ class ECTestCase(unittest.TestCase):
         assert '1' in json.loads(rv.data).get('code','')
         rv = self.sign_in('test.good.name','222222')
         assert self.ua_id in json.loads(rv.data).get('u_watchusers','')
+        rv = self.sign_in('test.another.name','222222')
+        assert self.u_id in json.loads(rv.data).get('u_watchusers','')
 
+        rv = self.user_watch(self.u_id, '222222', self.ua_id, '0')
+        assert '1' in json.loads(rv.data).get('code','')
+        rv = self.sign_in('test.good.name','222222')
+        assert self.ua_id not in json.loads(rv.data).get('u_watchusers','')
+        rv = self.sign_in('test.another.name','222222')
+        assert self.u_id not in json.loads(rv.data).get('u_watchusers','')
 
 if __name__ == '__main__':
     unittest.main()
