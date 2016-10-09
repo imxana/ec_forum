@@ -4,7 +4,7 @@ import ec_forum.expr as expr
 from ec_forum.sql import sqlQ
 from ec_forum.salt import encrypt, decrypt
 from ec_forum.public import mail_sender
-
+from ec_forum.id_dealer import unpack_id, pack_id 
 sqlQ = sqlQ()
 
 def run(app):
@@ -214,5 +214,55 @@ def run(app):
             
 
 
+    @app.route('/u/watchuser', methods=['POST'])
+    def watch_user():
+        if request.method != 'POST':
+            return jsonify(error.requestError)
 
+        u_id = request.values.get('u_id', '')
+        u_psw = request.values.get('u_psw', '')
+        ua_id = request.values.get('ua_id','')
+        u_act = request.values.get('u_act','')
+        u_info = {}
 
+        '''empty'''
+        if u_id == '' or ua_id == '':
+            return jsonify(error.useridEmpty)
+
+        '''exist'''
+        if not sqlQ.userid_search(u_id):
+            return jsonify(error.userNotExisted)
+        if not sqlQ.userid_search(ua_id):
+            return jsonify(error.watchuserNotExisted)
+
+        '''psw'''
+        err,res = sqlQ.signin_select(u_id, method='u_id')
+        if err:
+            return jsonify(error.serverError)
+        decrypt_psw = decrypt(res[2].encode('utf8'))
+        if decrypt_psw != u_psw:
+            return jsonify(error.pswWrong)
+
+        '''watchid'''
+        watch_user_dic = unpack_id(res[13])
+        if u_act == '1':
+            if str(ua_id) in watch_user_dic[0]:
+                return jsonify(error.userAlreadyWatched)
+            watch_user_dic[0].append(ua_id)
+        elif u_act == '0':
+            if str(ua_id) not in watch_user_dic[0]:
+                return jsonify(error.userAlreadyUnwatched)
+            watch_user_dic[0].remove(ua_id)
+        else:
+            return jsonify(error.argsError)
+
+        u_info['u_watchusers'] = pack_id(watch_user_dic)
+
+        '''update info'''
+        err = sqlQ.user_update(u_id, u_info)
+        if err:
+            return jsonify(error.serverError)
+
+        return jsonify({'code':'1'})
+            
+ 

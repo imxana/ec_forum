@@ -54,6 +54,7 @@ class ECTestCase(unittest.TestCase):
             u_psw=psw
         ),follow_redirects=True)
 
+
     def user_update_info(self, uid, psw, rn, bl, gh, tags, intro):
         return self.app.post('/u/update',data=dict(
             u_id=uid,
@@ -70,6 +71,7 @@ class ECTestCase(unittest.TestCase):
         return self.app.post('/u/query',data=dict(
             u_id=uid
         ),follow_redirects=True)
+
 
     def article_add(self, uid, psw, title, text, tags):
         return self.app.post('/t/add',data=dict(
@@ -114,6 +116,13 @@ class ECTestCase(unittest.TestCase):
         ),follow_redirects=True)
 
     
+    def user_watch(self, uid, psw, uaid, act):
+        return self.app.post('/u/watchuser', data=dict(
+            u_id=uid,
+            u_psw=psw,
+            ua_id=uaid,
+            u_act=act
+        ),follow_redirects=True)
 
 
     def test_sign_up_fail(self):
@@ -232,11 +241,12 @@ class ECTestCase(unittest.TestCase):
         rv = self.article_del(self.ua_id, '222222', self.t_id)
         assert 'have no access to do it' in json.loads(rv.data).get('codeState','')
 
-#    def test_mail_send(self):
-#        '''send verified email, this test is annoying. once enough, i think'''
-#        rv = self.mail_send(self.ua_id, '1401520070@qq.com', 'FFFFF')
-#        assert '1' in json.loads(rv.data).get('code','')
-
+    def ntest_mail_send(self):
+        '''send verified email, this test is annoying. once enough, i think'''
+        verify_code = self.app.get('/public/get_verify', follow_redirects=True)
+        assert len(verify_code)==5
+        rv = self.mail_send(self.ua_id, '1401520070@qq.com', verify_code)
+        assert '1' in json.loads(rv.data).get('code','')
 
     def test_mail_confirm(self):
         '''confirm user email'''
@@ -252,9 +262,14 @@ class ECTestCase(unittest.TestCase):
         rv = self.sign_in('anotheremail@gmail.com','222222')
         assert 0 == json.loads(rv.data).get('u_email_confirm','')
 
-
-
+    def test_watch_user(self):
+        '''watch and unwatch'''
+        rv = self.user_watch(self.u_id, '222222', self.ua_id, '1')
+        assert '1' in json.loads(rv.data).get('code','')
+        rv = self.sign_in('test.good.name','222222')
+        assert self.ua_id in json.loads(rv.data).get('u_watchusers','')
 
 
 if __name__ == '__main__':
     unittest.main()
+

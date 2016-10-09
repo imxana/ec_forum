@@ -2,12 +2,16 @@ normalError          = { 'code': '-10', 'codeState': 'something bad happended' }
 safeError            = { 'code': '-11', 'codeState': 'unsafe action, who are u'}
 requestError         = { 'code': '-12', 'codeState': 'method not allowed'      }
 serverError          = { 'code': '-13', 'codeState': 'server error, maybe db crash' }
+argsError            = { 'code': '-14', 'codeState': 'arguments error'         }
 
 userNotExisted       = { 'code': '-20', 'codeState': 'user not existed'        }
 usernameEmpty        = { 'code': '-21', 'codeState': 'username empty'          }
 usernameExisted      = { 'code': '-22', 'codeState': 'username is existed'     }
 usernameIllegal      = { 'code': '-23', 'codeState': 'username illegal'        }
 useridEmpty          = { 'code': '-24', 'codeState': 'userid empty'            }
+watchuserNotExisted  = { 'code': '-25', 'codeState': 'watch user not existed'  }
+userAlreadyWatched   = { 'code': '-26', 'codeState': 'user already watched'    }
+userAlreadyUnwatched = { 'code': '-26', 'codeState': 'user already unwatched'  }
 
 pswEmpty             = { 'code': '-30', 'codeState': 'password empty'          }
 pswWrong             = { 'code': '-31', 'codeState': 'wrong password'          }
@@ -18,7 +22,7 @@ emailEmpty           = { 'code': '-41', 'codeState': 'email empty'             }
 emailExisted         = { 'code': '-42', 'codeState': 'email is existed'        }
 emailIllegal         = { 'code': '-43', 'codeState': 'email illegal'           }
 emailNotConfirmed    = { 'code': '-44', 'codeState': 'email not confirmed'     }
-emailConfirmed       = { 'code': '-45', 'codeState': 'email confirmed'         }
+emailConfirmed       = { 'code': '-45', 'codeState': 'email confirmed already' }
 
 loginNameNotExisted  = { 'code': '-50', 'codeState': 'login name not existed'  }
 loginNameEmpty       = { 'code': '-51', 'codeState': 'login name empty'        }
@@ -33,6 +37,7 @@ articleAccess        = { 'code': '-65', 'codeState': 'have no access to do it' }
 
 verifyEmpty          = { 'code': '-70', 'codeState': 'verify code empty'       }
 verifyWrong          = { 'code': '-71', 'codeState': 'verify code wrong'       }
+
 
 noteNotExisted       = { 'code': '-6', 'codeState': 'note not existed'         }
 noteidEmpty          = { 'code': '-7', 'codeState': 'noteid empty'             }

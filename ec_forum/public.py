@@ -30,11 +30,11 @@ default_tags = (
 def run(app):
     @app.route('/public/tags')
     def get_public_tags():
-        return jsonify({'code':'1','tags':default_tags})
+        return jsonify(list(set(default_tags)))
 
     @app.route('/public/get_verify')
     def get_verify():
-        return jsonify({'code':'1','verify':gene_id(num=5,letter=True).upper()})
+        return gene_id(num=5,letter=True).upper()
 
 
 def mail_sender(mail_to, mail_title, mail_subject):
@@ -49,12 +49,10 @@ def mail_sender(mail_to, mail_title, mail_subject):
             "mailtext":mail_subject,
             "mailencoding":"utf-8"
             }    
-    print(52)
     smtp = SMTP_SSL(mailInfo["hostname"])
     smtp.set_debuglevel(1)
     smtp.ehlo(mailInfo["hostname"])
     smtp.login(mailInfo["username"],mailInfo["password"])
-    print(57)
 
     #msg = MIMEText(mailInfo["mailtext"],"text",mailInfo["mailencoding"])
     msg = MIMEText(mailInfo["mailtext"])
@@ -62,5 +60,4 @@ def mail_sender(mail_to, mail_title, mail_subject):
     msg["from"] = mailInfo["from"]
     msg["to"] = mailInfo["to"]
     smtp.sendmail(mailInfo["from"], mailInfo["to"], msg.as_string())
-    print(65)
     smtp.quit()
