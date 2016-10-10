@@ -1,7 +1,7 @@
 normalError          = { 'code': '-10', 'codeState': 'something bad happended' }
-safeError            = { 'code': '-11', 'codeState': 'unsafe action, who are u'}
+safeError            = { 'code': '-11', 'codeState': 'unsafe attempt, who R U' }
 requestError         = { 'code': '-12', 'codeState': 'method not allowed'      }
-serverError          = { 'code': '-13', 'codeState': 'server error, maybe db crash' }
+serverError          = { 'code': '-13', 'codeState': 'server error, maybe MySQL crashed' }
 argsError            = { 'code': '-14', 'codeState': 'arguments error'         }
 
 userNotExisted       = { 'code': '-20', 'codeState': 'user not existed'        }
@@ -38,7 +38,5 @@ articleAccess        = { 'code': '-65', 'codeState': 'have no access to do it' }
 verifyEmpty          = { 'code': '-70', 'codeState': 'verify code empty'       }
 verifyWrong          = { 'code': '-71', 'codeState': 'verify code wrong'       }
 
+tagNotExisted        = { 'code': '-80', 'codeState': 'some tag not existed'    }
 
-noteNotExisted       = { 'code': '-6', 'codeState': 'note not existed'         }
-noteidEmpty          = { 'code': '-7', 'codeState': 'noteid empty'             }
-titleEmpty           = { 'code': '-8', 'codeState': 'title can\'t be empty'    }

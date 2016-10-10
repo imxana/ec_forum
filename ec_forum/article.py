@@ -2,7 +2,8 @@ from flask import request,jsonify
 import ec_forum.error as error
 from ec_forum.sql import sqlQ
 from ec_forum.salt import encrypt, decrypt, secret_key
-
+from ec_forum.id_dealer import pack_id, unpack_id
+from ec_forum.public import default_tags
 sqlQ = sqlQ()
 
 def run(app):
@@ -63,6 +64,7 @@ def run(app):
         if not sqlQ.userid_search(t_id, table='ec_article'):
             return jsonify(error.articleNotExisted)
 
+        '''database'''
         err,res = sqlQ.article_select(t_id)
         if err:
             return jsonify(error.normalError)
@@ -132,18 +134,33 @@ def run(app):
         return jsonify({'code':'1','t_id':t_id})
 
 
+
+
+
     @app.route('/t/display', methods=['POST'])
     def article_show():
         if request.method != 'POST':
             return jsonify(error.normalError)
 
-        ec_tags = request.values.get('ec_tags', '')
+        t_tags = request.values.get('t_tags', '')
+        show_count = request.values.get('show_count', '30')        
+
+        t_tags_set = set(unpack_id(t_tags)[0])
+
+        if not set(default_tags).issuperset(t_tags_set):
+            return jsonify(error.tagNotExisted)
+
+        err,res = sqlQ.article_select(t_tags_set)
+        show_ids = []
+        for t in res:
+            show_ids.append(t[0])
+
+        return jsonify({'code':'1','t_ids':show_ids})
 
 
 
+
+
+    @app.route('/t/update', methods=['POST'])
+    def article_update():
         return jsonify({'code':'1'})
-
-
-    # @app.route('/t/update', methods=['POST'])
-    # def article_update():
-    #     return jsonify({'code':'1'})

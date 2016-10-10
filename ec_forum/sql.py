@@ -18,15 +18,6 @@ class sqlQ(object):
         cursor = conn.cursor()
         while self.userid_search(u_id, table='ec_user'):
             u_id = gene_id()
-        # u_realname text comment '真实姓名',
-        # u_blog text comment '博客地址',
-        # u_github text comment 'github地址',
-        # u_articles text comment '文章ID组，我的和收藏',
-        # u_questions text comment '提问ID组，我的和关注',
-        # u_answers text comment '回答ID组，我的和关注',
-        # u_watchusers text comment '关注用户ID组',
-        # u_tags text comment '关注标签',
-        # u_intro text comment '个人签名'
         sql = "insert into ec_user(u_name, u_email, u_psw, u_id, u_email_confirm, u_level, u_reputation, u_articles,u_questions,u_answers,u_watchusers) \
             values('%s','%s','%s',%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
         try:
@@ -50,8 +41,6 @@ class sqlQ(object):
         try:
             cursor.execute(sql)
             rs = cursor.fetchone()
-            # if not bool(rs):
-            #    exist = False
             exist = bool(rs)
         except Exception as e:
             raise e
@@ -166,6 +155,32 @@ class sqlQ(object):
         return err,t_id
 
 
+    def article_select_tag(self, t_tags=''):
+        '''select article just by t_id (add by display expand)'''
+        cursor = conn.cursor()
+        err,res = True,()
+        sql = ''
+        if not bool(t_tags):
+            sql = "select * from ec_article;"
+        else:
+            sql = "select * from ec_article where " 
+            for tag in t_tags:
+                sql += "t_tags like '%%%s%%' and "%tag
+            sql = sql[:-5] + ";"
+        try:
+            if cursor.execute(sql) == 1:
+                rs = cursor.fetchall()
+                if bool(rs):
+                    err,res = False,rs
+        except Exception as e:
+            raise e
+            conn.rollback()
+        finally:
+            cursor.close()
+        return err,res
+
+
+
     def article_select(self, t_id):
         '''select article just by t_id'''
         cursor = conn.cursor()
@@ -181,8 +196,8 @@ class sqlQ(object):
             conn.rollback()
         finally:
             cursor.close()
-        return err,res
 
+        return err,res
 
     def article_del(self, tid):
         '''easy article delete'''
@@ -201,3 +216,6 @@ class sqlQ(object):
             cursor.close()
         return err
 
+
+
+    

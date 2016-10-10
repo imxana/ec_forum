@@ -17,7 +17,7 @@ def unpack_id(s):
     res = {}
     for i in range(len(arr)):
         res[i] = arr[i].split(',')
-        if '' in res[i]:
+        while '' in res[i]:
            res[i].remove('')
     return res
 
@@ -30,10 +30,9 @@ def pack_id(dic):
 
 
 if __name__ == '__main__':
-    test_arr = ['&', '1&', '&a', '2&3,4']
+    test_arr = ['&', '1&', '&a', '2&3,4','32','&,,,&']
     for i in test_arr:
-        #print(i)
-        #print(unpack_id(i))
-        #print(pack_id(unpack_id(i)))
         print(i, unpack_id(i), pack_id(unpack_id(i)))
+    
 
+    
