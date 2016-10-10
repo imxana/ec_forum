@@ -172,7 +172,7 @@ class ECTestCase(unittest.TestCase):
         assert b'The method is not allowed for the requested URL.' in rv.data
         rv = self.sign_del('','222222')
         assert 'userid empty' in json.loads(rv.data).get('codeState','')
-        rv = self.sign_del('000000','222222')
+        rv = self.sign_del('100000','222222')
         assert 'user not existed' in json.loads(rv.data).get('codeState','')
         rv = self.sign_del(self.u_id,'222223')
         assert 'wrong password' in json.loads(rv.data).get('codeState','')
@@ -194,14 +194,14 @@ class ECTestCase(unittest.TestCase):
         assert 'goodblog.com' in json.loads(rv.data).get('u_blog','')
         rv = self.user_query_info('')
         assert 'userid empty' in json.loads(rv.data).get('codeState','')
-        rv = self.user_query_info('000000')
+        rv = self.user_query_info('100000')
         assert 'user not existed' in json.loads(rv.data).get('codeState','')
 
     def test_article_add_fail(self):
         '''add_fail'''
         rv = self.article_add('', '222222', 'Title', 'Text', 'node.js')
         assert 'userid empty' in json.loads(rv.data).get('codeState','')
-        rv = self.article_add('000000', '222222', 'title', 'text', 'node.js')
+        rv = self.article_add('100000', '222222', 'title', 'text', 'node.js')
         assert 'user not existed' in json.loads(rv.data).get('codeState','')
         rv = self.article_add(self.u_id, '', 'Title', 'Text', 'node.js')
         assert 'password empty' in json.loads(rv.data).get('codeState','')
@@ -221,14 +221,14 @@ class ECTestCase(unittest.TestCase):
         '''query_fail'''
         rv = self.article_query('')
         assert 'article id empty' in json.loads(rv.data).get('codeState','')
-        rv = self.article_query('000000')
+        rv = self.article_query('100000')
         assert 'article not existed' in json.loads(rv.data).get('codeState','')
 
     def test_article_del_fail(self):
         '''delete_fail'''
         rv = self.article_del('', '222222', self.t_id)
         assert 'userid empty' in json.loads(rv.data).get('codeState','')
-        rv = self.article_del('000000', '222222', self.t_id)
+        rv = self.article_del('100000', '222222', self.t_id)
         assert 'user not existed' in json.loads(rv.data).get('codeState','')
         rv = self.article_del(self.u_id, '', self.t_id)
         assert 'password empty' in json.loads(rv.data).get('codeState','')
@@ -236,40 +236,63 @@ class ECTestCase(unittest.TestCase):
         assert 'wrong password' in json.loads(rv.data).get('codeState','')
         rv = self.article_del(self.u_id, '222222', '')
         assert 'article id empty' in json.loads(rv.data).get('codeState','')
-        rv = self.article_del(self.u_id, '222222', '000000')
+        rv = self.article_del(self.u_id, '222222', '100000')
         assert 'article not existed' in json.loads(rv.data).get('codeState','')
         rv = self.article_del(self.ua_id, '222222', self.t_id)
         assert 'have no access to do it' in json.loads(rv.data).get('codeState','')
 
     def ntest_mail_send(self):
         '''send verified email, this test is annoying. once enough, i think'''
-        verify_code = self.app.get('/public/get_verify', follow_redirects=True)
+        rv = self.app.get('/public/get_verify', follow_redirects=True)
+        verify_code = rv.data
         assert len(verify_code)==5
         rv = self.mail_send(self.ua_id, '1401520070@qq.com', verify_code)
         assert '1' in json.loads(rv.data).get('code','')
 
-    def test_mail_confirm(self):
+    def test_mail_confirm_suc(self):
         '''confirm user email'''
         rv = self.mail_pass(self.ua_id,'222222')
         assert '1' in json.loads(rv.data).get('code','')
         rv = self.sign_in('test.another.name','222222')
         assert 1 == json.loads(rv.data).get('u_email_confirm','')
 
-    def test_mail_change(self):
+    def test_mail_confirm_fail(self):
+        rv = self.mail_pass('','222222')
+        assert 'userid empty' in json.loads(rv.data).get('codeState','')
+        rv = self.mail_pass('100000','222222')
+        assert 'user not existed' in json.loads(rv.data).get('codeState','')
+        rv = self.mail_pass(self.ua_id,'222223')
+        assert 'wrong password' in json.loads(rv.data).get('codeState','')
+
+    def test_mail_change_suc(self):
         '''change email'''
         rv = self.mail_change(self.ua_id,'222222','anotheremail@gmail.com')
         assert '1' in json.loads(rv.data).get('code','')
         rv = self.sign_in('anotheremail@gmail.com','222222')
         assert 0 == json.loads(rv.data).get('u_email_confirm','')
 
+    def test_mail_change_fail(self):
+        rv = self.mail_change('','222222','anotheremail@gmail.com')
+        assert 'userid empty' in json.loads(rv.data).get('codeState','')
+        rv = self.mail_change('100000','222222','anotheremail@gmail.com')
+        assert 'user not existed' in json.loads(rv.data).get('codeState','')
+        rv = self.mail_change(self.ua_id,'','anotheremail@gmail.com')
+        assert 'password empty' in json.loads(rv.data).get('codeState','')
+        rv = self.mail_change(self.ua_id,'222223','anotheremail@gmail.com')
+        assert 'wrong password' in json.loads(rv.data).get('codeState','')
+        rv = self.sign_in('anotheremail@gmail.com','222222')
+        assert 'email not existed' in json.loads(rv.data).get('codeState','')
+
     def test_watch_user(self):
-        '''watch and unwatch'''
+        '''watch and unwatch, suc and fail'''
         rv = self.user_watch(self.u_id, '222222', self.ua_id, '1')
         assert '1' in json.loads(rv.data).get('code','')
         rv = self.sign_in('test.good.name','222222')
         assert self.ua_id in json.loads(rv.data).get('u_watchusers','')
         rv = self.sign_in('test.another.name','222222')
         assert self.u_id in json.loads(rv.data).get('u_watchusers','')
+        rv = self.user_watch(self.u_id, '222222', self.ua_id, '1')
+        assert 'user already watched' in json.loads(rv.data).get('codeState','')
 
         rv = self.user_watch(self.u_id, '222222', self.ua_id, '0')
         assert '1' in json.loads(rv.data).get('code','')
@@ -277,6 +300,10 @@ class ECTestCase(unittest.TestCase):
         assert self.ua_id not in json.loads(rv.data).get('u_watchusers','')
         rv = self.sign_in('test.another.name','222222')
         assert self.u_id not in json.loads(rv.data).get('u_watchusers','')
+        rv = self.user_watch(self.u_id, '222222', self.ua_id, '0')
+        assert 'user already unwatched' in json.loads(rv.data).get('codeState','')
+
+
 
 if __name__ == '__main__':
     unittest.main()
