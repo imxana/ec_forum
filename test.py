@@ -16,14 +16,34 @@ class ECTestCase(unittest.TestCase):
         self.ua_id = json.loads(rv.data).get('u_id','')
         assert '1' in json.loads(rv.data).get('code','')
 
-        '''add_suc'''
-        rv = self.article_add(self.u_id, '222222', 'Title', 'Text', 'node.js')
+        '''article_add_suc'''
+        rv = self.article_add(self.u_id, '222222', 'What\'s nodejs',
+'''Node.js  is a set of libraries for JavaScript which allows it to be used outside of the
+browser. It is primarily focused on creating simple, easy to build network clients  and
+servers.''', 'node.js')
         self.t_id = json.loads(rv.data).get('t_id','')
         assert '1' in json.loads(rv.data).get('code','')
+        rv = self.article_add(self.u_id, '222222', 'Python Version',
+'''To support multiple versions, the programs named python and pythonw select the real ver-
+sion of Python to run, depending on various settings.  The current supported versions are
+2.6 and 2.7, with the default being 2.7.  Use
+
+   % man python2.6
+   % man python2.7
+   % man pythonw2.6
+   % man pythonw2.7
+
+to see the man page for a specific version.  Without a version specified these will show
+the man page for the (unmodified) default version of Python (2.7).  To see the man page
+for a specific version of pydoc, for example, use
+''', 'python')
+        self.ta_id = json.loads(rv.data).get('t_id','')
 
     def tearDown(self):
         '''article_del_suc'''
         rv = self.article_del(self.u_id, '222222', self.t_id)
+        assert '1' in json.loads(rv.data).get('code','')
+        rv = self.article_del(self.u_id, '222222', self.ta_id)
         assert '1' in json.loads(rv.data).get('code','')
 
         '''sign_del suc'''
@@ -94,6 +114,12 @@ class ECTestCase(unittest.TestCase):
             t_id=tid
         ),follow_redirects=True)
 
+    def article_display(self, tags):
+        return self.app.post('/t/display', data=dict(
+            t_tags=tags
+        ),follow_redirects=True)
+
+
 
     def mail_send(self, uid, email, verify):
         return self.app.post('/u/email/verify', data=dict(
@@ -115,7 +141,7 @@ class ECTestCase(unittest.TestCase):
             u_email=email
         ),follow_redirects=True)
 
-    
+
     def user_watch(self, uid, psw, uaid, act):
         return self.app.post('/u/watchuser', data=dict(
             u_id=uid,
@@ -303,8 +329,12 @@ class ECTestCase(unittest.TestCase):
         rv = self.user_watch(self.u_id, '222222', self.ua_id, '0')
         assert 'user already unwatched' in json.loads(rv.data).get('codeState','')
 
+    def test_article_display(self):
+        rv = self.article_display('node.js')
+        assert '1' in json.loads(rv.data).get('code','')
+        rv = self.article_query(self.t_id)
+        assert '1' in json.loads(rv.data).get('code','')
 
 
 if __name__ == '__main__':
     unittest.main()
-

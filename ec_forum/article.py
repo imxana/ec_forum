@@ -143,14 +143,14 @@ def run(app):
             return jsonify(error.normalError)
 
         t_tags = request.values.get('t_tags', '')
-        show_count = request.values.get('show_count', '30')        
+        show_count = request.values.get('show_count', '30')
 
         t_tags_set = set(unpack_id(t_tags)[0])
 
         if not set(default_tags).issuperset(t_tags_set):
             return jsonify(error.tagNotExisted)
 
-        err,res = sqlQ.article_select(t_tags_set)
+        err,res = sqlQ.article_select_tag(t_tags_set)
         show_ids = []
         for t in res:
             show_ids.append(t[0])

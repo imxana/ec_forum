@@ -18,8 +18,8 @@ class sqlQ(object):
         cursor = conn.cursor()
         while self.userid_search(u_id, table='ec_user'):
             u_id = gene_id()
-        sql = "insert into ec_user(u_name, u_email, u_psw, u_id, u_email_confirm, u_level, u_reputation, u_articles,u_questions,u_answers,u_watchusers) \
-            values('%s','%s','%s',%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
+        sql = '''insert into ec_user(u_name, u_email, u_psw, u_id, u_email_confirm, u_level, u_reputation, u_articles,u_questions,u_answers,u_watchusers) \
+values(%r,%r,%r,%s,0,2,0,'&','&','&','&');''' % (name,email,psw,u_id)
         try:
             if cursor.execute(sql) == 1:
                 if cursor.rowcount == 1:
@@ -37,7 +37,7 @@ class sqlQ(object):
         '''check if some property exist'''
         cursor = conn.cursor()
         exist = True
-        sql = "select * from ec_user where %s='%s';" % (method, name)
+        sql = "select * from ec_user where %s=%r;" % (method, name)
         try:
             cursor.execute(sql)
             rs = cursor.fetchone()
@@ -54,7 +54,7 @@ class sqlQ(object):
         '''sign in by name or email to get the tuple'''
         cursor = conn.cursor()
         err,res = True,()
-        sql = "select * from ec_user where %s='%s';" % (method,loginname)
+        sql = "select * from ec_user where %s=%r;" % (method,loginname)
         try:
             if cursor.execute(sql) == 1:
                 rs = cursor.fetchone()
@@ -72,7 +72,7 @@ class sqlQ(object):
         '''delelte account, just for test!!!'''
         cursor = conn.cursor()
         err = True
-        sql = "delete from ec_user where u_id='%s';" % uid
+        sql = "delete from ec_user where u_id=%r;" % uid
         try:
             st = cursor.execute(sql)
             if st == 1:
@@ -99,7 +99,7 @@ class sqlQ(object):
             query_name = 'c_id'
         elif table == 'ec_answer':
             query_name = 'a_id'
-        sql = "select * from %s where %s='%s';" % (table,query_name,ec_id)
+        sql = "select * from %s where %s=%r;" % (table,query_name,ec_id)
         try:
             cursor.execute(sql)
             rs = cursor.fetchone()
@@ -120,8 +120,8 @@ class sqlQ(object):
             return err
         sql = "update ec_user set "
         for k,v in info.items():
-            sql += "%s='%s',"%(k,v)
-        sql = sql[:-1] + " where u_id='%s';"%u_id
+            sql += "%s=%r,"%(k,v)
+        sql = sql[:-1] + " where u_id=%r;"%u_id
         #print('sql.py 136',sql)
         try:
             if cursor.execute(sql) == 1:
@@ -141,7 +141,8 @@ class sqlQ(object):
         err,t_id = True,gene_id()
         while self.userid_search(t_id, table='ec_article'):
             t_id = gene_id()
-        sql = "insert into ec_article(t_id, u_id, t_title, t_text, t_date, t_like, t_comments, t_tags, t_date_latest) values(%s,%s,'%s','%s',curdate(),0,'','%s', curdate());"%(t_id, u_id, t_title, t_text, t_tags)
+        sql = "insert into ec_article(t_id, u_id, t_title, t_text, t_date, t_like, t_comments, t_tags, t_date_latest) values(%s,%s,%r,%r,curdate(),0,'',%r, curdate());"%(t_id, u_id, t_title, t_text, t_tags)
+        print('sql.py 145',sql)
         try:
             if cursor.execute(sql) == 1:
                 if cursor.rowcount == 1:
@@ -156,22 +157,22 @@ class sqlQ(object):
 
 
     def article_select_tag(self, t_tags=''):
-        '''select article just by t_id (add by display expand)'''
+        '''select article just by tag'''
         cursor = conn.cursor()
         err,res = True,()
         sql = ''
         if not bool(t_tags):
             sql = "select * from ec_article;"
         else:
-            sql = "select * from ec_article where " 
+            sql = "select * from ec_article where "
             for tag in t_tags:
                 sql += "t_tags like '%%%s%%' and "%tag
             sql = sql[:-5] + ";"
         try:
-            if cursor.execute(sql) == 1:
-                rs = cursor.fetchall()
-                if bool(rs):
-                    err,res = False,rs
+            cursor.execute(sql)
+            rs = cursor.fetchall()
+            if bool(rs):
+                err,res = False,rs
         except Exception as e:
             raise e
             conn.rollback()
@@ -185,7 +186,7 @@ class sqlQ(object):
         '''select article just by t_id'''
         cursor = conn.cursor()
         err,res = True,()
-        sql = "select * from ec_article where t_id='%s';" % t_id
+        sql = "select * from ec_article where t_id=%r;" % t_id
         try:
             if cursor.execute(sql) == 1:
                 rs = cursor.fetchone()
@@ -203,7 +204,7 @@ class sqlQ(object):
         '''easy article delete'''
         cursor = conn.cursor()
         err = True
-        sql = "delete from ec_article where t_id='%s';" % tid
+        sql = "delete from ec_article where t_id=%r;" % tid
         try:
             st = cursor.execute(sql)
             if st == 1:
@@ -215,7 +216,3 @@ class sqlQ(object):
         finally:
             cursor.close()
         return err
-
-
-
-    
