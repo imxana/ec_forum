@@ -43,11 +43,8 @@ class ECTestCase(unittest.TestCase):
     def article_display(self, tags):
         return self.app.post('/t/display', data=dict(t_tags=tags),follow_redirects=True)
 
-    def test_test(self):
-        rv = self.article_display('node.js,python')
-        print('ut 76:', rv.data)
-        rv = self.article_query(self.t_id)
-        print('ut 78:', rv.data)
+    def test_now(self):
+        pass
 
 if __name__ == '__main__':
     unittest.main()

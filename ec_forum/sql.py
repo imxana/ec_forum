@@ -159,11 +159,11 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
         '''select article just by tag'''
         cursor = conn.cursor()
         err,res = True,()
-        sql = ''
+        sql = 'select * from ec_article'
         if not bool(t_tags):
-            sql = "select * from ec_article;"
+            sql += ";"
         else:
-            sql = "select * from ec_article where "
+            sql += " where "
             for tag in t_tags:
                 sql += "t_tags like '%%%s%%' and "%tag
             sql = sql[:-5] + ";"

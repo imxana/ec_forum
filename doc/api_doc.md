@@ -166,7 +166,7 @@ method:post
 u_id | str | 必填
 u_email| str | 必填
 u_verify | str| 必填
- 
+
 suc:
 
 字段|类型或值
@@ -183,7 +183,7 @@ method:post
 ------------ | ------------- | ------------
 u_id | str | 必填
 u_psw| str | 必填
- 
+
 suc:
 
 字段|类型或值
@@ -209,7 +209,7 @@ method:post
 u_id | str | 必填
 u_psw| str | 必填
 u_email| str | 必填
- 
+
 suc:
 
 字段|类型或值
@@ -291,8 +291,29 @@ code | !1
 codeState | str
 
 
-## ./t/show
 ## ./t/display
+
+
+method:post
+
+字段|类型
+------------ | -------------
+t_tags | str
+
+suc:
+
+字段|类型
+------------ | -------------
+code | 1
+t_ids | str
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code | !1
+codeState | str
+
 ## ./t/query
 
 method:post
@@ -305,14 +326,7 @@ suc:
 
 字段|类型或值
 ------------ | -------------
-code|1
-t_id|str
-
-fail:
-
-字段|类型或值
------------- | -------------
-code | !1
+code | 1
 t_id | int
 u_id | int
 t_title | str
@@ -322,6 +336,15 @@ t_like | int
 t_comments | str
 t_tags | str
 t_date_latest | date
+t_star | int
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code | !1
+codeState | str
+
 
 ## ./q/repution
 

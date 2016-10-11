@@ -4,7 +4,7 @@ import ec_forum.expr as expr
 from ec_forum.sql import sqlQ
 from ec_forum.salt import encrypt, decrypt
 from ec_forum.public import mail_sender
-from ec_forum.id_dealer import unpack_id, pack_id 
+from ec_forum.id_dealer import unpack_id, pack_id
 sqlQ = sqlQ()
 
 def run(app):
@@ -105,7 +105,7 @@ def run(app):
         u_id = request.values.get('u_id', '')
         u_email = request.values.get('u_email','')
         u_verify = request.values.get('u_verify','')
-        
+
         '''empty'''
         if u_id == '':
             return jsonify(error.useridEmpty)
@@ -122,13 +122,13 @@ def run(app):
         if not expr.validEmail(u_email):
             return jsonify(error.emailIllegal)
 
-        mail_title = '实验班问答交流平台邮箱验证' 
+        mail_title = '实验班问答交流平台邮箱验证'
         mail_subject = '以下是您的验证码：\n\n %s\n\n您好！我们收到了来自您的邮箱验证请求，请使用上述验证码来验证您的邮箱归属，如果你从未发送过相关请求，请忽略此邮件。\n\nhave a nice day!\n实验班问答交流平台'%u_verify
         mail_sender(u_email, mail_title, mail_subject)
 
         return jsonify({'code':'1'})
 
- 
+
 
 
 
@@ -141,7 +141,7 @@ def run(app):
 
         u_id = request.values.get('u_id', '')
         u_psw = request.values.get('u_psw', '')
-        
+
         '''empty'''
         if u_id == '':
             return jsonify(error.useridEmpty)
@@ -184,7 +184,7 @@ def run(app):
             'u_email':u_email,
             'u_email_confirm':'0'
         }
-        
+
         '''empty'''
         if u_id == '':
             return jsonify(error.useridEmpty)
@@ -211,7 +211,7 @@ def run(app):
             return jsonify(error.serverError)
 
         return jsonify({'code':'1'})
-            
+
 
 
     @app.route('/u/watchuser', methods=['POST'])
@@ -227,6 +227,8 @@ def run(app):
         '''empty'''
         if u_id == '' or ua_id == '':
             return jsonify(error.useridEmpty)
+        if u_act == '':
+            return jsonify(error.argsEmpty)
 
         '''exist'''
         if not sqlQ.userid_search(u_id):
@@ -259,7 +261,7 @@ def run(app):
             watch_user_dic[0].remove(ua_id)
             be_watched_user_dic[1].remove(u_id)
         else:
-            return jsonify(error.argsError)
+            return jsonify(error.argsIllegal)
         '''update info'''
         if sqlQ.user_update(u_id, {'u_watchusers': pack_id(watch_user_dic)}):
             return jsonify(error.serverError)
@@ -267,5 +269,3 @@ def run(app):
             return jsonify(error.serverError)
 
         return jsonify({'code':'1'})
-            
- 

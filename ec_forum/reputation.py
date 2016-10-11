@@ -29,6 +29,4 @@ event = {
 }
 
 def run(app):
-
-    
     print(event)

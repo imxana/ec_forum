@@ -30,9 +30,6 @@ def pack_id(dic):
 
 
 if __name__ == '__main__':
-    test_arr = ['&', '1&', '&a', '2&3,4','32','&,,,&']
+    test_arr = ['&', '1&', '&a', '2&3,4','32','&,,,&',',&','&,','哈哈','哈&_','&哈哈']
     for i in test_arr:
         print(i, unpack_id(i), pack_id(unpack_id(i)))
-    
-
-    

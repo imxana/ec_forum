@@ -2,7 +2,7 @@ normalError          = { 'code': '-10', 'codeState': 'something bad happended' }
 safeError            = { 'code': '-11', 'codeState': 'unsafe attempt, who R U' }
 requestError         = { 'code': '-12', 'codeState': 'method not allowed'      }
 serverError          = { 'code': '-13', 'codeState': 'server error, maybe MySQL crashed' }
-argsError            = { 'code': '-14', 'codeState': 'arguments error'         }
+
 
 userNotExisted       = { 'code': '-20', 'codeState': 'user not existed'        }
 usernameEmpty        = { 'code': '-21', 'codeState': 'username empty'          }
@@ -11,7 +11,7 @@ usernameIllegal      = { 'code': '-23', 'codeState': 'username illegal'        }
 useridEmpty          = { 'code': '-24', 'codeState': 'userid empty'            }
 watchuserNotExisted  = { 'code': '-25', 'codeState': 'watch user not existed'  }
 userAlreadyWatched   = { 'code': '-26', 'codeState': 'user already watched'    }
-userAlreadyUnwatched = { 'code': '-26', 'codeState': 'user already unwatched'  }
+userAlreadyUnwatched = { 'code': '-27', 'codeState': 'user already unwatched'  }
 
 pswEmpty             = { 'code': '-30', 'codeState': 'password empty'          }
 pswWrong             = { 'code': '-31', 'codeState': 'wrong password'          }
@@ -37,6 +37,7 @@ articleAccess        = { 'code': '-65', 'codeState': 'have no access to do it' }
 
 verifyEmpty          = { 'code': '-70', 'codeState': 'verify code empty'       }
 verifyWrong          = { 'code': '-71', 'codeState': 'verify code wrong'       }
+argsIllegal          = { 'code': '-72', 'codeState': 'illegal arguments value' }
+argsEmpty            = { 'code': '-73', 'codeState': 'empty arguments value'   }
 
 tagNotExisted        = { 'code': '-80', 'codeState': 'some tag not existed'    }
-
