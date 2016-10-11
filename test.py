@@ -330,7 +330,7 @@ for a specific version of pydoc, for example, use
         assert 'user already unwatched' in json.loads(rv.data).get('codeState','')
 
     def test_article_display(self):
-        rv = self.article_display('node.js')
+        rv = self.article_display('node.js,python')
         assert '1' in json.loads(rv.data).get('code','')
         rv = self.article_query(self.t_id)
         assert '1' in json.loads(rv.data).get('code','')

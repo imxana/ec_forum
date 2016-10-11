@@ -55,7 +55,8 @@ create table ec_article
     t_like integer comment '文章被推荐数',
     t_comments text comment '评论ID组',
     t_tags text comment '文章标签',
-    t_date_latest date comment '最后修改时间'
+    t_date_latest date comment '最后修改时间',
+    t_star integer comment '被收藏数'
 );
 
 create table ec_comment
@@ -81,4 +82,4 @@ create table ec_reputaion
     r_date date comment '事件日期'
 );
 
-/* comment 2'(.*)' */
+/* comment '(.*)' */

@@ -84,6 +84,7 @@ def run(app):
             't_comments':res[6],
             't_tags':res[7],
             't_date_latest':res[8],
+            't_star':res[9]
         })
 
 
@@ -150,12 +151,14 @@ def run(app):
         if not set(default_tags).issuperset(t_tags_set):
             return jsonify(error.tagNotExisted)
 
-        err,res = sqlQ.article_select_tag(t_tags_set)
-        show_ids = []
-        for t in res:
-            show_ids.append(t[0])
+        '''note: empty is not an error'''
+        show_ids = set()
+        for tag in t_tags_set:
+            err,res = sqlQ.article_select_tag([tag])
+            for t_tuple in res:
+                show_ids.add(t_tuple[0])
 
-        return jsonify({'code':'1','t_ids':show_ids})
+        return jsonify({'code':'1','t_ids':list(show_ids)[:int(show_count)]})
 
 
 

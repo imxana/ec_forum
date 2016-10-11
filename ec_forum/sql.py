@@ -18,8 +18,8 @@ class sqlQ(object):
         cursor = conn.cursor()
         while self.userid_search(u_id, table='ec_user'):
             u_id = gene_id()
-        sql = '''insert into ec_user(u_name, u_email, u_psw, u_id, u_email_confirm, u_level, u_reputation, u_articles,u_questions,u_answers,u_watchusers) \
-values(%r,%r,%r,%s,0,2,0,'&','&','&','&');''' % (name,email,psw,u_id)
+        sql = "insert into ec_user(u_name, u_email, u_psw, u_id, u_email_confirm, u_level, u_reputation, u_articles, u_questions,u_answers,u_watchusers) \
+values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
         try:
             if cursor.execute(sql) == 1:
                 if cursor.rowcount == 1:
@@ -122,7 +122,6 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');''' % (name,email,psw,u_id)
         for k,v in info.items():
             sql += "%s=%r,"%(k,v)
         sql = sql[:-1] + " where u_id=%r;"%u_id
-        #print('sql.py 136',sql)
         try:
             if cursor.execute(sql) == 1:
                 err = False
@@ -141,8 +140,8 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');''' % (name,email,psw,u_id)
         err,t_id = True,gene_id()
         while self.userid_search(t_id, table='ec_article'):
             t_id = gene_id()
-        sql = "insert into ec_article(t_id, u_id, t_title, t_text, t_date, t_like, t_comments, t_tags, t_date_latest) values(%s,%s,%r,%r,curdate(),0,'',%r, curdate());"%(t_id, u_id, t_title, t_text, t_tags)
-        print('sql.py 145',sql)
+        sql = "insert into ec_article(t_id, u_id, t_title, t_text, t_date, t_like, t_comments, t_tags, t_date_latest, t_star) values(%s,%s,%r,%r,curdate(),0,'',%r, curdate(),0);"%(t_id, u_id, t_title, t_text, t_tags)
+        # print('sql.py 145',sql)
         try:
             if cursor.execute(sql) == 1:
                 if cursor.rowcount == 1:
