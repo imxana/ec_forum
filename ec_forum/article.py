@@ -13,7 +13,7 @@ def run(app):
     @app.route('/t/add', methods=['POST'])
     def article_add():
         if request.method != 'POST':
-            return jsonify(error.normalError)
+            return jsonify(error.requestError)
 
         u_id = request.values.get('u_id', '')
         u_psw = request.values.get('u_psw', '')
@@ -38,7 +38,7 @@ def run(app):
         '''psw'''
         err,res = sqlQ.signin_select(u_id, method='u_id')
         if err:
-            return jsonify(error.normalError)
+            return jsonify(error.serverError)
 
         decrypt_psw = decrypt(res[2].encode('utf8'))
         if decrypt_psw != u_psw:
@@ -46,7 +46,7 @@ def run(app):
 
         err,t_id = sqlQ.article_insert(u_id, u_psw, t_title, t_text, t_tags)
         if err:
-            return jsonify(error.normalError)
+            return jsonify(error.serverError)
 
         return jsonify({'code':'1','t_id':t_id})
 
@@ -55,7 +55,7 @@ def run(app):
     def article_query():
         '''query an article by its t_id'''
         if request.method != 'POST':
-            return jsonify(error.normalError)
+            return jsonify(error.requestError)
         t_id = request.values.get('t_id','')
 
         '''empty'''
@@ -69,7 +69,7 @@ def run(app):
         '''database'''
         err,res = sqlQ.article_select(t_id)
         if err:
-            return jsonify(error.normalError)
+            return jsonify(error.serverError)
 
 
         # print('article.py 65',res)
@@ -94,7 +94,7 @@ def run(app):
     @app.route('/t/del', methods=['POST'])
     def article_delete():
         if request.method != 'POST':
-            return jsonify(error.normalError)
+            return jsonify(error.requestError)
         u_id = request.values.get('u_id', '')
         u_psw = request.values.get('u_psw', '')
         t_id = request.values.get('t_id', '')
@@ -116,7 +116,7 @@ def run(app):
         '''psw'''
         err,res = sqlQ.signin_select(u_id, method='u_id')
         if err:
-            return jsonify(error.normalError)
+            return jsonify(error.serverError)
         decrypt_psw = decrypt(res[2].encode('utf8'))
         if decrypt_psw != u_psw:
             return jsonify(error.pswWrong)
@@ -124,7 +124,7 @@ def run(app):
         '''Article owner'''
         err,res = sqlQ.article_select(t_id)
         if err:
-            return jsonify(error.normalError)
+            return jsonify(error.serverError)
         # print('_%s_%s_'%(res[1],u_id), res[1]==int(u_id),type(res[1]),type(u_id))
         if res[1] != int(u_id):
             return jsonify(error.articleAccess)
@@ -132,7 +132,7 @@ def run(app):
         '''db'''
         err = sqlQ.article_del(t_id)
         if err:
-            return jsonify(error.normalError)
+            return jsonify(error.serverError)
 
         return jsonify({'code':'1','t_id':t_id})
 
@@ -143,7 +143,7 @@ def run(app):
     @app.route('/t/display', methods=['POST'])
     def article_show():
         if request.method != 'POST':
-            return jsonify(error.normalError)
+            return jsonify(error.requestError)
 
         t_tags = request.values.get('t_tags', '')
         show_count = request.values.get('show_count', '30')
@@ -158,11 +158,18 @@ def run(app):
             return jsonify(error.tagNotExisted)
 
         '''note: empty is not an error'''
+        # origin_ids = ()
+        # for tag in t_tags_set:
+        #     err,res = sqlQ.article_select_tag([tag])
+        #     for t_tuple in res:
+        #         show_ids.add((t_tuple[0],t_tuple[5],t_tuple[9],t_tuple[8]))
+
         show_ids = set()
         for tag in t_tags_set:
             err,res = sqlQ.article_select_tag([tag])
             for t_tuple in res:
-                show_ids.add(t_tuple[0])
+                # show_ids.add(t_tuple[0])
+                show_ids.add(t_tuple[8])
 
         return jsonify({'code':'1','t_ids':list(show_ids)[:int(show_count)]})
 
@@ -172,8 +179,50 @@ def run(app):
 
     @app.route('/t/update', methods=['POST'])
     def article_update():
+        if request.method != 'POST':
+            return jsonify(error.requestError)
 
+        u_id = request.values.get('u_id', '')
+        u_psw = request.values.get('u_psw', '')
+        t_id = request.values.get('t_id', '')
+        t_title = request.values.get('t_title', '')
+        t_text = request.values.get('t_text', '')
+        t_tags = request.values.get('t_tags', '')
 
+        '''empty'''
+        if u_id == '':
+            return jsonify(error.useridEmpty)
+        if u_psw == '':
+            return jsonify(error.pswEmpty)
+        if t_title == '':
+            return jsonify(error.articleTitleEmpty)
+        if t_text == '':
+            return jsonify(error.articleTextEmpty)
 
+        '''exist'''
+        if not sqlQ.userid_search(u_id):
+            return jsonify(error.userNotExisted)
+        if not sqlQ.userid_search(t_id, table='ec_article'):
+            return jsonify(error.articleNotExisted)
 
-        return jsonify({'code':'1'})
+        '''psw'''
+        err,res = sqlQ.signin_select(u_id, method='u_id')
+        if err:
+            return jsonify(error.serverError)
+        decrypt_psw = decrypt(res[2].encode('utf8'))
+        if decrypt_psw != u_psw:
+            return jsonify(error.pswWrong)
+
+        '''Article owner'''
+        err,res = sqlQ.article_select(t_id)
+        if err:
+            return jsonify(error.serverError)
+        if res[1] != int(u_id):
+            return jsonify(error.articleAccess)
+
+        '''db'''
+        err,t_id = sqlQ.article_update(u_id, u_psw, t_id, t_title, t_text, t_tags)
+        if err:
+            return jsonify(error.serverError)
+
+        return jsonify({'code':'1','t_id':t_id})

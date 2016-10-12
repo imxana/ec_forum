@@ -44,7 +44,8 @@ class ECTestCase(unittest.TestCase):
         return self.app.post('/t/display', data=dict(t_tags=tags),follow_redirects=True)
 
     def test_now(self):
-        pass
+        rv = self.article_display('node.js')
+        print(rv.data)
 
 if __name__ == '__main__':
     unittest.main()

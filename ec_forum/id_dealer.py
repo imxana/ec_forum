@@ -1,4 +1,5 @@
 from random import randint
+import datetime
 
 def gene_id(num=6, letter=False, lower=False):
     origin = '1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM'
@@ -28,8 +29,19 @@ def pack_id(dic):
     res = '&'.join(arr)
     return res
 
+def gmt_to_timestamp(TIME='now'):
+    GMT_FORMAT = '%a, %d %b %Y %H:%M:%S GMT'
+    if TIME == 'now':
+        t = datetime.datetime.utcnow()
+        return int(t.timestamp())
+    t = datetime.datetime.strptime(TIME, GMT_FORMAT)
+    return int(t.timestamp())
+
+
 
 if __name__ == '__main__':
-    test_arr = ['&', '1&', '&a', '2&3,4','32','&,,,&',',&','&,','哈哈','哈&_','&哈哈']
-    for i in test_arr:
-        print(i, unpack_id(i), pack_id(unpack_id(i)))
+    print(gmt_to_timestamp())
+    print(gmt_to_timestamp(TIME="Tue, 11 Oct 2016 23:20:45 GMT"))
+    # test_arr = ['&', '1&', '&a', '2&3,4','32','&,,,&',',&','&,','哈哈','哈&_','&哈哈']
+    # for i in test_arr:
+    #     print(i, unpack_id(i), pack_id(unpack_id(i)))

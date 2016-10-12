@@ -2,13 +2,7 @@
 import pymysql
 from ec_forum.id_dealer import gene_id
 
-conn = pymysql.Connect(
-    host = '127.0.0.1',
-    user = 'root',
-    passwd = '',
-    db = 'ec_forum',
-    charset = 'utf8'
-)
+conn = pymysql.Connect(host = '127.0.0.1',user = 'root',passwd = '',db = 'ec_forum',charset = 'utf8')
 
 class sqlQ(object):
 
@@ -140,7 +134,7 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
         err,t_id = True,gene_id()
         while self.userid_search(t_id, table='ec_article'):
             t_id = gene_id()
-        sql = "insert into ec_article(t_id, u_id, t_title, t_text, t_date, t_like, t_comments, t_tags, t_date_latest, t_star) values(%s,%s,%r,%r,curdate(),0,'',%r, curdate(),0);"%(t_id, u_id, t_title, t_text, t_tags)
+        sql = "insert into ec_article(t_id, u_id, t_title, t_text, t_date, t_like, t_comments, t_tags, t_date_latest, t_star) values(%s,%s,%r,%r,curtime(),0,'',%r, curtime(),0);"%(t_id, u_id, t_title, t_text, t_tags)
         # print('sql.py 145',sql)
         try:
             if cursor.execute(sql) == 1:

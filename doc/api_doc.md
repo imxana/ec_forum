@@ -1,3 +1,28 @@
+# Public
+
+## 获取所有基础tag ./public/tags
+
+method:get
+
+return: array
+
+## 获取5位随机验证码 ./public/get_verify
+
+method:get
+
+return: str
+
+## 获取密钥 ./safe/secret_key
+
+method:get
+
+return:
+
+字段|类型或值
+------------ | -------------
+code|1
+secret_key| str
+
 # Acount
 ## 注册 ./sign_up
 
@@ -5,9 +30,10 @@ method:post
 
 字段|类型|要求
 ------------ | ------------- | ------------
-u_name| str|str
-u_email| str|前台正则验证合法
-u_psw| str|前台验证合法
+u_email| str|[A-Za-z0-9\_\.]+@[A-Za-z0-9\.]+\.[A-Za-z]{2,4}
+u_name| str|[a-z][a-z0-9\.]{2,20}
+u_psw| str|6<=len(psw)<=16
+
 
 
 
@@ -90,7 +116,7 @@ codeState | str
 
 # User_info
 
-## ./u/query
+## 查询用户信息 ./u/query
 
 method:post
 
@@ -127,7 +153,7 @@ fail:
 code|<=0
 codeState| str
 
-## ./u/update
+## 更新用户信息 ./u/update
 
 method:post
 
@@ -157,7 +183,7 @@ codeState| str
 
 
 
-## ./u/email/verify
+## 发送验证邮件 ./u/email/verify
 
 method:post
 
@@ -175,7 +201,7 @@ code|1
 
 
 
-## ./u/email/confirm
+## 邮箱验证通过 ./u/email/confirm
 
 method:post
 
@@ -200,7 +226,7 @@ codeState| str
 
 
 
-## ./u/email/change
+## 修改用户邮箱 ./u/email/change
 
 method:post
 
@@ -228,13 +254,13 @@ codeState| str
 
 
 
-## ./u/psw_change
+## 修改用户密码 ./u/psw_change
 
 
 
 # Article
 
-## ./t/add
+## 添加文章 ./t/add
 
 method:post
 
@@ -262,10 +288,10 @@ fail:
 code|<=0
 codeState| str
 
-## ./t/update
+## 更新文章 ./t/update
 
 
-## ./t/del
+## 删除文章 ./t/del
 
 method:post
 
@@ -291,7 +317,7 @@ code | !1
 codeState | str
 
 
-## ./t/display
+## 获取展示文章列表 ./t/display
 
 
 method:post
@@ -314,7 +340,7 @@ fail:
 code | !1
 codeState | str
 
-## ./t/query
+## 查询文章信息 ./t/query
 
 method:post
 

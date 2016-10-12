@@ -2,6 +2,8 @@ run:
 	python3 app.py
 test:
 	python3 test.py
+unittest:
+	python3 unit_test.py
 ssh:
 	@ssh root@139.129.24.151
 ssh2:
