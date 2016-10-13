@@ -48,7 +48,7 @@ def mail_sender(mail_to, mail_title, mail_subject):
             "mailsubject":mail_title,
             "mailtext":mail_subject,
             "mailencoding":"utf-8"
-            }    
+            }
     smtp = SMTP_SSL(mailInfo["hostname"])
     smtp.set_debuglevel(1)
     smtp.ehlo(mailInfo["hostname"])

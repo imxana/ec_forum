@@ -39,9 +39,14 @@ def gmt_to_timestamp(TIME='now'):
 
 
 
+
 if __name__ == '__main__':
-    print(gmt_to_timestamp())
-    print(gmt_to_timestamp(TIME="Tue, 11 Oct 2016 23:20:45 GMT"))
+    for i in range(10):
+        print(gene_id(num=6, letter=True, lower=True))
+
+
+    # print(gmt_to_timestamp())
+    # print(gmt_to_timestamp(TIME="Tue, 11 Oct 2016 23:20:45 GMT"))
     # test_arr = ['&', '1&', '&a', '2&3,4','32','&,,,&',',&','&,','哈哈','哈&_','&哈哈']
     # for i in test_arr:
     #     print(i, unpack_id(i), pack_id(unpack_id(i)))

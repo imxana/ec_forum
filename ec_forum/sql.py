@@ -2,12 +2,24 @@
 import pymysql
 from ec_forum.id_dealer import gene_id
 
-conn = pymysql.Connect(host = '127.0.0.1',user = 'root',passwd = '',db = 'ec_forum',charset = 'utf8')
+
+def get_conn():
+    return pymysql.Connect(host='127.0.0.1',user='root',passwd='',db='ec_forum',charset='utf8')
+# conn = get_conn()
+
+
+'''mysql socket pool'''
+socket_limit = 20
+socket_pool = []
+for i in range(socket_limit):
+    socket_pool.append(get_conn())
+
 
 class sqlQ(object):
 
     def signup_insert(self,name,email,psw):
         '''insert without check'''
+        conn = socket_pool.pop()
         err,u_id = True,gene_id()
         cursor = conn.cursor()
         while self.userid_search(u_id, table='ec_user'):
@@ -20,15 +32,19 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
                     conn.commit()
                     err = False
         except Exception as e:
-            raise Exception('sign_up failed')
+            print(e)
             conn.rollback()
+            conn = get_conn()
         finally:
             cursor.close()
+            socket_pool.append(conn)
         return err, u_id
 
 
     def signup_select(self, name, method='u_name'):
         '''check if some property exist'''
+
+        conn = socket_pool.pop()
         cursor = conn.cursor()
         exist = True
         sql = "select * from ec_user where %s=%r;" % (method, name)
@@ -37,15 +53,19 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             rs = cursor.fetchone()
             exist = bool(rs)
         except Exception as e:
-            raise e
+            print(e)
             conn.rollback()
+            conn = get_conn()
         finally:
             cursor.close()
+            socket_pool.append(conn)
         return exist
 
 
     def signin_select(self, loginname, method='u_name'):
         '''sign in by name or email to get the tuple'''
+
+        conn = socket_pool.pop()
         cursor = conn.cursor()
         err,res = True,()
         sql = "select * from ec_user where %s=%r;" % (method,loginname)
@@ -55,15 +75,19 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
                 if bool(rs):
                     err,res = False,rs
         except Exception as e:
-            raise e
+            print(e)
             conn.rollback()
+            conn = get_conn()
         finally:
             cursor.close()
+            socket_pool.append(conn)
         return err,res
 
 
     def sign_del(self, uid):
         '''delelte account, just for test!!!'''
+
+        conn = socket_pool.pop()
         cursor = conn.cursor()
         err = True
         sql = "delete from ec_user where u_id=%r;" % uid
@@ -73,15 +97,19 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
                 err = False
                 conn.commit()
         except Exception as e:
-            raise e
+            print(e)
             conn.rollback()
+            conn = get_conn()
         finally:
             cursor.close()
+            socket_pool.append(conn)
         return err
 
 
     def userid_search(self, ec_id, table='ec_user'):
         '''search existense of an id'''
+
+        conn = socket_pool.pop()
         cursor = conn.cursor()
         exist = True
         query_name = 'u_id'
@@ -99,15 +127,19 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             rs = cursor.fetchone()
             exist = bool(rs)
         except Exception as e:
-            raise e
+            print(e)
             conn.rollback()
+            conn = get_conn()
         finally:
             cursor.close()
+            socket_pool.append(conn)
         return exist
 
 
     def user_update(self, u_id, info):
         '''update the infomation'''
+
+        conn = socket_pool.pop()
         cursor = conn.cursor()
         err = True
         if len(info) == 0:
@@ -121,15 +153,19 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
                 err = False
                 conn.commit()
         except Exception as e:
-            raise e
+            print(e)
             conn.rollback()
+            conn = get_conn()
         finally:
             cursor.close()
+            socket_pool.append(conn)
         return err
 
 
     def article_insert(self, u_id, u_psw, t_title, t_text, t_tags):
         '''insert an article without check'''
+
+        conn = socket_pool.pop()
         cursor = conn.cursor()
         err,t_id = True,gene_id()
         while self.userid_search(t_id, table='ec_article'):
@@ -142,15 +178,19 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
                     conn.commit()
                     err = False
         except Exception as e:
-            raise e
+            print(e)
             conn.rollback()
+            conn = get_conn()
         finally:
             cursor.close()
+            socket_pool.append(conn)
         return err,t_id
 
 
     def article_select_tag(self, t_tags=''):
         '''select article just by tag'''
+
+        conn = socket_pool.pop()
         cursor = conn.cursor()
         err,res = True,()
         sql = 'select * from ec_article'
@@ -167,16 +207,20 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             if bool(rs):
                 err,res = False,rs
         except Exception as e:
-            raise e
+            print(e)
             conn.rollback()
+            conn = get_conn()
         finally:
             cursor.close()
+            socket_pool.append(conn)
         return err,res
 
 
 
     def article_select(self, t_id):
         '''select article just by t_id'''
+
+        conn = socket_pool.pop()
         cursor = conn.cursor()
         err,res = True,()
         sql = "select * from ec_article where t_id=%r;" % t_id
@@ -186,15 +230,18 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
                 if bool(rs):
                     err,res = False,rs
         except Exception as e:
-            raise e
+            print(e)
             conn.rollback()
+            conn = get_conn()
         finally:
             cursor.close()
-
+            socket_pool.append(conn)
         return err,res
 
     def article_del(self, tid):
         '''easy article delete'''
+
+        conn = socket_pool.pop()
         cursor = conn.cursor()
         err = True
         sql = "delete from ec_article where t_id=%r;" % tid
@@ -204,8 +251,10 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
                 err = False
                 conn.commit()
         except Exception as e:
-            raise e
+            print(e)
             conn.rollback()
+            conn = get_conn()
         finally:
             cursor.close()
+            socket_pool.append(conn)
         return err
