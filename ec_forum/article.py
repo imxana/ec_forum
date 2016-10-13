@@ -3,7 +3,7 @@ import ec_forum.error as error
 import ec_forum.expr as expr
 from ec_forum.sql import sqlQ
 from ec_forum.salt import encrypt, decrypt, secret_key
-from ec_forum.id_dealer import pack_id, unpack_id
+from ec_forum.id_dealer import pack_id, unpack_id, gmt_to_timestamp
 from ec_forum.public import default_tags
 
 sqlQ = sqlQ()
@@ -158,20 +158,31 @@ def run(app):
             return jsonify(error.tagNotExisted)
 
         '''note: empty is not an error'''
-        # origin_ids = ()
-        # for tag in t_tags_set:
-        #     err,res = sqlQ.article_select_tag([tag])
-        #     for t_tuple in res:
-        #         show_ids.add((t_tuple[0],t_tuple[5],t_tuple[9],t_tuple[8]))
-
-        show_ids = set()
+        origin_ids = set()
         for tag in t_tags_set:
             err,res = sqlQ.article_select_tag([tag])
             for t_tuple in res:
-                # show_ids.add(t_tuple[0])
-                show_ids.add(t_tuple[8])
+                # 0 t_id int, 5 like int, 9 star int, 8 date, the date type is datetime.datetime, i shock
+                t_id,like,star,timestamp = t_tuple[0], t_tuple[5], t_tuple[9], t_tuple[8].timestamp()
+                origin_ids.add((t_id,like,star,timestamp))
 
-        return jsonify({'code':'1','t_ids':list(show_ids)[:int(show_count)]})
+        origin_ids = list(origin_ids)
+        show_ids = {0:[],1:[]}
+        origin_ids_sorted_by_hot = sorted(origin_ids, key=lambda x: x[1]+x[2], reverse=True)
+        origin_ids_sorted_by_date = sorted(origin_ids, key=lambda x: x[3], reverse=True)
+        origin_ids_sorted_by_hot = origin_ids_sorted_by_hot[:int(show_count)]
+        origin_ids_sorted_by_date = origin_ids_sorted_by_date[:int(show_count)]
+
+        for t_tuple in origin_ids_sorted_by_hot:
+            show_ids[0].append(str(t_tuple[0]))
+        for t_tuple in origin_ids_sorted_by_date:
+            show_ids[1].append(str(t_tuple[0]))
+        # for tag in t_tags_set:
+        #     err,res = sqlQ.article_select_tag([tag])
+        #     for t_tuple in res:
+        #         show_ids.add(t_tuple[8])
+        print('ar 184: ', show_ids)
+        return jsonify({'code':'1','t_ids':pack_id(show_ids)})
 
 
 
