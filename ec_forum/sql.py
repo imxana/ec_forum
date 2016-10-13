@@ -1,5 +1,5 @@
 # coding:utf8
-import pymysql
+import pymysql, threading
 from ec_forum.id_dealer import gene_id
 
 
@@ -8,11 +8,26 @@ def get_conn():
 # conn = get_conn()
 
 
-'''mysql socket pool'''
-socket_limit = 20
+'''pymysql socket pool'''
+socket_limit = 10
 socket_pool = []
 for i in range(socket_limit):
     socket_pool.append(get_conn())
+
+'''set setInterval to update conn'''
+socket_update = socket_limit
+def update_conn():
+    global socket_update
+    socket_update+=1
+    if socket_update >= socket_limit:
+        socket_update = 0
+    print("[update pymysql connection..]")
+    socket_pool[socket_update] = get_conn()
+    global t    #Notice: use global variable!
+    t = threading.Timer(7200.0, update_conn)
+    t.start()
+t = threading.Timer(7200.0, update_conn)
+# t.start()
 
 
 class sqlQ(object):

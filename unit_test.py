@@ -17,7 +17,6 @@ class ECTestCase(unittest.TestCase):
         '''sign_up suc'''
         rv = self.sign_up(self.name,'222222',self.email)
         self.u_id = json.loads(rv.data).get('u_id','')
-        print('test14:',json.loads(rv.data))
         assert '1' in json.loads(rv.data).get('code','')
         rv = self.sign_up(self.name2,'222222','1401520070@qq.com')
         self.ua_id = json.loads(rv.data).get('u_id','')
@@ -55,7 +54,6 @@ for a specific version of pydoc, for example, use
 
         '''sign_del suc'''
         rv = self.sign_del(self.u_id,'222222')
-        print('test46:',json.loads(rv.data))
         assert '1' in json.loads(rv.data).get('code','')
         rv = self.sign_del(self.ua_id,'222222')
         assert '1' in json.loads(rv.data).get('code','')
