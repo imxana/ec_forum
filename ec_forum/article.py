@@ -181,7 +181,7 @@ def run(app):
         #     err,res = sqlQ.article_select_tag([tag])
         #     for t_tuple in res:
         #         show_ids.add(t_tuple[8])
-        print('ar 184: ', show_ids)
+        #print('ar 184: ', show_ids)
         return jsonify({'code':'1','t_ids':pack_id(show_ids)})
 
 

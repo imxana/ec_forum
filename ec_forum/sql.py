@@ -10,7 +10,7 @@ def get_conn():
 
 '''pymysql socket pool'''
 socket_limit = 10
-socket_auto_update = False
+socket_auto_update = True
 socket_pool = []
 socket_update = socket_limit
 
@@ -25,10 +25,10 @@ def update_conn():
     print("[update pymysql connection..]")
     socket_pool[socket_update] = get_conn()
     global t    #Notice: use global variable!
-    t = threading.Timer(7200.0, update_conn)
+    t = threading.Timer(600.0, update_conn)
     t.start()
 
-t = threading.Timer(7200.0, update_conn)
+t = threading.Timer(600.0, update_conn)
 if socket_auto_update:
     t.start()
 
@@ -49,9 +49,11 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
                 if cursor.rowcount == 1:
                     conn.commit()
                     err = False
-        except Exception as e:
-            print(e)
+        except BrokenPipeError as e:
+            print('sql.py error:', e)
             conn = get_conn()
+        except Exception as e:
+            print('sql.py error:', e)
             conn.rollback()
         finally:
             cursor.close()
@@ -70,9 +72,11 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             cursor.execute(sql)
             rs = cursor.fetchone()
             exist = bool(rs)
-        except Exception as e:
-            print(e)
+        except BrokenPipeError as e:
+            print('sql.py error:', e)
             conn = get_conn()
+        except Exception as e:
+            print('sql.py error:', e)
             conn.rollback()
         finally:
             cursor.close()
@@ -92,10 +96,12 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
                 rs = cursor.fetchone()
                 if bool(rs):
                     err,res = False,rs
-        except Exception as e:
-            print(e)
-            conn.rollback()
+        except BrokenPipeError as e:
+            print('sql.py error:', e)
             conn = get_conn()
+        except Exception as e:
+            print('sql.py error:', e)
+            conn.rollback()
         finally:
             cursor.close()
             socket_pool.append(conn)
@@ -114,9 +120,11 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             if st == 1:
                 err = False
                 conn.commit()
-        except Exception as e:
-            print(e)
+        except BrokenPipeError as e:
+            print('sql.py error:', e)
             conn = get_conn()
+        except Exception as e:
+            print('sql.py error:', e)
             conn.rollback()
         finally:
             cursor.close()
@@ -144,9 +152,11 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             cursor.execute(sql)
             rs = cursor.fetchone()
             exist = bool(rs)
-        except Exception as e:
-            print(e)
+        except BrokenPipeError as e:
+            print('sql.py error:', e)
             conn = get_conn()
+        except Exception as e:
+            print('sql.py error:', e)
             conn.rollback()
         finally:
             cursor.close()
@@ -170,9 +180,11 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             if cursor.execute(sql) == 1:
                 err = False
                 conn.commit()
-        except Exception as e:
-            print(e)
+        except BrokenPipeError as e:
+            print('sql.py error:', e)
             conn = get_conn()
+        except Exception as e:
+            print('sql.py error:', e)
             conn.rollback()
         finally:
             cursor.close()
@@ -195,9 +207,11 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
                 if cursor.rowcount == 1:
                     conn.commit()
                     err = False
-        except Exception as e:
-            print(e)
+        except BrokenPipeError as e:
+            print('sql.py error:', e)
             conn = get_conn()
+        except Exception as e:
+            print('sql.py error:', e)
             conn.rollback()
         finally:
             cursor.close()
@@ -224,9 +238,11 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             rs = cursor.fetchall()
             if bool(rs):
                 err,res = False,rs
-        except Exception as e:
-            print(e)
+        except BrokenPipeError as e:
+            print('sql.py error:', e)
             conn = get_conn()
+        except Exception as e:
+            print('sql.py error:', e)
             conn.rollback()
         finally:
             cursor.close()
@@ -247,9 +263,11 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
                 rs = cursor.fetchone()
                 if bool(rs):
                     err,res = False,rs
-        except Exception as e:
-            print(e)
+        except BrokenPipeError as e:
+            print('sql.py error:', e)
             conn = get_conn()
+        except Exception as e:
+            print('sql.py error:', e)
             conn.rollback()
         finally:
             cursor.close()
@@ -268,9 +286,11 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             if st == 1:
                 err = False
                 conn.commit()
-        except Exception as e:
-            print(e)
+        except BrokenPipeError as e:
+            print('sql.py error:', e)
             conn = get_conn()
+        except Exception as e:
+            print('sql.py error:', e)
             conn.rollback()
         finally:
             cursor.close()
