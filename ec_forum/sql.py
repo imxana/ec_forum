@@ -10,12 +10,13 @@ def get_conn():
 
 '''pymysql socket pool'''
 socket_limit = 10
+socket_auto_update = False
 socket_pool = []
+socket_update = socket_limit
+
 for i in range(socket_limit):
     socket_pool.append(get_conn())
 
-'''set setInterval to update conn'''
-socket_update = socket_limit
 def update_conn():
     global socket_update
     socket_update+=1
@@ -26,8 +27,10 @@ def update_conn():
     global t    #Notice: use global variable!
     t = threading.Timer(7200.0, update_conn)
     t.start()
+
 t = threading.Timer(7200.0, update_conn)
-# t.start()
+if socket_auto_update:
+    t.start()
 
 
 class sqlQ(object):
@@ -48,8 +51,8 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
                     err = False
         except Exception as e:
             print(e)
-            conn.rollback()
             conn = get_conn()
+            conn.rollback()
         finally:
             cursor.close()
             socket_pool.append(conn)
@@ -69,8 +72,8 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             exist = bool(rs)
         except Exception as e:
             print(e)
-            conn.rollback()
             conn = get_conn()
+            conn.rollback()
         finally:
             cursor.close()
             socket_pool.append(conn)
@@ -113,8 +116,8 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
                 conn.commit()
         except Exception as e:
             print(e)
-            conn.rollback()
             conn = get_conn()
+            conn.rollback()
         finally:
             cursor.close()
             socket_pool.append(conn)
@@ -143,8 +146,8 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             exist = bool(rs)
         except Exception as e:
             print(e)
-            conn.rollback()
             conn = get_conn()
+            conn.rollback()
         finally:
             cursor.close()
             socket_pool.append(conn)
@@ -169,8 +172,8 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
                 conn.commit()
         except Exception as e:
             print(e)
-            conn.rollback()
             conn = get_conn()
+            conn.rollback()
         finally:
             cursor.close()
             socket_pool.append(conn)
@@ -194,8 +197,8 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
                     err = False
         except Exception as e:
             print(e)
-            conn.rollback()
             conn = get_conn()
+            conn.rollback()
         finally:
             cursor.close()
             socket_pool.append(conn)
@@ -223,8 +226,8 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
                 err,res = False,rs
         except Exception as e:
             print(e)
-            conn.rollback()
             conn = get_conn()
+            conn.rollback()
         finally:
             cursor.close()
             socket_pool.append(conn)
@@ -246,8 +249,8 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
                     err,res = False,rs
         except Exception as e:
             print(e)
-            conn.rollback()
             conn = get_conn()
+            conn.rollback()
         finally:
             cursor.close()
             socket_pool.append(conn)
@@ -267,8 +270,8 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
                 conn.commit()
         except Exception as e:
             print(e)
-            conn.rollback()
             conn = get_conn()
+            conn.rollback()
         finally:
             cursor.close()
             socket_pool.append(conn)

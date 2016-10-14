@@ -8,7 +8,8 @@ ssh2:
 	@ssh root@115.28.16.220
 ip:
 	@ifconfig | grep "inet " | grep -v 127.0.0.1
-
+pma:
+	sudo dpkg-reconfigure -plow phpmyadmin
 
 
 su:

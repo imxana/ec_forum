@@ -14,7 +14,7 @@ def run(app):
     @app.route('/c/del', methods=['POST'])
     def coment_del():
         return 'fuck'
-    
+
     @app.route('/c/l', methods=['POST'])
     def coment_l():
         return 'fuck'
