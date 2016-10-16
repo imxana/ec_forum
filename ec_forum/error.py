@@ -3,7 +3,6 @@ safeError            = { 'code': '-11', 'codeState': 'unsafe attempt, who R U' }
 requestError         = { 'code': '-12', 'codeState': 'method not allowed'      }
 serverError          = { 'code': '-13', 'codeState': 'server error, maybe MySQL crashed' }
 
-
 userNotExisted       = { 'code': '-20', 'codeState': 'user not existed'        }
 usernameEmpty        = { 'code': '-21', 'codeState': 'username empty'          }
 usernameExisted      = { 'code': '-22', 'codeState': 'username is existed'     }
@@ -34,10 +33,14 @@ articleTextEmpty     = { 'code': '-62', 'codeState': 'article text empty'      }
 articleNotExisted    = { 'code': '-63', 'codeState': 'article not existed'     }
 articleidEmpty       = { 'code': '-64', 'codeState': 'article id empty'        }
 articleAccess        = { 'code': '-65', 'codeState': 'have no access to do it' }
+tagNotExisted        = { 'code': '-66', 'codeState': 'some tag not existed'    }
 
 verifyEmpty          = { 'code': '-70', 'codeState': 'verify code empty'       }
 verifyWrong          = { 'code': '-71', 'codeState': 'verify code wrong'       }
 argsIllegal          = { 'code': '-72', 'codeState': 'illegal arguments value' }
 argsEmpty            = { 'code': '-73', 'codeState': 'empty arguments value'   }
 
-tagNotExisted        = { 'code': '-80', 'codeState': 'some tag not existed'    }
+commentTextEmpty     = { 'code': '-80', 'codeState': 'comment text empty'      }
+commentEventNotExsited= {'code': '-81', 'codeState': 'comment event not existed' }
+commentidEmpty       = { 'code': '-64', 'codeState': 'comment id empty'        }
+

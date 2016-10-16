@@ -63,8 +63,8 @@ create table ec_article
 create table ec_comment
 (
     c_id integer primary key comment '评论id',
-    type integer comment '评论类型 q/a/t 0/1/2',
-    t_id integer comment '对应事件id',
+    ec_type text comment '评论类型 question/answer/article',
+    ec_id integer comment '对应事件id',
     u_id integer comment '评论用户id',
     c_text text comment '评论正文',
     c_date datetime comment '评论日期',

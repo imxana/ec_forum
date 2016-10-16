@@ -290,6 +290,12 @@ codeState| str
 
 ## 更新文章 ./t/update
 
+u_id | int
+u_psw | str
+t_id | int
+t_title| str
+t_text| str
+t_tags| str
 
 ## 删除文章 ./t/del
 

@@ -32,7 +32,7 @@ def run(app):
             return jsonify(error.articleTextEmpty)
 
         '''exist'''
-        if not sqlQ.userid_search(u_id):
+        if not sqlQ.id_search(u_id):
             return jsonify(error.userNotExisted)
 
         '''psw'''
@@ -44,7 +44,7 @@ def run(app):
         if decrypt_psw != u_psw:
             return jsonify(error.pswWrong)
 
-        err,t_id = sqlQ.article_insert(u_id, u_psw, t_title, t_text, t_tags)
+        err,t_id = sqlQ.article_insert(u_id, t_title, t_text, t_tags)
         if err:
             return jsonify(error.serverError)
 
@@ -63,11 +63,11 @@ def run(app):
             return jsonify(error.articleidEmpty)
 
         '''exist'''
-        if not sqlQ.userid_search(t_id, table='ec_article'):
+        if not sqlQ.id_search(t_id, table='ec_article'):
             return jsonify(error.articleNotExisted)
 
         '''database'''
-        err,res = sqlQ.article_select(t_id)
+        err,res = sqlQ.id_select(t_id, table='ec_article')
         if err:
             return jsonify(error.serverError)
 
@@ -108,9 +108,9 @@ def run(app):
             return jsonify(error.articleidEmpty)
 
         '''exist'''
-        if not sqlQ.userid_search(u_id):
+        if not sqlQ.id_search(u_id):
             return jsonify(error.userNotExisted)
-        if not sqlQ.userid_search(t_id, table='ec_article'):
+        if not sqlQ.id_search(t_id, table='ec_article'):
             return jsonify(error.articleNotExisted)
 
         '''psw'''
@@ -122,7 +122,7 @@ def run(app):
             return jsonify(error.pswWrong)
 
         '''Article owner'''
-        err,res = sqlQ.article_select(t_id)
+        err,res = sqlQ.id_select(t_id, table='ec_article')
         if err:
             return jsonify(error.serverError)
         # print('_%s_%s_'%(res[1],u_id), res[1]==int(u_id),type(res[1]),type(u_id))
@@ -130,7 +130,7 @@ def run(app):
             return jsonify(error.articleAccess)
 
         '''db'''
-        err = sqlQ.article_del(t_id)
+        err = sqlQ.id_delete(t_id, table='ec_article')
         if err:
             return jsonify(error.serverError)
 
@@ -150,7 +150,7 @@ def run(app):
 
         '''expr'''
         if not expr.validPack(t_tags):
-            return jsonify(error.argsError)
+            return jsonify(error.argsIllegal)
 
         t_tags_set = set(unpack_id(t_tags)[0])
 
@@ -196,24 +196,26 @@ def run(app):
         u_id = request.values.get('u_id', '')
         u_psw = request.values.get('u_psw', '')
         t_id = request.values.get('t_id', '')
-        t_title = request.values.get('t_title', '')
-        t_text = request.values.get('t_text', '')
-        t_tags = request.values.get('t_tags', '')
+        t_info = {
+            't_title': request.values.get('t_title', ''),
+            't_text': request.values.get('t_text', ''),
+            't_tags': request.values.get('t_tags', ''),
+        }
 
         '''empty'''
         if u_id == '':
             return jsonify(error.useridEmpty)
         if u_psw == '':
             return jsonify(error.pswEmpty)
-        if t_title == '':
+        if t_info['t_title'] == '':
             return jsonify(error.articleTitleEmpty)
-        if t_text == '':
+        if t_info['t_text'] == '':
             return jsonify(error.articleTextEmpty)
 
         '''exist'''
-        if not sqlQ.userid_search(u_id):
+        if not sqlQ.id_search(u_id):
             return jsonify(error.userNotExisted)
-        if not sqlQ.userid_search(t_id, table='ec_article'):
+        if not sqlQ.id_search(t_id, table='ec_article'):
             return jsonify(error.articleNotExisted)
 
         '''psw'''
@@ -225,15 +227,15 @@ def run(app):
             return jsonify(error.pswWrong)
 
         '''Article owner'''
-        err,res = sqlQ.article_select(t_id)
+        err,res = sqlQ.id_select(t_id, table='ec_article')
         if err:
             return jsonify(error.serverError)
         if res[1] != int(u_id):
             return jsonify(error.articleAccess)
 
         '''db'''
-        err,t_id = sqlQ.article_update(u_id, u_psw, t_id, t_title, t_text, t_tags)
+        err = sqlQ.article_update(t_id, t_info)
         if err:
             return jsonify(error.serverError)
 
-        return jsonify({'code':'1','t_id':t_id})
+        return jsonify({'code':'1'})

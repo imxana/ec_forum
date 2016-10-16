@@ -29,4 +29,6 @@ event = {
 }
 
 def run(app):
+
+    @app.route('./r/history')
     print(event)

@@ -20,7 +20,7 @@ def run(app):
             return jsonify(error.useridEmpty)
 
         '''exist'''
-        if not sqlQ.userid_search(u_id):
+        if not sqlQ.id_search(u_id):
             return jsonify(error.userNotExisted)
 
         '''db'''
@@ -75,7 +75,7 @@ def run(app):
             return jsonify(error.pswEmpty)
 
         '''exist'''
-        if not sqlQ.userid_search(u_id):
+        if not sqlQ.id_search(u_id):
             return jsonify(error.userNotExisted)
 
         '''psw'''
@@ -115,7 +115,7 @@ def run(app):
             return jsonify(error.verifyEmpty)
 
         '''exist'''
-        if not sqlQ.userid_search(u_id):
+        if not sqlQ.id_search(u_id):
             return jsonify(error.userNotExisted)
 
         '''formate legal'''
@@ -149,7 +149,7 @@ def run(app):
             return jsonify(error.pswEmpty)
 
         '''exist'''
-        if not sqlQ.userid_search(u_id):
+        if not sqlQ.id_search(u_id):
             return jsonify(error.userNotExisted)
 
         '''psw'''
@@ -194,7 +194,7 @@ def run(app):
             return jsonify(error.emailEmpty)
 
         '''exist'''
-        if not sqlQ.userid_search(u_id):
+        if not sqlQ.id_search(u_id):
             return jsonify(error.userNotExisted)
 
         '''psw'''
@@ -231,9 +231,9 @@ def run(app):
             return jsonify(error.argsEmpty)
 
         '''exist'''
-        if not sqlQ.userid_search(u_id):
+        if not sqlQ.id_search(u_id):
             return jsonify(error.userNotExisted)
-        if not sqlQ.userid_search(ua_id):
+        if not sqlQ.id_search(ua_id):
             return jsonify(error.watchuserNotExisted)
 
         '''psw'''

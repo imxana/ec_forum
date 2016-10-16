@@ -130,7 +130,7 @@ def run(app):
             return jsonify(error.pswEmpty)
 
         '''exist'''
-        if not sqlQ.userid_search(u_id):
+        if not sqlQ.id_search(u_id):
             return jsonify(error.userNotExisted)
 
         '''psw'''
@@ -142,7 +142,7 @@ def run(app):
             return jsonify(error.pswWrong)
 
         '''err'''
-        if sqlQ.sign_del(u_id):
+        if sqlQ.id_delete(u_id,table='ec_user'):
             return jsonify(error.serverError)
 
         return jsonify({'code':'1','u_id':u_id})

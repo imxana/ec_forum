@@ -120,6 +120,16 @@ for a specific version of pydoc, for example, use
             t_id=tid
         ),follow_redirects=True)
 
+    def article_update(self, uid, psw, tid, title, text, tags):
+        return self.app.post('/t/update',data=dict(
+            u_id=uid,
+            u_psw=psw,
+            t_id=tid,
+            t_title=title,
+            t_text=text,
+            t_tags=tags
+        ),follow_redirects=True)
+
     def article_display(self, tags):
         return self.app.post('/t/display', data=dict(
             t_tags=tags
@@ -155,6 +165,7 @@ for a specific version of pydoc, for example, use
             ua_id=uaid,
             u_act=act
         ),follow_redirects=True)
+
 
 
     def test_sign_up_fail(self):
@@ -244,13 +255,8 @@ for a specific version of pydoc, for example, use
         rv = self.article_add(self.u_id, '222222', 'Title', '', 'node.js')
         assert 'article text empty' in json.loads(rv.data).get('codeState','')
 
-    def test_article_query_suc(self):
-        '''query_suc'''
-        rv = self.article_query(self.t_id)
-        assert '1' in json.loads(rv.data).get('code','')
-
     def test_article_query_fail(self):
-        '''query_fail'''
+        '''query_fail, suc_test is everywhere'''
         rv = self.article_query('')
         assert 'article id empty' in json.loads(rv.data).get('codeState','')
         rv = self.article_query('100000')
@@ -273,8 +279,8 @@ for a specific version of pydoc, for example, use
         rv = self.article_del(self.ua_id, '222222', self.t_id)
         assert 'have no access to do it' in json.loads(rv.data).get('codeState','')
 
-    def ntest_mail_send(self):
-        '''send verified email, this test is annoying. once enough, i think'''
+    def not_test_mail_send(self):
+        '''send verified email, this test is annoying. once enough, i think..'''
         rv = self.app.get('/public/get_verify', follow_redirects=True)
         verify_code = rv.data
         assert len(verify_code)==5
@@ -338,9 +344,14 @@ for a specific version of pydoc, for example, use
     def test_article_display(self):
         rv = self.article_display('node.js,python')
         assert '1' in json.loads(rv.data).get('code','')
-        rv = self.article_query(self.t_id)
-        assert '1' in json.loads(rv.data).get('code','')
 
+    def test_article_update(self):
+        '''check if text changed'''
+        text = gene_id(num=20,letter=True)
+        rv = self.article_update(self.u_id, '222222', self.t_id, 'What\'s nodejs', text, 'nodejs')
+        assert '1' in json.loads(rv.data).get('code','')
+        rv = self.article_query(self.t_id)
+        assert text in json.loads(rv.data).get('t_text','')
 
 
 
