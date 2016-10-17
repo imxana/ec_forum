@@ -33,7 +33,8 @@ create table ec_question
     q_date datetime comment '提问日期',
     q_close integer comment '是否关闭',
     q_report integer comment '被举报次数',
-    q_answers text comment '回答ID组'
+    q_answers text comment '回答ID组',
+    q_comments text comment '评论ID组'
 );
 
 create table ec_answer

@@ -119,6 +119,8 @@ def run(app):
     def sign_del():
         if request.method != 'POST':
             return jsonify(error.requestError)
+        if not app.config['DEBUG']:
+            return jsonify(error.methodAbort)
 
         u_id = request.values.get('u_id', '')
         u_psw = request.values.get('u_psw', '')

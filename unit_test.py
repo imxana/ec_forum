@@ -8,7 +8,7 @@ from ec_forum.id_dealer import gene_id
 class ECTestCase(unittest.TestCase):
 
     def setUp(self):
-        #ec.config['TESTING'] = True
+        # ec.app.config['TESTING'] = True
         self.app = ec.app.test_client()
         self.name = 'a'+gene_id(num=5, letter=True, lower=True)
         self.email = self.name+'@gmail.com'
@@ -29,27 +29,11 @@ browser. It is primarily focused on creating simple, easy to build network clien
 servers.''', 'node.js')
         self.t_id = json.loads(rv.data).get('t_id','')
         assert '1' in json.loads(rv.data).get('code','')
-        rv = self.article_add(self.u_id, '222222', 'Python Version',
-'''To support multiple versions, the programs named python and pythonw select the real ver-
-sion of Python to run, depending on various settings.  The current supported versions are
-2.6 and 2.7, with the default being 2.7.  Use
 
-   % man python2.6
-   % man python2.7
-   % man pythonw2.6
-   % man pythonw2.7
-
-to see the man page for a specific version.  Without a version specified these will show
-the man page for the (unmodified) default version of Python (2.7).  To see the man page
-for a specific version of pydoc, for example, use
-''', 'python')
-        self.ta_id = json.loads(rv.data).get('t_id','')
 
     def tearDown(self):
         '''article_del_suc'''
         rv = self.article_del(self.u_id, '222222', self.t_id)
-        assert '1' in json.loads(rv.data).get('code','')
-        rv = self.article_del(self.u_id, '222222', self.ta_id)
         assert '1' in json.loads(rv.data).get('code','')
 
         '''sign_del suc'''
@@ -166,7 +150,26 @@ for a specific version of pydoc, for example, use
             u_act=act
         ),follow_redirects=True)
 
+    def comment_add(self, uid, psw, ectype, ecid, text):
+        return self.app.post('/c/add', data=dict(
+            u_id=uid,
+            u_psw=psw,
+            ec_type = ectype,
+            ec_id = ecid,
+            c_text = text
+        ),follow_redirects=True)
 
+    def comment_query(self, cid):
+        return self.app.post('/c/query', data=dict(
+            c_id = cid,
+        ),follow_redirects=True)
+
+    def comment_del(self, uid, psw, cid):
+        return self.app.post('/c/del',data=dict(
+            u_id=uid,
+            u_psw=psw,
+            c_id=cid
+        ),follow_redirects=True)
 
     def test_sign_up_fail(self):
         rv = self.app.get('/sign_up?u_name=test.good.name&psw=222222&goodemail@gmail.com', follow_redirects=True)
@@ -279,7 +282,7 @@ for a specific version of pydoc, for example, use
         rv = self.article_del(self.ua_id, '222222', self.t_id)
         assert 'have no access to do it' in json.loads(rv.data).get('codeState','')
 
-    def not_test_mail_send(self):
+    def test_mail_send(self):
         '''send verified email, this test is annoying. once enough, i think..'''
         rv = self.app.get('/public/get_verify', follow_redirects=True)
         verify_code = rv.data
@@ -342,7 +345,24 @@ for a specific version of pydoc, for example, use
         assert 'user already unwatched' in json.loads(rv.data).get('codeState','')
 
     def test_article_display(self):
+        rv = self.article_add(self.ua_id, '222222', 'Python Version',
+'''To support multiple versions, the programs named python and pythonw select the real ver-
+sion of Python to run, depending on various settings.  The current supported versions are
+2.6 and 2.7, with the default being 2.7.  Use
+
+   % man python2.6
+   % man python2.7
+   % man pythonw2.6
+   % man pythonw2.7
+
+to see the man page for a specific version.  Without a version specified these will show
+the man page for the (unmodified) default version of Python (2.7).  To see the man page
+for a specific version of pydoc, for example, use
+''', 'python')
+        self.ta_id = json.loads(rv.data).get('t_id','')
         rv = self.article_display('node.js,python')
+        assert '1' in json.loads(rv.data).get('code','')
+        rv = self.article_del(self.ua_id, '222222', self.ta_id)
         assert '1' in json.loads(rv.data).get('code','')
 
     def test_article_update(self):
@@ -352,6 +372,18 @@ for a specific version of pydoc, for example, use
         assert '1' in json.loads(rv.data).get('code','')
         rv = self.article_query(self.t_id)
         assert text in json.loads(rv.data).get('t_text','')
+
+    def test_comment_all_suc(self):
+        rv = self.comment_add(self.ua_id, '222222', 'article', self.t_id, 'js is shit!')
+        assert '1' in json.loads(rv.data).get('code','')
+        self.c_id = json.loads(rv.data).get('c_id','')
+
+        rv = self.comment_query(self.c_id)
+        assert '1' in json.loads(rv.data).get('code','')
+        rv = self.article_query(self.t_id)
+        assert self.c_id in json.loads(rv.data).get('t_comments','')
+        rv = self.comment_del(self.ua_id, '222222', self.c_id)
+        assert '1' in json.loads(rv.data).get('code','')
 
 
 

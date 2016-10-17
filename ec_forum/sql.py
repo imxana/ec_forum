@@ -1,52 +1,54 @@
 # coding:utf8
 import pymysql, threading
 from ec_forum.id_dealer import gene_id
+from app import app
 
 
 def get_conn():
-    return pymysql.Connect(host='127.0.0.1',user='root',passwd='',db='ec_forum',charset='utf8')
+    return pymysql.Connect(host='127.0.0.1',user=app.config['USERNAME'],passwd=app.config['PASSWORD'],db='ec_forum',charset='utf8')
 # conn = get_conn()
 
 
 '''pymysql socket pool'''
 socket_limit = 10
-socket_auto_update = False
 socket_pool = []
 socket_update = socket_limit
 
 for i in range(socket_limit):
     socket_pool.append(get_conn())
 
+
 def update_conn():
     global socket_update
     socket_update+=1
     if socket_update >= socket_limit:
         socket_update = 0
-    print("[update pymysql connection..]")
+    print("[update pymysql connection.. Pipe %s]"%socket_update)
     socket_pool[socket_update] = get_conn()
     global t    #Notice: use global variable!
-    t = threading.Timer(600.0, update_conn)
+    t = threading.Timer(7200.0, update_conn)
     t.start()
 
-t = threading.Timer(600.0, update_conn)
-if socket_auto_update:
+t = threading.Timer(7200.0, update_conn)
+
+if not app.config['TESTING']:
     t.start()
 
 
 
 class sqlQ(object):
 
-    def get_query_name(self, table):
-        query_name = 'u_id'
+    def get_query_name(self, table, ext='id'):
+        query_name = 'u'
         if table == 'ec_article':
-            query_name = 't_id'
+            query_name = 't'
         elif table == 'ec_question':
-            query_name = 'q_id'
+            query_name = 'q'
         elif table == 'ec_comment':
-            query_name = 'c_id'
+            query_name = 'c'
         elif table == 'ec_answer':
-            query_name = 'a_id'
-        return query_name
+            query_name = 'a'
+        return '%s_%s'%(query_name,ext)
 
 
     def id_search(self, ec_id, table='ec_user'):
@@ -276,7 +278,7 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
 
 
 
-    def article_update(self, t_id, info):
+    def article_update(self, t_id, info, owner='self'):
         '''update the infomation'''
         conn = socket_pool.pop()
         cursor = conn.cursor()
@@ -286,7 +288,10 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
         sql = "update ec_article set "
         for k,v in info.items():
             sql += "%s=%r,"%(k,v)
-        sql = sql + "t_date_latest=now() where t_id=%r;"%t_id
+        if owner == 'self':
+            sql = sql + "t_date_latest=now() where t_id=%r;"%t_id
+        else:
+            sql = sql[:-1] + " where t_id=%r;"%t_id
         try:
             fs = cursor.execute(sql)
             if fs == 1:
@@ -309,8 +314,8 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
         conn = socket_pool.pop()
         cursor = conn.cursor()
         err,c_id = True,gene_id()
-        while self.id_search(t_id, table='ec_article'):
-            t_id = gene_id()
+        while self.id_search(c_id, table='ec_comment'):
+            c_id = gene_id()
         sql = "insert into ec_comment(c_id, ec_type, ec_id, u_id, c_text, c_date, c_like)\
          values(%s,%r,%s,%s,%r,now(),0);"%(c_id, ec_type, ec_id, u_id, c_text)
         # print('sql.py 145',sql)

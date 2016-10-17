@@ -2,6 +2,7 @@ normalError          = { 'code': '-10', 'codeState': 'something bad happended' }
 safeError            = { 'code': '-11', 'codeState': 'unsafe attempt, who R U' }
 requestError         = { 'code': '-12', 'codeState': 'method not allowed'      }
 serverError          = { 'code': '-13', 'codeState': 'server error, maybe MySQL crashed' }
+methodAbort          = { 'code': '-14', 'codeState': 'method already aborted'  }
 
 userNotExisted       = { 'code': '-20', 'codeState': 'user not existed'        }
 usernameEmpty        = { 'code': '-21', 'codeState': 'username empty'          }
@@ -41,6 +42,7 @@ argsIllegal          = { 'code': '-72', 'codeState': 'illegal arguments value' }
 argsEmpty            = { 'code': '-73', 'codeState': 'empty arguments value'   }
 
 commentTextEmpty     = { 'code': '-80', 'codeState': 'comment text empty'      }
-commentEventNotExsited= {'code': '-81', 'codeState': 'comment event not existed' }
-commentidEmpty       = { 'code': '-64', 'codeState': 'comment id empty'        }
-
+commentEventNotExsited={ 'code': '-81', 'codeState': 'comment event not existed' }
+commentidEmpty       = { 'code': '-82', 'codeState': 'comment id empty'        }
+commentNotExisted    = { 'code': '-83', 'codeState': 'comment not existed'     }
+commentExsited       = { 'code': '-84', 'codeState': 'comment exists in event' }

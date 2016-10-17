@@ -124,7 +124,8 @@ def run(app):
 
         mail_title = '实验班问答交流平台邮箱验证'
         mail_subject = '以下是您的验证码：\n\n %s\n\n您好！我们收到了来自您的邮箱验证请求，请使用上述验证码来验证您的邮箱归属，如果你从未发送过相关请求，请忽略此邮件。\n\nhave a nice day!\n实验班问答交流平台'%u_verify
-        mail_sender(u_email, mail_title, mail_subject)
+        if not app.config['TESTING']:
+            mail_sender(u_email, mail_title, mail_subject)
 
         return jsonify({'code':'1'})
 

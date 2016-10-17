@@ -72,20 +72,17 @@ def run(app):
             return jsonify(error.serverError)
 
 
-        # print('article.py 65',res)
-        # | t_id   | u_id   | t_title | t_text | t_date     | t_like | t_comments | t_tags  |
-        # (66831, 981428, 'Title', 'Text', datetime.date(2016, 9, 28), 0, '', 'node.js')
         return jsonify({
             'code':'1',
             't_id':res[0],
             'u_id':res[1],
             't_title':res[2],
             't_text':res[3],
-            't_date':res[4],
+            't_date':int(res[4].timestamp()),
             't_like':res[5],
             't_comments':res[6],
             't_tags':res[7],
-            't_date_latest':res[8],
+            't_date_latest':int(res[8].timestamp()),
             't_star':res[9]
         })
 
@@ -234,7 +231,7 @@ def run(app):
             return jsonify(error.articleAccess)
 
         '''db'''
-        err = sqlQ.article_update(t_id, t_info)
+        err = sqlQ.article_update(t_id, t_info, owner='self')
         if err:
             return jsonify(error.serverError)
 
