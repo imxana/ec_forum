@@ -3,12 +3,13 @@ import unittest
 import tempfile
 import app as ec
 from ec_forum.id_dealer import gene_id
-
+import config
 
 class ECTestCase(unittest.TestCase):
 
     def setUp(self):
         # ec.app.config['TESTING'] = True
+        config.MyConfig = config.DevelopmentConfig()
         self.app = ec.app.test_client()
         self.name = 'a'+gene_id(num=5, letter=True, lower=True)
         self.email = self.name+'@gmail.com'

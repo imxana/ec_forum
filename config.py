@@ -1,9 +1,10 @@
 class Config(object):
     TESTING = False
     DEBUG = False
-    # SECRET_KEY = 'development key'
+    SECRET_KEY = 'development key'
     USERNAME = 'root'
     PASSWORD = ''
+
 
 class ProductionConfig(Config):
     USERNAME = 'xana'
@@ -15,3 +16,8 @@ class DevelopmentConfig(Config):
 class TestingConfig(Config):
     DEBUG =True
     TESTING = True
+
+
+CLASS_ARRAY = [TestingConfig, DevelopmentConfig, ProductionConfig]
+
+MyConfig = CLASS_ARRAY[0]

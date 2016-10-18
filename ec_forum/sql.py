@@ -1,13 +1,10 @@
 # coding:utf8
 import pymysql, threading
 from ec_forum.id_dealer import gene_id
-from app import app
-
+from config import MyConfig
 
 def get_conn():
-    return pymysql.Connect(host='127.0.0.1',user=app.config['USERNAME'],passwd=app.config['PASSWORD'],db='ec_forum',charset='utf8')
-# conn = get_conn()
-
+    return pymysql.Connect(host='127.0.0.1',user=MyConfig.USERNAME,passwd=MyConfig.PASSWORD,db='ec_forum',charset='utf8')
 
 '''pymysql socket pool'''
 socket_limit = 10
@@ -30,9 +27,10 @@ def update_conn():
     t.start()
 
 t = threading.Timer(7200.0, update_conn)
-
-if not app.config['TESTING']:
+if not MyConfig.TESTING:
     t.start()
+
+
 
 
 

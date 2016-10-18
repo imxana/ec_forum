@@ -4,6 +4,7 @@ import ec_forum.error as error
 import ec_forum.sql as sql
 import ec_forum.expr as expr
 from ec_forum.salt import encrypt, decrypt
+from config import MyConfig
 
 sqlQ = sql.sqlQ()
 
@@ -119,7 +120,7 @@ def run(app):
     def sign_del():
         if request.method != 'POST':
             return jsonify(error.requestError)
-        if not app.config['DEBUG']:
+        if not MyConfig.DEBUG:
             return jsonify(error.methodAbort)
 
         u_id = request.values.get('u_id', '')
