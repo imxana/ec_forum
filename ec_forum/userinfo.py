@@ -14,8 +14,8 @@ def run(app):
     def user_query():
         if request.method != 'POST':
             return jsonify(error.requestError)
-        u_id = request.values.get('u_id', '')
 
+        u_id = request.values.get('u_id', '')
         '''empty'''
         if u_id == '':
             return jsonify(error.useridEmpty)
@@ -54,7 +54,6 @@ def run(app):
 
 
     @app.route('/u/update', methods=['POST'])
-    #self, uid, psw, rn, bl, gh, waus, tags)
     def user_update():
         if request.method != 'POST':
             return jsonify(error.requestError)
@@ -137,7 +136,6 @@ def run(app):
 
     @app.route('/u/email/confirm', methods=['POST'])
     def email_confirm_pass():
-
         if request.method != 'POST':
             return jsonify(error.requestError)
 

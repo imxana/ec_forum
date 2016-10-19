@@ -122,7 +122,7 @@ method:post
 
 字段|类型|要求
 ------------ | ------------- | ------------
-u_id | str | 必填
+u_id | int | 必填
 
 suc:
 
@@ -159,7 +159,7 @@ method:post
 
 字段|类型|要求
 ------------ | ------------- | ------------
-u_id | str | 必填
+u_id | int | 必填
 u_psw | str | 用于验证
 u_realname | str | 无要求
 u_blog | str | 无要求
@@ -189,7 +189,7 @@ method:post
 
 字段|类型|要求
 ------------ | ------------- | ------------
-u_id | str | 必填
+u_id | int | 必填
 u_email| str | 必填
 u_verify | str| 必填
 
@@ -207,7 +207,7 @@ method:post
 
 字段|类型|要求
 ------------ | ------------- | ------------
-u_id | str | 必填
+u_id | int | 必填
 u_psw| str | 必填
 
 suc:
@@ -232,7 +232,7 @@ method:post
 
 字段|类型|要求
 ------------ | ------------- | ------------
-u_id | str | 必填
+u_id | int | 必填
 u_psw| str | 必填
 u_email| str | 必填
 
@@ -266,7 +266,7 @@ method:post
 
 字段|类型|要求
 ------------ | ------------- | ------------
-u_id | str | 必填
+u_id | int | 必填
 u_psw | str | 用于验证
 u_title | str | 非空
 u_text | str | 非空
@@ -278,7 +278,7 @@ suc:
 字段|类型或值
 ------------ | -------------
 code | 1
-t_id | str
+t_id | int
 
 
 fail:
@@ -290,6 +290,10 @@ codeState| str
 
 ## 更新文章 ./t/update
 
+method:post
+
+字段|类型
+------------ | -------------
 u_id | int
 u_psw | str
 t_id | int
@@ -297,15 +301,28 @@ t_title| str
 t_text| str
 t_tags| str
 
+suc:
+
+字段|类型或值
+------------ | -------------
+code|1
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code | !1
+codeState | str
+
 ## 删除文章 ./t/del
 
 method:post
 
 字段|类型
 ------------ | -------------
-u_name| str
+u_id | int
 u_psw| str
-t_id | str
+t_id | int
 
 
 suc:
@@ -313,7 +330,7 @@ suc:
 字段|类型或值
 ------------ | -------------
 code|1
-t_id|str
+t_id | int
 
 fail:
 
@@ -352,7 +369,7 @@ method:post
 
 字段|类型
 ------------ | -------------
-t_id | str
+t_id | int
 
 suc:
 
@@ -363,11 +380,11 @@ t_id | int
 u_id | int
 t_title | str
 t_text | str
-t_date | date
+t_date | int
 t_like | int
 t_comments | str
 t_tags | str
-t_date_latest | date
+t_date_latest | int
 t_star | int
 
 fail:
@@ -383,7 +400,86 @@ codeState | str
 # Comment
 
 ## ./c/add
+
+method:post
+
+字段|类型|要求
+------------ | ------------- | ------------
+u_id | int | 必填
+u_psw | str | 用于验证
+ec_type | str | article/question/answer
+ec_id | int | 必填
+c_text | str | 非空
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code | 1
+c_id | int
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code|<=0
+codeState| str
+
+
 ## ./c/del
+
+method:post
+
+字段|类型
+------------ | -------------
+u_id | int
+u_psw| str
+c_id | int
+
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code|1
+t_id | int
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code | !1
+codeState | str
+
+## ./c/query
+
+method:post
+
+字段|类型
+------------ | -------------
+c_id | int
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code | 1
+c_id | int
+u_id | int
+ec_type | article/question/answer
+ec_id | int
+c_like | int
+c_date | int
+c_like | str
+
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code | !1
+codeState | str
+
 
 # Question
 

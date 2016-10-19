@@ -1,7 +1,7 @@
 class Config(object):
     TESTING = False
     DEBUG = False
-    SECRET_KEY = 'development key'
+    SECRET_KEY = 'BnUcbCUHZj3lzrdHutfAI5cRCBLzBY3JIAIxt2ZWUz8='
     USERNAME = 'root'
     PASSWORD = ''
 
@@ -9,12 +9,13 @@ class Config(object):
 class ProductionConfig(Config):
     USERNAME = 'xana'
     PASSWORD = '123'
+    # pass
 
 class DevelopmentConfig(Config):
     DEBUG = True
 
 class TestingConfig(Config):
-    DEBUG =True
+    DEBUG = True
     TESTING = True
 
 

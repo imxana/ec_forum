@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from flask import jsonify
+from flask import jsonify,request
 from cryptography.fernet import Fernet
-
+from config import MyConfig
+import ec_forum.error as error
 # must be safe
 origin_salt = b'8YzsWooy9nWurNur7L3Nj3PJDLfXkWg2UkfJ8VnW4Gc='
-secret_key = 'BnUcbCUHZj3lzrdHutfAI5cRCBLzBY3JIAIxt2ZWUz8='
 
 def gene_key():
     return Fernet.generate_key()
@@ -16,9 +16,15 @@ def decrypt(encrypted_text, salt=origin_salt):
     return str(Fernet(salt).decrypt(encrypted_text), encoding='utf-8')
 
 def run(app):
+    @app.before_request
+    def before_request():
+        secret_key = request.values.get('secret_key', '')
+        if request.method == 'POST' and not MyConfig.DEBUG and secret_key != MyConfig.SECRET_KEY:
+            return jsonify(error.safeError)
+
     @app.route('/safe/secret_key')
     def get_secret_key():
-        return jsonify({'code':'1','secret_key':secret_key})
+        return jsonify({'code':'1','secret_key':MyConfig.SECRET_KEY})
 
 # test..
 if __name__ == '__main__':

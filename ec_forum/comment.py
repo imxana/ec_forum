@@ -64,6 +64,7 @@ def run(app):
             t_comments[0].append(c_id)
             if sqlQ.article_update(ec_id, {'t_comments':pack_id(t_comments)}, owner='others'):
                 return jsonify(error.serverError)
+        
 
         return jsonify({'code':'1','c_id':c_id})
 
