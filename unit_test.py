@@ -144,7 +144,7 @@ servers.''', 'node.js')
 
 
     def user_watch(self, uid, psw, uaid, act):
-        return self.app.post('/u/watchuser', data=dict(
+        return self.app.post('/u/follow', data=dict(
             u_id=uid,
             u_psw=psw,
             ua_id=uaid,

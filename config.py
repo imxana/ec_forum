@@ -5,11 +5,9 @@ class Config(object):
     USERNAME = 'root'
     PASSWORD = ''
 
-
 class ProductionConfig(Config):
     USERNAME = 'xana'
     PASSWORD = '123'
-    # pass
 
 class DevelopmentConfig(Config):
     DEBUG = True

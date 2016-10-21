@@ -214,7 +214,7 @@ def run(app):
 
 
 
-    @app.route('/u/watchuser', methods=['POST'])
+    @app.route('/u/follow', methods=['POST'])
     def watch_user():
         if request.method != 'POST':
             return jsonify(error.requestError)
@@ -262,6 +262,7 @@ def run(app):
             be_watched_user_dic[1].remove(u_id)
         else:
             return jsonify(error.argsIllegal)
+            
         '''update info'''
         if sqlQ.user_update(u_id, {'u_watchusers': pack_id(watch_user_dic)}):
             return jsonify(error.serverError)

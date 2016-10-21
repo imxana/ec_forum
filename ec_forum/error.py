@@ -35,6 +35,7 @@ articleNotExisted    = { 'code': '-63', 'codeState': 'article not existed'     }
 articleidEmpty       = { 'code': '-64', 'codeState': 'article id empty'        }
 articleAccess        = { 'code': '-65', 'codeState': 'have no access to do it' }
 tagNotExisted        = { 'code': '-66', 'codeState': 'some tag not existed'    }
+tagNotIllegal        = { 'code': '-67', 'codeState': 'tags not illegal'        }
 
 verifyEmpty          = { 'code': '-70', 'codeState': 'verify code empty'       }
 verifyWrong          = { 'code': '-71', 'codeState': 'verify code wrong'       }

@@ -33,7 +33,6 @@ if not MyConfig.TESTING:
 
 
 
-
 class sqlQ(object):
 
     def get_query_name(self, table, ext='id'):
@@ -46,6 +45,8 @@ class sqlQ(object):
             query_name = 'c'
         elif table == 'ec_answer':
             query_name = 'a'
+        elif table == 'ec_reputation':
+            query_name = 'r'
         return '%s_%s'%(query_name,ext)
 
 
@@ -61,11 +62,11 @@ class sqlQ(object):
             rs = cursor.fetchone()
             exist = bool(rs)
         except BrokenPipeError as e:
-            print('sql.py error:', e)
             conn = get_conn()
+            raise e
         except Exception as e:
-            print('sql.py error:', e)
             conn.rollback()
+            raise e
         finally:
             cursor.close()
             socket_pool.append(conn)
@@ -85,11 +86,11 @@ class sqlQ(object):
                 if bool(rs):
                     err,res = False,rs
         except BrokenPipeError as e:
-            print('sql.py error:', e)
             conn = get_conn()
+            raise e
         except Exception as e:
-            print('sql.py error:', e)
             conn.rollback()
+            raise e
         finally:
             cursor.close()
             socket_pool.append(conn)
@@ -108,11 +109,11 @@ class sqlQ(object):
                 err = False
                 conn.commit()
         except BrokenPipeError as e:
-            print('sql.py error:', e)
             conn = get_conn()
+            raise e
         except Exception as e:
-            print('sql.py error:', e)
             conn.rollback()
+            raise e
         finally:
             cursor.close()
             socket_pool.append(conn)
@@ -134,11 +135,11 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
                     conn.commit()
                     err = False
         except BrokenPipeError as e:
-            print('sql.py error:', e)
             conn = get_conn()
+            raise e
         except Exception as e:
-            print('sql.py error:', e)
             conn.rollback()
+            raise e
         finally:
             cursor.close()
             socket_pool.append(conn)
@@ -156,11 +157,11 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             rs = cursor.fetchone()
             exist = bool(rs)
         except BrokenPipeError as e:
-            print('sql.py error:', e)
             conn = get_conn()
+            raise e
         except Exception as e:
-            print('sql.py error:', e)
             conn.rollback()
+            raise e
         finally:
             cursor.close()
             socket_pool.append(conn)
@@ -179,11 +180,11 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
                 if bool(rs):
                     err,res = False,rs
         except BrokenPipeError as e:
-            print('sql.py error:', e)
             conn = get_conn()
+            raise e
         except Exception as e:
-            print('sql.py error:', e)
             conn.rollback()
+            raise e
         finally:
             cursor.close()
             socket_pool.append(conn)
@@ -207,11 +208,11 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
                 err = False
                 conn.commit()
         except BrokenPipeError as e:
-            print('sql.py error:', e)
             conn = get_conn()
+            raise e
         except Exception as e:
-            print('sql.py error:', e)
             conn.rollback()
+            raise e
         finally:
             cursor.close()
             socket_pool.append(conn)
@@ -225,19 +226,19 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
         err,t_id = True,gene_id()
         while self.id_search(t_id, table='ec_article'):
             t_id = gene_id()
-        sql = "insert into ec_article(t_id, u_id, t_title, t_text, t_date, t_like, t_comments, t_tags, t_date_latest, t_star) values(%s,%s,%r,%r,now(),0,'',%r, now(),0);"%(t_id, u_id, t_title, t_text, t_tags)
-        # print('sql.py 145',sql)
+        sql = "insert into ec_article(t_id, u_id, t_title, t_text, t_date, t_like, t_comments, t_tags, t_date_latest, t_star) \
+        values(%s,%s,%r,%r,now(),0,'',%r, now(),0);"%(t_id, u_id, t_title, t_text, t_tags)
         try:
             if cursor.execute(sql) == 1:
                 if cursor.rowcount == 1:
                     conn.commit()
                     err = False
         except BrokenPipeError as e:
-            print('sql.py error:', e)
             conn = get_conn()
+            raise e
         except Exception as e:
-            print('sql.py error:', e)
             conn.rollback()
+            raise e
         finally:
             cursor.close()
             socket_pool.append(conn)
@@ -263,11 +264,11 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             if bool(rs):
                 err,res = False,rs
         except BrokenPipeError as e:
-            print('sql.py error:', e)
             conn = get_conn()
+            raise e
         except Exception as e:
-            print('sql.py error:', e)
             conn.rollback()
+            raise e
         finally:
             cursor.close()
             socket_pool.append(conn)
@@ -276,7 +277,7 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
 
 
 
-    def article_update(self, t_id, info, owner='self'):
+    def article_update(self, t_id, info, modify=False):
         '''update the infomation'''
         conn = socket_pool.pop()
         cursor = conn.cursor()
@@ -286,7 +287,7 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
         sql = "update ec_article set "
         for k,v in info.items():
             sql += "%s=%r,"%(k,v)
-        if owner == 'self':
+        if modify:
             sql = sql + "t_date_latest=now() where t_id=%r;"%t_id
         else:
             sql = sql[:-1] + " where t_id=%r;"%t_id
@@ -296,11 +297,11 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
                 err = False
                 conn.commit()
         except BrokenPipeError as e:
-            print('sql.py error:', e)
             conn = get_conn()
+            raise e
         except Exception as e:
-            print('sql.py error:', e)
             conn.rollback()
+            raise e
         finally:
             cursor.close()
             socket_pool.append(conn)
@@ -323,12 +324,38 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
                     conn.commit()
                     err = False
         except BrokenPipeError as e:
-            print('sql.py error:', e)
             conn = get_conn()
+            raise e
         except Exception as e:
-            print('sql.py error:', e)
             conn.rollback()
+            raise e
         finally:
             cursor.close()
             socket_pool.append(conn)
         return err,c_id
+
+
+    def reputation_add(self, r_type, ec_type, ec_id, ua_id, ua_rep, ub_id, ub_rep):
+        '''insert an article without check'''
+        conn = socket_pool.pop()
+        cursor = conn.cursor()
+        err,r_id = True,gene_id()
+        while self.id_search(c_id, table='ec_reputation'):
+            r_id = gene_id()
+        sql = 'insert into ec_reputation(r_id,r_type, ec_type, ec_id, ua_id, ub_id, ua_rep, ub_rep, r_date)\
+        values(%s,%r,%s,%s,%r,%s,%s,%s,%s,now()) '%(r_id, r_type, u_id, ec_id, ec_type, ua_id, ub_id, ua_rep, ub_rep)
+        try:
+            if cursor.execute(sql) == 1:
+                if cursor.rowcount == 1:
+                    conn.commit()
+                    err = False
+        except BrokenPipeError as e:
+            conn = get_conn()
+            raise e
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            cursor.close()
+            socket_pool.append(conn)
+        return err, r_id

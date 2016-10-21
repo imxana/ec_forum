@@ -24,6 +24,7 @@ code|1
 secret_key| str
 
 # Acount
+
 ## 注册 ./sign_up
 
 method:post
@@ -181,6 +182,30 @@ fail:
 code|<=0
 codeState| str
 
+# 关注用户 ./u/follow
+
+method:post
+
+字段|类型|要求
+------------ | ------------- | ------------
+u_id | int | -
+u_psw | str | -
+ua_id | int | -
+u_act | int | 1关注 0取关
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code|1
+
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code|<=0
+codeState| str
 
 
 ## 发送验证邮件 ./u/email/verify
@@ -347,14 +372,15 @@ method:post
 
 字段|类型
 ------------ | -------------
-t_tags | str
+t_tags | str ex:'python,nodejs'
+show_count | 可选,默认30
 
 suc:
 
 字段|类型
 ------------ | -------------
 code | 1
-t_ids | str
+t_ids | str 'by,hot&by,time'
 
 fail:
 
@@ -381,11 +407,11 @@ u_id | int
 t_title | str
 t_text | str
 t_date | int
-t_like | int
+t_like | str
 t_comments | str
 t_tags | str
 t_date_latest | int
-t_star | int
+t_star | str
 
 fail:
 
@@ -468,7 +494,6 @@ c_id | int
 u_id | int
 ec_type | article/question/answer
 ec_id | int
-c_like | int
 c_date | int
 c_like | str
 
@@ -484,6 +509,9 @@ codeState | str
 # Question
 
 ## ./q/add
+
+
+
 ## ./q/edit
 ## ./q/del
 
