@@ -6,6 +6,7 @@ from ec_forum.salt import encrypt, decrypt
 from ec_forum.public import mail_sender
 from ec_forum.id_dealer import unpack_id, pack_id
 from config import MyConfig
+from ec_forum.reputation import event, rule
 sqlQ = sqlQ()
 
 def run(app):
@@ -165,6 +166,13 @@ def run(app):
         if err:
             return jsonify(error.serverError)
 
+        '''rep'''
+        r_type = 'email_confirm_pass'
+        ev = event[r_type]
+        err,r_id = sqlQ.reputation_add(r_type, 'userinfo', u_id, u_id, ev[0], u_id, ev[0])
+        if err:
+            return jsonify(error.serverError)
+
         return jsonify({'code':'1'})
 
 
@@ -204,9 +212,18 @@ def run(app):
         decrypt_psw = decrypt(res[2].encode('utf8'))
         if decrypt_psw != u_psw:
             return jsonify(error.pswWrong)
+        if res[3] == u_email:
+            return jsonify(error.emailNotChanged)
 
         '''update info, todo: reduce rep'''
         err = sqlQ.user_update(u_id, u_info)
+        if err:
+            return jsonify(error.serverError)
+
+        '''rep'''
+        r_type = 'email_confirm_pass'
+        ev = event[r_type]
+        err,r_id = sqlQ.reputation_add(r_type, 'user', u_id, u_id, ev[0], u_id, ev[0])
         if err:
             return jsonify(error.serverError)
 
@@ -262,7 +279,7 @@ def run(app):
             be_watched_user_dic[1].remove(u_id)
         else:
             return jsonify(error.argsIllegal)
-            
+
         '''update info'''
         if sqlQ.user_update(u_id, {'u_watchusers': pack_id(watch_user_dic)}):
             return jsonify(error.serverError)

@@ -16,12 +16,7 @@ return: str
 
 method:get
 
-return:
-
-字段|类型或值
------------- | -------------
-code|1
-secret_key| str
+return: str
 
 # Acount
 
@@ -420,12 +415,13 @@ fail:
 code | !1
 codeState | str
 
+## 收藏文章 ./t/star
 
-## ./q/repution
+
 
 # Comment
 
-## ./c/add
+## 发表评论 ./c/add
 
 method:post
 
@@ -452,7 +448,7 @@ code|<=0
 codeState| str
 
 
-## ./c/del
+## 删除评论 ./c/del
 
 method:post
 
@@ -477,7 +473,7 @@ fail:
 code | !1
 codeState | str
 
-## ./c/query
+## 查询评论信息 ./c/query
 
 method:post
 
@@ -509,9 +505,6 @@ codeState | str
 # Question
 
 ## ./q/add
-
-
-
 ## ./q/edit
 ## ./q/del
 
@@ -519,5 +512,4 @@ codeState | str
 
 ## ./a/add
 ## ./a/edit
-## ./q/repution
 ## ./a/del

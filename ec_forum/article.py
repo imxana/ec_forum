@@ -65,6 +65,14 @@ def run(app):
         if sqlQ.user_update(u_id, {'u_articles':pack_id(u_articles)}):
             return jsonify(error.serverError)
 
+        '''rep'''
+        r_type = 'article_add'
+        ev = event[r_type]
+        # sqlQ.reputation_add(r_type, ec_type, ec_id, ua_id, ua_rep, ub_id, ub_rep)
+        err,r_id = sqlQ.reputation_add(r_type, 'article', t_id, u_id, ev[0], u_id, ev[0])
+        if err:
+            return jsonify(error.serverError)
+
 
         return jsonify({'code':'1','t_id':t_id})
 
@@ -162,6 +170,12 @@ def run(app):
         if sqlQ.user_update(u_id, {'u_articles':pack_id(u_articles)}):
             return jsonify(error.serverError)
 
+        '''rep'''
+        r_type = 'article_del'
+        ev = event[r_type]
+        err,r_id = sqlQ.reputation_add(r_type, 'article', t_id, u_id, ev[0], u_id, ev[0])
+        if err:
+            return jsonify(error.serverError)
 
         return jsonify({'code':'1','t_id':t_id})
 
@@ -282,7 +296,6 @@ def run(app):
         u_id = request.values.get('u_id', '')
         u_psw = request.values.get('u_psw', '')
         t_id = request.values.get('t_id', '')
-        u_method = request.values.get('u_method', '')
         u_act = request.values.get('u_act', '')
 
         '''empty'''
@@ -309,7 +322,7 @@ def run(app):
         if decrypt_psw != u_psw:
             return jsonify(error.pswWrong)
 
-        '''db'''
+        '''get article_info'''
         err,res = sqlQ.id_select(t_id, table='ec_article')
         if err:
             return jsonify(error.serverError)
@@ -324,6 +337,7 @@ def run(app):
             return jsonify(error.argsIllegal)
         ev = event[r_type]
 
+        '''rep'''
         err,r_id = sqlQ.reputation_add(r_type, 'article', t_id, u_id, ev[0], ub_id, ev[1])
         if err:
             return jsonify(error.serverError)
@@ -334,14 +348,135 @@ def run(app):
         if err:
             return jsonify(error.serverError)
         u_articles = unpack_id(res[10])
-        if int(t_id) not in u_articles[1]:
-            u_articles[1].append(t_id)
+        if int(t_id) in u_articles[1]:
+            return jsonify(error.articleStarAlready)
+        u_articles[1].append(t_id)
         if sqlQ.user_update(u_id, {'u_articles':pack_id(u_articles)}):
             return jsonify(error.serverError)
 
 
         '''update article_info'''
-        if sqlQ.article_update(t_id, {'t_star':int(t_star)+1}):
+        if u_act == '1' and sqlQ.article_update(t_id, {'t_star':int(t_star)+1}):
+            return jsonify(error.serverError)
+        elif sqlQ.article_update(t_id, {'t_star':int(t_star)-1}):
             return jsonify(error.serverError)
 
-        return jsonify({'coode':'1', 'r_id':r_id})
+
+        return jsonify({'code':'1', 'r_id':r_id})
+
+
+
+
+    @app.route('/t/star_unlink')
+    def article_star_unlink():
+        '''if star_article be deleted, remove it from my_star'''
+        if request.method != 'POST':
+            return jsonify(error.requestError)
+
+        u_id = request.values.get('u_id', '')
+        u_psw = request.values.get('u_psw', '')
+        t_id = request.values.get('t_id', '')
+
+        '''empty'''
+        if u_id == '':
+            return jsonify(error.useridEmpty)
+        if u_psw == '':
+            return jsonify(error.pswEmpty)
+        if t_id == '':
+            return jsonify(error.articleidEmpty)
+
+        '''exist'''
+        if not sqlQ.id_search(u_id):
+            return jsonify(error.userNotExisted)
+        if sqlQ.id_search(t_id, table='ec_article'):
+            return jsonify(error.articleExist)
+
+        '''psw'''
+        err,res = sqlQ.signin_select(u_id, method='u_id')
+        if err:
+            return jsonify(error.serverError)
+        decrypt_psw = decrypt(res[2].encode('utf8'))
+        if decrypt_psw != u_psw:
+            return jsonify(error.pswWrong)
+
+
+        '''update userinfo'''
+        err,res = sqlQ.id_select(u_id, table='ec_user')
+        if err:
+            return jsonify(error.serverError)
+        u_articles = unpack_id(res[10])
+        if int(t_id) in u_articles[1]:
+            u_articles[1].remove(t_id)
+        if sqlQ.user_update(u_id, {'u_articles':pack_id(u_articles)}):
+            return jsonify(error.serverError)
+
+
+        return jsonify({'code':'1'})
+
+
+
+
+    @app.route('/t/recommend', methods=['POST'])
+    def article_recommend():
+        if request.method != 'POST':
+            return jsonify(error.requestError)
+
+        u_id = request.values.get('u_id', '')
+        u_psw = request.values.get('u_psw', '')
+        t_id = request.values.get('t_id', '')
+        u_act = request.values.get('u_act', '')
+
+        '''empty'''
+        if u_id == '':
+            return jsonify(error.useridEmpty)
+        if u_psw == '':
+            return jsonify(error.pswEmpty)
+        if t_id == '':
+            return jsonify(error.articleidEmpty)
+        if u_act == '':
+            return jsonify(error.argsEmpty)
+
+        '''exist'''
+        if not sqlQ.id_search(u_id):
+            return jsonify(error.userNotExisted)
+        if not sqlQ.id_search(t_id, table='ec_article'):
+            return jsonify(error.articleNotExisted)
+
+        '''psw'''
+        err,res = sqlQ.signin_select(u_id, method='u_id')
+        if err:
+            return jsonify(error.serverError)
+        decrypt_psw = decrypt(res[2].encode('utf8'))
+        if decrypt_psw != u_psw:
+            return jsonify(error.pswWrong)
+
+        '''get article_info'''
+        err,res = sqlQ.id_select(t_id, table='ec_article')
+        if err:
+            return jsonify(error.serverError)
+        ub_id,t_star = res[1],res[9]
+
+
+        '''rep'''
+        r_type = ''
+        if u_act == '1':
+            r_type = 'article_recommend'
+        elif u_act == '0':
+            r_type = 'article_recommend_cancel'
+        else:
+            return jsonify(error.argsIllegal)
+        ev = event[r_type]
+
+        err,r_id = sqlQ.reputation_add(r_type, 'article', t_id, u_id, ev[0], ub_id, ev[1])
+        if err:
+            return jsonify(error.serverError)
+
+
+        '''update article_info'''
+        if u_act =='1' and sqlQ.article_update(t_id, {'t_like':int(t_like)+1}):
+            return jsonify(error.serverError)
+        elif sqlQ.article_update(t_id, {'t_star':int(t_like)-1}):
+            return jsonify(error.serverError)
+
+
+        return jsonify({'code':'1', 'r_id':r_id})

@@ -3,13 +3,13 @@ import ec_forum.error as error
 import ec_forum.sql as sql
 from ec_forum.salt import encrypt, decrypt
 from ec_forum.id_dealer import pack_id, unpack_id
-
+from ec_forum.reputation import event, rule
 sqlQ = sql.sqlQ()
 
 def run(app):
 
     @app.route('/c/add', methods=['POST'])
-    def coment_add():
+    def comment_add():
         if request.method != 'POST':
             return jsonify(error.requestError)
 
@@ -52,18 +52,27 @@ def run(app):
         if err:
             return jsonify(error.serverError)
 
-        '''todo: and comment id to event["x_comments"]'''
-        err, res = sqlQ.id_select(ec_id, table='ec_'+ec_type)
+        '''update to event_info'''
+        err,res = sqlQ.id_select(ec_id, table='ec_'+ec_type)
         if err:
             return jsonify(error.serverError)
+        ub_id = ''
 
         if ec_type == 'article':
+            ub_id = res[1]
             t_comments = unpack_id(res[6])
             if int(c_id) in t_comments[0]:
                 return jsonify(error.commentExsited)
             t_comments[0].append(c_id)
             if sqlQ.article_update(ec_id, {'t_comments':pack_id(t_comments)}):
                 return jsonify(error.serverError)
+
+        '''rep'''
+        r_type = 'comment_add'
+        ev = event[r_type]
+        err,r_id = sqlQ.reputation_add(r_type, ec_type, ec_id, u_id, ev[0], ub_id, ev[1])
+        if err:
+            return jsonify(error.serverError)
 
 
         return jsonify({'code':'1','c_id':c_id})
@@ -72,7 +81,7 @@ def run(app):
 
 
     @app.route('/c/del', methods=['POST'])
-    def commemt_delete():
+    def comment_delete():
         if request.method != 'POST':
             return jsonify(error.requestError)
         u_id = request.values.get('u_id', '')
@@ -106,14 +115,27 @@ def run(app):
         if err:
             return jsonify(error.serverError)
         # print('c.py 102: _%s_%s_'%(res[3],u_id), res[3]==int(u_id),type(res[3]),type(u_id))
-        if res[3] != int(u_id):
-            return jsonify(error.articleAccess)
+        ec_type,ec_id,co_id = res[1],res[2],res[3]
+
+        '''event owner'''
+        err,res = sqlQ.id_select(ec_id, table='ec_'+ec_type)
+        if err:
+            return jsonify(error.serverError)
+        eo_id = res[1]
+        if int(u_id) not in (co_id, eo_id):
+            return jsonify(error.commentAccess)
 
         '''db'''
         err = sqlQ.id_delete(c_id, table='ec_comment')
         if err:
             return jsonify(error.serverError)
 
+        '''rep'''
+        r_type = 'comment_del'
+        ev = event[r_type]
+        err,r_id = sqlQ.reputation_add(r_type, ec_type, ec_id, u_id, ev[0], eo_id, ev[1])
+        if err:
+            return jsonify(error.serverError)
 
         return jsonify({'code':'1','c_id':c_id})
 
@@ -144,7 +166,7 @@ def run(app):
             'code':'1',
             'c_id':res[0],
             'ec_type':res[1],
-            'ec_title':res[2],
+            'ec_id':res[2],
             'u_id':res[3],
             'c_text':res[4],
             'c_date':int(res[5].timestamp()),

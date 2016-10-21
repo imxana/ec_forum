@@ -176,7 +176,7 @@ servers.''', 'node.js')
         rv = self.app.get('/sign_up?u_name=test.good.name&psw=222222&goodemail@gmail.com', follow_redirects=True)
         assert b'The method is not allowed for the requested URL.' in rv.data
         rv = self.sign_up(self.name,'222222',self.email)
-        assert 'username is existed' in json.loads(rv.data).get('codeState','')
+        assert 'username exists' in json.loads(rv.data).get('codeState','')
         rv = self.sign_up('te','222222',self.email)
         assert 'username illegal' in json.loads(rv.data).get('codeState','')
         rv = self.sign_up('','222222',self.email)
@@ -226,7 +226,8 @@ servers.''', 'node.js')
 
     def test_get_key(self):
         rv = self.app.get('/safe/secret_key', follow_redirects=True)
-        assert '1' in json.loads(rv.data).get('code','')
+        assert  b'' in rv.data
+
 
     def test_user_update_then_query(self):
         #self, uid, psw, rn, bl, gh, waus, tags
@@ -281,7 +282,7 @@ servers.''', 'node.js')
         rv = self.article_del(self.u_id, '222222', '100000')
         assert 'article not existed' in json.loads(rv.data).get('codeState','')
         rv = self.article_del(self.ua_id, '222222', self.t_id)
-        assert 'have no access to do it' in json.loads(rv.data).get('codeState','')
+        assert 'no access to del article' in json.loads(rv.data).get('codeState','')
 
     def test_mail_send(self):
         '''send verified email, this test is annoying. once enough, i think..'''

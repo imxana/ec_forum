@@ -24,7 +24,8 @@ def run(app):
 
     @app.route('/safe/secret_key')
     def get_secret_key():
-        return jsonify({'code':'1','secret_key':MyConfig.SECRET_KEY})
+        return MyConfig.SECRET_KEY
+
 
 # test..
 if __name__ == '__main__':

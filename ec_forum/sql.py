@@ -340,10 +340,11 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
         conn = socket_pool.pop()
         cursor = conn.cursor()
         err,r_id = True,gene_id()
-        while self.id_search(c_id, table='ec_reputation'):
+        while self.id_search(r_id, table='ec_reputation'):
             r_id = gene_id()
-        sql = 'insert into ec_reputation(r_id,r_type, ec_type, ec_id, ua_id, ub_id, ua_rep, ub_rep, r_date)\
-        values(%s,%r,%s,%s,%r,%s,%s,%s,%s,now()) '%(r_id, r_type, u_id, ec_id, ec_type, ua_id, ub_id, ua_rep, ub_rep)
+        sql = 'insert into ec_reputation(r_id, r_type, ec_type, ec_id, ua_id, ub_id, ua_rep, ub_rep, r_date)\
+        values(%s,%r,%r,%s,%s,%s,%s,%s,now());'%(r_id, r_type, ec_type, ec_id, ua_id, ub_id, ua_rep, ub_rep)
+        # print('sql 347',sql)
         try:
             if cursor.execute(sql) == 1:
                 if cursor.rowcount == 1:
