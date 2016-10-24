@@ -1,7 +1,7 @@
 normalError          = { 'code': '-10', 'codeState': 'something bad happended' }
 safeError            = { 'code': '-11', 'codeState': 'unsafe attempt, who R U' }
 requestError         = { 'code': '-12', 'codeState': 'method not allowed'      }
-serverError          = { 'code': '-13', 'codeState': 'server error, maybe MySQL crashed' }
+serverError          = { 'code': '-13', 'codeState': 'server error, mostly the wrong sql syntax'}
 methodAbort          = { 'code': '-14', 'codeState': 'method already aborted'  }
 
 userNotExisted       = { 'code': '-20', 'codeState': 'user not existed'        }
@@ -35,8 +35,12 @@ articleTextEmpty     = { 'code': '-62', 'codeState': 'article text empty'      }
 articleNotExisted    = { 'code': '-63', 'codeState': 'article not existed'     }
 articleidEmpty       = { 'code': '-64', 'codeState': 'article id empty'        }
 articleAccess        = { 'code': '-65', 'codeState': 'no access to del article'}
-articleStarAlready   = { 'code': '-66', 'codeState': 'article star already'    }
-articleExist         = { 'code': '-63', 'codeState': 'article exists'      }
+articleExist         = { 'code': '-66', 'codeState': 'article exists'          }
+articleStarAlready   = { 'code': '-67', 'codeState': 'article star already'    }
+articleNotStar       = { 'code': '-68', 'codeState': 'article not star'        }
+articleRecommended   = { 'code': '-69', 'codeState': 'article recommend already'}
+articleNotRecommend  = { 'code': '-6A', 'codeState': 'article not recommend'   }
+
 
 verifyEmpty          = { 'code': '-70', 'codeState': 'verify code empty'       }
 verifyWrong          = { 'code': '-71', 'codeState': 'verify code wrong'       }

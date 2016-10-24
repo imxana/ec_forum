@@ -121,6 +121,29 @@ servers.''', 'node.js')
         ),follow_redirects=True)
 
 
+    def article_star(self,uid,psw,tid,act):
+        return self.app.post('/t/star', data=dict(
+            u_id=uid,
+            u_psw=psw,
+            t_id=tid,
+            u_act=act
+        ),follow_redirects=True)
+
+    def article_star_unlink(self,uid,psw,tid):
+        return self.app.post('/t/star_unlink', data=dict(
+            u_id=uid,
+            u_psw=psw,
+            t_id=tid,
+        ),follow_redirects=True)
+
+    def article_recommend(self,uid,psw,tid,act):
+        return self.app.post('/t/recommend', data=dict(
+            u_id=uid,
+            u_psw=psw,
+            t_id=tid,
+            u_act=act
+        ),follow_redirects=True)
+
 
     def mail_send(self, uid, email, verify):
         return self.app.post('/u/email/verify', data=dict(
@@ -171,6 +194,7 @@ servers.''', 'node.js')
             u_psw=psw,
             c_id=cid
         ),follow_redirects=True)
+
 
     def test_sign_up_fail(self):
         rv = self.app.get('/sign_up?u_name=test.good.name&psw=222222&goodemail@gmail.com', follow_redirects=True)
@@ -292,12 +316,17 @@ servers.''', 'node.js')
         rv = self.mail_send(self.ua_id, '1401520070@qq.com', verify_code)
         assert '1' in json.loads(rv.data).get('code','')
 
-    def test_mail_confirm_suc(self):
+    def test_mail_confirm_change_suc(self):
         '''confirm user email'''
         rv = self.mail_pass(self.ua_id,'222222')
         assert '1' in json.loads(rv.data).get('code','')
         rv = self.sign_in(self.name2,'222222')
         assert 1 == json.loads(rv.data).get('u_email_confirm','')
+        '''change email'''
+        rv = self.mail_change(self.ua_id,'222222','anotheremail@gmail.com')
+        assert '1' in json.loads(rv.data).get('code','')
+        rv = self.sign_in('anotheremail@gmail.com','222222')
+        assert 0 == json.loads(rv.data).get('u_email_confirm','')
 
     def test_mail_confirm_fail(self):
         rv = self.mail_pass('','222222')
@@ -307,12 +336,6 @@ servers.''', 'node.js')
         rv = self.mail_pass(self.ua_id,'222223')
         assert 'wrong password' in json.loads(rv.data).get('codeState','')
 
-    def test_mail_change_suc(self):
-        '''change email'''
-        rv = self.mail_change(self.ua_id,'222222','anotheremail@gmail.com')
-        assert '1' in json.loads(rv.data).get('code','')
-        rv = self.sign_in('anotheremail@gmail.com','222222')
-        assert 0 == json.loads(rv.data).get('u_email_confirm','')
 
     def test_mail_change_fail(self):
         rv = self.mail_change('','222222','anotheremail@gmail.com')
@@ -387,6 +410,20 @@ for a specific version of pydoc, for example, use
         rv = self.comment_del(self.ua_id, '222222', self.c_id)
         assert '1' in json.loads(rv.data).get('code','')
 
+
+    def test_article_starlike(self):
+        rv = self.article_recommend(self.ua_id, '222222', self.t_id, '0')
+        assert 'article not recommend' in json.loads(rv.data).get('codeState','')
+        rv = self.article_recommend(self.ua_id, '222222', self.t_id, '1')
+        assert '1' in json.loads(rv.data).get('code','')
+        rv = self.article_recommend(self.ua_id, '222222', self.t_id, '0')
+        assert '1' in json.loads(rv.data).get('code','')
+        rv = self.article_star(self.ua_id, '222222', self.t_id, '0')
+        assert 'article not star' in json.loads(rv.data).get('codeState','')
+        rv = self.article_star(self.ua_id, '222222', self.t_id, '1')
+        assert '1' in json.loads(rv.data).get('code','')
+        rv = self.article_star(self.ua_id, '222222', self.t_id, '0')
+        assert '1' in json.loads(rv.data).get('code','')
 
 
 if __name__ == '__main__':

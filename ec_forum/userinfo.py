@@ -9,6 +9,9 @@ from config import MyConfig
 from ec_forum.reputation import event, rule
 sqlQ = sqlQ()
 
+
+
+
 def run(app):
 
     @app.route('/u/query', methods=['POST'])
@@ -169,7 +172,7 @@ def run(app):
         '''rep'''
         r_type = 'email_confirm_pass'
         ev = event[r_type]
-        err,r_id = sqlQ.reputation_add(r_type, 'userinfo', u_id, u_id, ev[0], u_id, ev[0])
+        err,r_id = sqlQ.reputation_add(r_type, 'user', u_id, u_id, ev[0], u_id, ev[0])
         if err:
             return jsonify(error.serverError)
 
@@ -212,6 +215,8 @@ def run(app):
         decrypt_psw = decrypt(res[2].encode('utf8'))
         if decrypt_psw != u_psw:
             return jsonify(error.pswWrong)
+
+        '''check if email change'''
         if res[3] == u_email:
             return jsonify(error.emailNotChanged)
 
@@ -220,14 +225,23 @@ def run(app):
         if err:
             return jsonify(error.serverError)
 
+        # '''rep'''
+        # r_type = 'email_confirm_change'
+        # ev = event[r_type]
+        # err,r_id = sqlQ.reputation_add(r_type, 'user', u_id, u_id, ev[0], u_id, ev[0])
+        # if err:
+        #     return jsonify(error.serverError)
         '''rep'''
-        r_type = 'email_confirm_pass'
-        ev = event[r_type]
-        err,r_id = sqlQ.reputation_add(r_type, 'user', u_id, u_id, ev[0], u_id, ev[0])
-        if err:
-            return jsonify(error.serverError)
+        err, rep_event = sqlQ.reputation_select('email_confirm_pass', 'user', u_id, u_id, u_id)
+        if bool(rep_event):
+            if sqlQ.id_delete(rep_event[0], table='ec_reputation'):
+                return jsonify(error.serverError)
+
 
         return jsonify({'code':'1'})
+
+
+
 
 
 

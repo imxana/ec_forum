@@ -165,16 +165,17 @@ def run(app):
         if err:
             return jsonify(error.serverError)
         u_articles = unpack_id(res[10])
-        if int(t_id) in u_articles[0]:
+        if t_id in u_articles[0]:
             u_articles[0].remove(t_id)
         if sqlQ.user_update(u_id, {'u_articles':pack_id(u_articles)}):
             return jsonify(error.serverError)
 
+
         '''rep'''
-        r_type = 'article_del'
-        ev = event[r_type]
-        err,r_id = sqlQ.reputation_add(r_type, 'article', t_id, u_id, ev[0], u_id, ev[0])
+        err, rep_event = sqlQ.reputation_select('article_add', 'article', t_id, u_id, u_id)
         if err:
+            return jsonify(error.articleNotExisted)
+        if sqlQ.id_delete(rep_event[0], table='ec_reputation'):
             return jsonify(error.serverError)
 
         return jsonify({'code':'1','t_id':t_id})
@@ -322,44 +323,80 @@ def run(app):
         if decrypt_psw != u_psw:
             return jsonify(error.pswWrong)
 
+
         '''get article_info'''
         err,res = sqlQ.id_select(t_id, table='ec_article')
         if err:
             return jsonify(error.serverError)
         ub_id,t_star = res[1],res[9]
 
-        r_type = ''
-        if u_act == '1':
-            r_type = 'article_star'
-        elif u_act == '0':
-            r_type = 'article_star_cancel'
-        else:
-            return jsonify(error.argsIllegal)
+
+        '''get rep_info'''
+        r_type, ec_type, r_id = 'article_star', 'article', ''
         ev = event[r_type]
 
-        '''rep'''
-        err,r_id = sqlQ.reputation_add(r_type, 'article', t_id, u_id, ev[0], ub_id, ev[1])
+        err,rep_event = sqlQ.reputation_select(r_type, ec_type, t_id, u_id, ub_id)
         if err:
             return jsonify(error.serverError)
 
 
-        '''update userinfo'''
-        err,res = sqlQ.id_select(u_id, table='ec_user')
-        if err:
-            return jsonify(error.serverError)
-        u_articles = unpack_id(res[10])
-        if int(t_id) in u_articles[1]:
-            return jsonify(error.articleStarAlready)
-        u_articles[1].append(t_id)
-        if sqlQ.user_update(u_id, {'u_articles':pack_id(u_articles)}):
-            return jsonify(error.serverError)
 
+        if u_act =='1':
+            if bool(rep_event):
+                return jsonify(error.articleStarAlready)
 
-        '''update article_info'''
-        if u_act == '1' and sqlQ.article_update(t_id, {'t_star':int(t_star)+1}):
-            return jsonify(error.serverError)
-        elif sqlQ.article_update(t_id, {'t_star':int(t_star)-1}):
-            return jsonify(error.serverError)
+            '''update userinfo'''
+            err,res = sqlQ.id_select(u_id, table='ec_user')
+            if err:
+                return jsonify(error.serverError)
+            u_articles = unpack_id(res[10])
+            if t_id in u_articles[1]:
+                return jsonify(error.articleStarAlready)
+            u_articles[1].append(t_id)
+            if sqlQ.user_update(u_id, {'u_articles':pack_id(u_articles)}):
+                return jsonify(error.serverError)
+
+            '''add rep_event'''
+            if u_id == ub_id:
+                err,r_id = sqlQ.reputation_add(r_type, ec_type, t_id, u_id, 0, ub_id, 0)
+                if err:
+                    return jsonify(error.serverError)
+            else:
+                err,r_id = sqlQ.reputation_add(r_type, ec_type, t_id, u_id, ev[0], ub_id, ev[1])
+                if err:
+                    return jsonify(error.serverError)
+
+            '''update article_info'''
+            if sqlQ.article_update(t_id, {'t_star':int(t_star)+1}):
+                return jsonify(error.serverError)
+
+            return jsonify({'code':'1', 'r_id':r_id})
+
+        elif u_act =='0':
+            if rep_event == ():
+                return jsonify(error.articleNotStar)
+
+            '''update userinfo'''
+            err,res = sqlQ.id_select(u_id, table='ec_user')
+            if err:
+                return jsonify(error.serverError)
+            u_articles = unpack_id(res[10])
+            if t_id not in u_articles[1]:
+                return jsonify(error.articleNotStar)
+            u_articles[1].append(t_id)
+            if sqlQ.user_update(u_id, {'u_articles':pack_id(u_articles)}):
+                return jsonify(error.serverError)
+
+            '''update t_info'''
+            if sqlQ.article_update(t_id, {'t_star':int(t_star)-1}):
+                return jsonify(error.serverError)
+
+            '''del rep_event'''
+            if sqlQ.id_delete(rep_event[0], table='ec_reputation'):
+                return jsonify(error.serverError)
+            return jsonify({'code':'1'})
+        else:
+            return jsonify(error.argsIllegal)
 
 
         return jsonify({'code':'1', 'r_id':r_id})
@@ -454,29 +491,39 @@ def run(app):
         err,res = sqlQ.id_select(t_id, table='ec_article')
         if err:
             return jsonify(error.serverError)
-        ub_id,t_star = res[1],res[9]
+        ub_id,t_like = res[1],res[5]
 
 
-        '''rep'''
-        r_type = ''
-        if u_act == '1':
-            r_type = 'article_recommend'
-        elif u_act == '0':
-            r_type = 'article_recommend_cancel'
-        else:
-            return jsonify(error.argsIllegal)
+        '''get rep_info'''
+        r_type, ec_type, r_id = 'article_recommend', 'article', ''
         ev = event[r_type]
 
-        err,r_id = sqlQ.reputation_add(r_type, 'article', t_id, u_id, ev[0], ub_id, ev[1])
+        err,rep_event = sqlQ.reputation_select(r_type, ec_type, t_id, u_id, ub_id)
         if err:
             return jsonify(error.serverError)
 
-
-        '''update article_info'''
-        if u_act =='1' and sqlQ.article_update(t_id, {'t_like':int(t_like)+1}):
-            return jsonify(error.serverError)
-        elif sqlQ.article_update(t_id, {'t_star':int(t_like)-1}):
-            return jsonify(error.serverError)
-
-
-        return jsonify({'code':'1', 'r_id':r_id})
+        '''update rep & article_info'''
+        if u_act =='1':
+            if bool(rep_event):
+                return jsonify(error.articleRecommended)
+            if u_id == ub_id:
+                err,r_id = sqlQ.reputation_add(r_type, ec_type, t_id, u_id, 0, ub_id, 0)
+                if err:
+                    return jsonify(error.serverError)
+            else:
+                err,r_id = sqlQ.reputation_add(r_type, ec_type, t_id, u_id, ev[0], ub_id, ev[1])
+                if err:
+                    return jsonify(error.serverError)
+            if sqlQ.article_update(t_id, {'t_like':int(t_like)+1}):
+                return jsonify(error.serverError)
+            return jsonify({'code':'1', 'r_id':r_id})
+        elif u_act =='0':
+            if rep_event == ():
+                return jsonify(error.articleNotRecommend)
+            if sqlQ.article_update(t_id, {'t_like':int(t_like)-1}):
+                return jsonify(error.serverError)
+            if sqlQ.id_delete(rep_event[0], table='ec_reputation'):
+                return jsonify(error.serverError)
+            return jsonify({'code':'1'})
+        else:
+            return jsonify(error.argsIllegal)

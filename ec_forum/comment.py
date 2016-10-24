@@ -110,14 +110,14 @@ def run(app):
         if decrypt_psw != u_psw:
             return jsonify(error.pswWrong)
 
-        '''Comment owner'''
+        '''query comment event'''
         err,res = sqlQ.id_select(c_id, table='ec_comment')
         if err:
             return jsonify(error.serverError)
         # print('c.py 102: _%s_%s_'%(res[3],u_id), res[3]==int(u_id),type(res[3]),type(u_id))
         ec_type,ec_id,co_id = res[1],res[2],res[3]
 
-        '''event owner'''
+        '''ec_event owner'''
         err,res = sqlQ.id_select(ec_id, table='ec_'+ec_type)
         if err:
             return jsonify(error.serverError)
@@ -130,11 +130,18 @@ def run(app):
         if err:
             return jsonify(error.serverError)
 
+        # '''rep'''
+        # r_type = 'comment_del'
+        # ev = event[r_type]
+        # err,r_id = sqlQ.reputation_add(r_type, ec_type, ec_id, u_id, ev[0], eo_id, ev[1])
+        # if err:
+        #     return jsonify(error.serverError)
+
         '''rep'''
-        r_type = 'comment_del'
-        ev = event[r_type]
-        err,r_id = sqlQ.reputation_add(r_type, ec_type, ec_id, u_id, ev[0], eo_id, ev[1])
+        err, rep_event = sqlQ.reputation_select('comment_add', ec_type, ec_id, u_id, eo_id)
         if err:
+            return jsonify(error.commentNotExisted)
+        if sqlQ.id_delete(rep_event[0], table='ec_reputation'):
             return jsonify(error.serverError)
 
         return jsonify({'code':'1','c_id':c_id})

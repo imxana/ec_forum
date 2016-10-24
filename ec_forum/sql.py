@@ -203,6 +203,7 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
         for k,v in info.items():
             sql += "%s=%r,"%(k,v)
         sql = sql[:-1] + " where u_id=%r;"%u_id
+        # print('sql 206',sql)
         try:
             if cursor.execute(sql) == 1:
                 err = False
@@ -360,3 +361,28 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             cursor.close()
             socket_pool.append(conn)
         return err, r_id
+
+
+    def reputation_select(self, r_type, ec_type, ec_id, ua_id, ub_id):
+        '''check user star_like event has done or not'''
+        conn = socket_pool.pop()
+        cursor = conn.cursor()
+        err,res = False, ()
+        sql = 'select * from ec_reputation where r_type=%r and ec_type=%r and ec_id=%s and ua_id=%s and ub_id=%s;'%(r_type, ec_type, ec_id, ua_id, ub_id)
+        try:
+            if cursor.execute(sql) == 1:
+                rs = cursor.fetchone()
+                if bool(rs):
+                    res = rs
+        except BrokenPipeError as e:
+            conn = get_conn()
+            err = True
+            raise e
+        except Exception as e:
+            conn.rollback()
+            err = True
+            raise e
+        finally:
+            cursor.close()
+            socket_pool.append(conn)
+        return err, res
