@@ -1,3 +1,5 @@
+
+
 event = {
     'email_confirm_pass'           : [+1],
     'email_confirm_change'         : [-1],
@@ -11,9 +13,9 @@ event = {
     'article_recommend'            : [ 0, +1],
     # 'article_recommend_cancel'     : [ 0, -1],
     'comment_like'                 : [ 0,  0],
-    'comment_like_cancel'          : [ 0,  0],
+    # 'comment_like_cancel'          : [ 0,  0],
     'comment_dislike'              : [ 0,  0],
-    'comment_dislike_cancel'       : [ 0,  0],
+    # 'comment_dislike_cancel'       : [ 0,  0],
 }
 
 rule = {

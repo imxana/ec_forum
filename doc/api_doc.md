@@ -31,14 +31,13 @@ u_name| str|[a-z][a-z0-9\.]{2,20}
 u_psw| str|6<=len(psw)<=16
 
 
-
-
 suc:
 
 字段|类型或值
 ------------ | -------------
 code|1
 u_id|int
+
 
 fail:
 
@@ -103,12 +102,14 @@ suc:
 ------------ | -------------
 code|1
 
+
 fail:
 
 字段|类型或值
 ------------ | -------------
 code | !1
 codeState | str
+
 
 # User_info
 
@@ -160,7 +161,7 @@ u_psw | str | 用于验证
 u_realname | str | 无要求
 u_blog | str | 无要求
 u_github | str | 无要求
-u_tags | str | 无要求
+u_tags | str | ','分割
 u_intro | str | 无要求
 
 suc:
@@ -268,8 +269,6 @@ fail:
 ------------ | -------------
 code|<=0
 codeState| str
-
-
 
 
 
@@ -418,6 +417,77 @@ codeState | str
 ## 收藏文章 ./t/star
 
 
+method:post
+
+字段|类型
+------------ | -------------
+u_id | int
+u_psw| str
+t_id | int
+u_act | str(1表示收藏,0表示取消收藏)
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code | 1
+r_id | int(如果u_act=='0'则无此参数)
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code | !1
+codeState | str
+
+## 静默移除失效文章 ./t/star_unlink
+
+method:post
+
+字段|类型
+------------ | -------------
+u_id | int
+u_psw| str
+t_id | int
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code | 1
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code | !1
+codeState | str
+
+## 推荐文章 ./t/recommend
+
+
+method:post
+
+字段|类型
+------------ | -------------
+u_id | int
+u_psw| str
+t_id | int
+u_act | str(1表示推荐,0表示取消推荐)
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code | 1
+r_id | int(如果u_act=='0'则无此参数)
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code | !1
+codeState | str
 
 # Comment
 

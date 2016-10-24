@@ -10,4 +10,7 @@ sqlQ = sqlQ()
 
 def run(app):
 
-    @app.route('/')
+    @app.route('/q/add')
+    def question_add():
+        
+        return jsonify({'code':'1'})

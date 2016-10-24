@@ -19,7 +19,7 @@ create table ec_user
     u_answers text comment '回答ID组，我的和关注',
     u_watchusers text comment '关注用户ID组',
     u_tags text comment '关注标签',
-    u_intro text comment '个人签名'，
+    u_intro text comment '个人签名',
     u_img text comment '用户头像链接'
 );
 
