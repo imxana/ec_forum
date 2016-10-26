@@ -178,7 +178,7 @@ fail:
 code|<=0
 codeState| str
 
-# 关注用户 ./u/follow
+## 关注用户 ./u/follow
 
 method:post
 
@@ -406,6 +406,30 @@ t_comments | str
 t_tags | str
 t_date_latest | int
 t_star | str
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code | !1
+codeState | str
+
+## 查询文章信息 ./t/query_pro
+
+method:post
+
+字段|类型
+------------ | -------------
+t_id | int
+u_id | int
+u_psw | str
+
+suc:(相对于/t/query额外信息)
+
+字段|类型或值
+------------ | -------------
+t_star_bool | '1'/'0'
+t_recommend_bool | '1'/'0'
 
 fail:
 

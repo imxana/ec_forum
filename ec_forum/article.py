@@ -117,63 +117,79 @@ def run(app):
 
 
 
-    # @app.route('/t/query_pro', methods=['POST'])
-    # def article_query_pro():
-    #     if request.method != 'POST':
-    #         return jsonify(error.requestError)
-    #     u_id = request.values.get('u_id', '')
-    #     u_psw = request.values.get('u_psw', '')
-    #     t_id = request.values.get('t_id', '')
-    #
-    #     '''empty'''
-    #     if u_id == '':
-    #         return jsonify(error.useridEmpty)
-    #     if u_psw == '':
-    #         return jsonify(error.pswEmpty)
-    #     if t_id == '':
-    #         return jsonify(error.articleidEmpty)
-    #
-    #     '''exist'''
-    #     if not sqlQ.id_search(u_id):
-    #         return jsonify(error.userNotExisted)
-    #     if not sqlQ.id_search(t_id, table='ec_article'):
-    #         return jsonify(error.articleNotExisted)
-    #
-    #     '''psw'''
-    #     err,res = sqlQ.signin_select(u_id, method='u_id')
-    #     if err:
-    #         return jsonify(error.serverError)
-    #     decrypt_psw = decrypt(res[2].encode('utf8'))
-    #     if decrypt_psw != u_psw:
-    #         return jsonify(error.pswWrong)
-    #
-    #     '''Article owner'''
-    #     err,res = sqlQ.id_select(t_id, table='ec_article')
-    #     if err:
-    #         return jsonify(error.serverError)
-    #     if res[1] != int(u_id):
-    #         return jsonify(error.articleAccess)
-    #
-    #
-    #     '''database'''
-    #     err,res = sqlQ.id_select(t_id, table='ec_article')
-    #     if err:
-    #         return jsonify(error.serverError)
-    #
-    #
-    #     return jsonify({
-    #         'code':'1',
-    #         't_id':res[0],
-    #         'u_id':res[1],
-    #         't_title':res[2],
-    #         't_text':res[3],
-    #         't_date':int(res[4].timestamp()),
-    #         't_like':res[5],
-    #         't_comments':res[6],
-    #         't_tags':res[7],
-    #         't_date_latest':int(res[8].timestamp()),
-    #         't_star':res[9]
-    #     })
+
+
+    @app.route('/t/query_pro', methods=['POST'])
+    def article_query_pro():
+        if request.method != 'POST':
+            return jsonify(error.requestError)
+        u_id = request.values.get('u_id', '')
+        u_psw = request.values.get('u_psw', '')
+        t_id = request.values.get('t_id', '')
+
+        t_star_bool = '0'
+        t_recommend_bool = '0'
+
+
+        '''empty'''
+        if u_id == '':
+            return jsonify(error.useridEmpty)
+        if u_psw == '':
+            return jsonify(error.pswEmpty)
+        if t_id == '':
+            return jsonify(error.articleidEmpty)
+
+        '''exist'''
+        if not sqlQ.id_search(u_id):
+            return jsonify(error.userNotExisted)
+        if not sqlQ.id_search(t_id, table='ec_article'):
+            return jsonify(error.articleNotExisted)
+
+        '''psw'''
+        err,res = sqlQ.signin_select(u_id, method='u_id')
+        if err:
+            return jsonify(error.serverError)
+        decrypt_psw = decrypt(res[2].encode('utf8'))
+        if decrypt_psw != u_psw:
+            return jsonify(error.pswWrong)
+
+        '''Article owner'''
+        err,res = sqlQ.id_select(t_id, table='ec_article')
+        if err:
+            return jsonify(error.serverError)
+        ao_id = str(res[1])
+        # if res[1] != int(u_id):
+        #     return jsonify(error.articleAccess)
+
+        '''select rep'''
+        err,rep_event = sqlQ.reputation_select('article_recommend', 'article', t_id, u_id, ao_id)
+        if err:
+            return jsonify(error.serverError)
+        if rep_event != ():
+            t_recommend_bool = '1'
+
+        err,rep_event = sqlQ.reputation_select('article_star', 'article', t_id, u_id, ao_id)
+        if err:
+            return jsonify(error.serverError)
+        if rep_event != ():
+            t_star_bool = '1'
+
+
+        return jsonify({
+            'code':'1',
+            't_id':res[0],
+            'u_id':res[1],
+            't_title':res[2],
+            't_text':res[3],
+            't_date':int(res[4].timestamp()),
+            't_like':res[5],
+            't_comments':res[6],
+            't_tags':res[7],
+            't_date_latest':int(res[8].timestamp()),
+            't_star':res[9],
+            't_recommend_bool':t_recommend_bool,
+            't_star_bool':t_star_bool
+        })
 
 
 
@@ -300,6 +316,9 @@ def run(app):
 
 
 
+
+
+
     @app.route('/t/update', methods=['POST'])
     def article_update():
         if request.method != 'POST':
@@ -351,6 +370,8 @@ def run(app):
             return jsonify(error.serverError)
 
         return jsonify({'code':'1'})
+
+
 
 
 
@@ -519,6 +540,9 @@ def run(app):
 
 
         return jsonify({'code':'1'})
+
+
+
 
 
 
