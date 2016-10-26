@@ -22,7 +22,6 @@ class ECTestCase(unittest.TestCase):
         rv = self.sign_up(self.name2,'222222','1401520070@qq.com')
         self.ua_id = json.loads(rv.data).get('u_id','')
         assert '1' in json.loads(rv.data).get('code','')
-
         '''article_add_suc'''
         rv = self.article_add(self.u_id, '222222', 'What\'s nodejs',
 '''Node.js  is a set of libraries for JavaScript which allows it to be used outside of the
@@ -36,7 +35,6 @@ servers.''', 'node.js')
         '''article_del_suc'''
         rv = self.article_del(self.u_id, '222222', self.t_id)
         assert '1' in json.loads(rv.data).get('code','')
-
         '''sign_del suc'''
         rv = self.sign_del(self.u_id,'222222')
         assert '1' in json.loads(rv.data).get('code','')
@@ -96,6 +94,13 @@ servers.''', 'node.js')
     def article_query(self, tid):
         return self.app.post('/t/query',data=dict(
             t_id=tid
+        ),follow_redirects=True)
+
+    def article_query_pro(self, tid, uid, psw):
+        return self.app.post('/t/query_pro',data=dict(
+            t_id=tid,
+            u_id=uid,
+            u_psw=psw
         ),follow_redirects=True)
 
     def article_del(self, uid, psw, tid):
@@ -252,7 +257,6 @@ servers.''', 'node.js')
         rv = self.app.get('/safe/secret_key', follow_redirects=True)
         assert  b'' in rv.data
 
-
     def test_user_update_then_query(self):
         #self, uid, psw, rn, bl, gh, waus, tags
         '''user_update_info'''
@@ -269,44 +273,26 @@ servers.''', 'node.js')
         rv = self.user_query_info('100000')
         assert 'user not existed' in json.loads(rv.data).get('codeState','')
 
-    def test_article_add_fail(self):
-        '''add_fail'''
-        rv = self.article_add('', '222222', 'Title', 'Text', 'node.js')
-        assert 'userid empty' in json.loads(rv.data).get('codeState','')
-        rv = self.article_add('100000', '222222', 'title', 'text', 'node.js')
-        assert 'user not existed' in json.loads(rv.data).get('codeState','')
-        rv = self.article_add(self.u_id, '', 'Title', 'Text', 'node.js')
-        assert 'password empty' in json.loads(rv.data).get('codeState','')
-        rv = self.article_add(self.u_id, '222221', 'Title', 'Text', 'node.js')
-        assert 'wrong password' in json.loads(rv.data).get('codeState','')
-        rv = self.article_add(self.u_id, '222222', '', 'Text', 'node.js')
-        assert 'article title empty' in json.loads(rv.data).get('codeState','')
-        rv = self.article_add(self.u_id, '222222', 'Title', '', 'node.js')
-        assert 'article text empty' in json.loads(rv.data).get('codeState','')
+    def test_user_watch(self):
+        '''watch and unwatch, suc and fail'''
+        rv = self.user_watch(self.u_id, '222222', self.ua_id, '1')
+        assert '1' in json.loads(rv.data).get('code','')
+        rv = self.sign_in(self.name,'222222')
+        assert self.ua_id in json.loads(rv.data).get('u_watchusers','')
+        rv = self.sign_in(self.name2,'222222')
+        assert self.u_id in json.loads(rv.data).get('u_watchusers','')
+        rv = self.user_watch(self.u_id, '222222', self.ua_id, '1')
+        assert 'user already watched' in json.loads(rv.data).get('codeState','')
 
-    def test_article_query_fail(self):
-        '''query_fail, suc_test is everywhere'''
-        rv = self.article_query('')
-        assert 'article id empty' in json.loads(rv.data).get('codeState','')
-        rv = self.article_query('100000')
-        assert 'article not existed' in json.loads(rv.data).get('codeState','')
+        rv = self.user_watch(self.u_id, '222222', self.ua_id, '0')
+        assert '1' in json.loads(rv.data).get('code','')
+        rv = self.sign_in(self.name,'222222')
+        assert self.ua_id not in json.loads(rv.data).get('u_watchusers','')
+        rv = self.sign_in(self.name2,'222222')
+        assert self.u_id not in json.loads(rv.data).get('u_watchusers','')
+        rv = self.user_watch(self.u_id, '222222', self.ua_id, '0')
+        assert 'user already unwatched' in json.loads(rv.data).get('codeState','')
 
-    def test_article_del_fail(self):
-        '''delete_fail'''
-        rv = self.article_del('', '222222', self.t_id)
-        assert 'userid empty' in json.loads(rv.data).get('codeState','')
-        rv = self.article_del('100000', '222222', self.t_id)
-        assert 'user not existed' in json.loads(rv.data).get('codeState','')
-        rv = self.article_del(self.u_id, '', self.t_id)
-        assert 'password empty' in json.loads(rv.data).get('codeState','')
-        rv = self.article_del(self.u_id, '222223', self.t_id)
-        assert 'wrong password' in json.loads(rv.data).get('codeState','')
-        rv = self.article_del(self.u_id, '222222', '')
-        assert 'article id empty' in json.loads(rv.data).get('codeState','')
-        rv = self.article_del(self.u_id, '222222', '100000')
-        assert 'article not existed' in json.loads(rv.data).get('codeState','')
-        rv = self.article_del(self.ua_id, '222222', self.t_id)
-        assert 'no access to del article' in json.loads(rv.data).get('codeState','')
 
     def test_mail_send(self):
         '''send verified email, this test is annoying. once enough, i think..'''
@@ -349,25 +335,46 @@ servers.''', 'node.js')
         rv = self.sign_in('anotheremail@gmail.com','222222')
         assert 'email not existed' in json.loads(rv.data).get('codeState','')
 
-    def test_watch_user(self):
-        '''watch and unwatch, suc and fail'''
-        rv = self.user_watch(self.u_id, '222222', self.ua_id, '1')
-        assert '1' in json.loads(rv.data).get('code','')
-        rv = self.sign_in(self.name,'222222')
-        assert self.ua_id in json.loads(rv.data).get('u_watchusers','')
-        rv = self.sign_in(self.name2,'222222')
-        assert self.u_id in json.loads(rv.data).get('u_watchusers','')
-        rv = self.user_watch(self.u_id, '222222', self.ua_id, '1')
-        assert 'user already watched' in json.loads(rv.data).get('codeState','')
 
-        rv = self.user_watch(self.u_id, '222222', self.ua_id, '0')
-        assert '1' in json.loads(rv.data).get('code','')
-        rv = self.sign_in(self.name,'222222')
-        assert self.ua_id not in json.loads(rv.data).get('u_watchusers','')
-        rv = self.sign_in(self.name2,'222222')
-        assert self.u_id not in json.loads(rv.data).get('u_watchusers','')
-        rv = self.user_watch(self.u_id, '222222', self.ua_id, '0')
-        assert 'user already unwatched' in json.loads(rv.data).get('codeState','')
+    def test_article_add_fail(self):
+        '''add_fail'''
+        rv = self.article_add('', '222222', 'Title', 'Text', 'node.js')
+        assert 'userid empty' in json.loads(rv.data).get('codeState','')
+        rv = self.article_add('100000', '222222', 'title', 'text', 'node.js')
+        assert 'user not existed' in json.loads(rv.data).get('codeState','')
+        rv = self.article_add(self.u_id, '', 'Title', 'Text', 'node.js')
+        assert 'password empty' in json.loads(rv.data).get('codeState','')
+        rv = self.article_add(self.u_id, '222221', 'Title', 'Text', 'node.js')
+        assert 'wrong password' in json.loads(rv.data).get('codeState','')
+        rv = self.article_add(self.u_id, '222222', '', 'Text', 'node.js')
+        assert 'article title empty' in json.loads(rv.data).get('codeState','')
+        rv = self.article_add(self.u_id, '222222', 'Title', '', 'node.js')
+        assert 'article text empty' in json.loads(rv.data).get('codeState','')
+
+    def test_article_query_fail(self):
+        '''query_fail, suc_test is everywhere'''
+        rv = self.article_query('')
+        assert 'article id empty' in json.loads(rv.data).get('codeState','')
+        rv = self.article_query('100000')
+        assert 'article not existed' in json.loads(rv.data).get('codeState','')
+
+    def test_article_del_fail(self):
+        '''delete_fail'''
+        rv = self.article_del('', '222222', self.t_id)
+        assert 'userid empty' in json.loads(rv.data).get('codeState','')
+        rv = self.article_del('100000', '222222', self.t_id)
+        assert 'user not existed' in json.loads(rv.data).get('codeState','')
+        rv = self.article_del(self.u_id, '', self.t_id)
+        assert 'password empty' in json.loads(rv.data).get('codeState','')
+        rv = self.article_del(self.u_id, '222223', self.t_id)
+        assert 'wrong password' in json.loads(rv.data).get('codeState','')
+        rv = self.article_del(self.u_id, '222222', '')
+        assert 'article id empty' in json.loads(rv.data).get('codeState','')
+        rv = self.article_del(self.u_id, '222222', '100000')
+        assert 'article not existed' in json.loads(rv.data).get('codeState','')
+        rv = self.article_del(self.ua_id, '222222', self.t_id)
+        assert 'no access to del article' in json.loads(rv.data).get('codeState','')
+
 
     def test_article_display(self):
         rv = self.article_add(self.ua_id, '222222', 'Python Version',
@@ -398,7 +405,7 @@ for a specific version of pydoc, for example, use
         rv = self.article_query(self.t_id)
         assert text in json.loads(rv.data).get('t_text','')
 
-    def test_comment_all_suc(self):
+    def test_comment_add_del_query_suc(self):
         rv = self.comment_add(self.ua_id, '222222', 'article', self.t_id, 'js is shit!')
         assert '1' in json.loads(rv.data).get('code','')
         self.c_id = json.loads(rv.data).get('c_id','')
@@ -411,19 +418,32 @@ for a specific version of pydoc, for example, use
         assert '1' in json.loads(rv.data).get('code','')
 
 
-    def test_article_starlike(self):
+    def test_article_starlike_and_querypro(self):
         rv = self.article_recommend(self.ua_id, '222222', self.t_id, '0')
         assert 'article not recommend' in json.loads(rv.data).get('codeState','')
         rv = self.article_recommend(self.ua_id, '222222', self.t_id, '1')
         assert '1' in json.loads(rv.data).get('code','')
+        '''query_pro test'''
+        rv = self.article_query_pro(self.t_id, self.ua_id, '222222')
+        assert '0' in json.loads(rv.data).get('t_star_bool','')
+        assert '1' in json.loads(rv.data).get('t_recommend_bool','')
+        '''test end'''
         rv = self.article_recommend(self.ua_id, '222222', self.t_id, '0')
         assert '1' in json.loads(rv.data).get('code','')
+
         rv = self.article_star(self.ua_id, '222222', self.t_id, '0')
         assert 'article not star' in json.loads(rv.data).get('codeState','')
         rv = self.article_star(self.ua_id, '222222', self.t_id, '1')
         assert '1' in json.loads(rv.data).get('code','')
+        '''query_pro test'''
+        rv = self.article_query_pro(self.t_id, self.ua_id, '222222')
+        assert '1' in json.loads(rv.data).get('t_star_bool','')
+        assert '0' in json.loads(rv.data).get('t_recommend_bool','')
+        '''test end'''
         rv = self.article_star(self.ua_id, '222222', self.t_id, '0')
         assert '1' in json.loads(rv.data).get('code','')
+
+
 
 
 if __name__ == '__main__':

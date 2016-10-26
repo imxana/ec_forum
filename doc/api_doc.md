@@ -12,7 +12,7 @@ method:get
 
 return: str
 
-## 获取密钥 ./safe/secret_key
+## 获取密钥 ./safe/secret_key (之后将隐藏此API)
 
 method:get
 
@@ -204,7 +204,7 @@ code|<=0
 codeState| str
 
 
-## 发送验证邮件 ./u/email/verify
+## 发送验证邮箱邮件 ./u/email/verify
 
 method:post
 
@@ -270,11 +270,72 @@ fail:
 code|<=0
 codeState| str
 
+## 根据旧密码修改用户密码 ./u/psw/change
 
+method:post
 
+字段|类型|要求
+------------ | ------------- | ------------
+u_id | int | 必填
+u_psw_before| str | 必填，旧密码
+u_psw| str | 必填，新密码
 
-## 修改用户密码 ./u/psw_change
+suc:
 
+字段|类型或值
+------------ | -------------
+code|1
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code|<=0
+codeState| str
+
+## 发送修改密码验证邮件 ./u/psw/verify
+
+method:post
+
+字段|类型|要求
+------------ | ------------- | ------------
+u_id | int | 必填
+u_psw| str | 必填
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code|1
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code|<=0
+codeState| str
+
+## 重设用户密码 ./u/psw/reset
+
+method:post
+
+字段|类型|要求
+------------ | ------------- | ------------
+u_id | int | 必填
+u_psw| str | 必填，新密码
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code|1
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code|<=0
+codeState| str
 
 
 # Article
@@ -424,12 +485,13 @@ t_id | int
 u_id | int
 u_psw | str
 
-suc:(相对于/t/query额外信息)
+suc:
 
 字段|类型或值
 ------------ | -------------
-t_star_bool | '1'/'0'
-t_recommend_bool | '1'/'0'
+code | 1
+t_star_bool | 1/0
+t_recommend_bool | 1/0
 
 fail:
 
