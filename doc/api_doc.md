@@ -299,8 +299,8 @@ method:post
 
 字段|类型|要求
 ------------ | ------------- | ------------
-u_id | int | 必填
-u_psw| str | 必填
+u_loginname | str | 必填
+u_verify | str | 必填
 
 suc:
 

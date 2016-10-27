@@ -81,6 +81,25 @@ servers.''', 'node.js')
             u_id=uid
         ),follow_redirects=True)
 
+    def user_psw_change(self,uid,psw_before,psw):
+        return self.app.post('/u/psw/change',data=dict(
+            u_id=uid,
+            u_psw_before=psw_before,
+            u_psw=psw
+        ),follow_redirects=True)
+
+    def user_psw_verify(self,loginname,verify):
+        return self.app.post('/u/psw/verify',data=dict(
+            u_loginname=loginname,
+            u_verify=verify
+        ),follow_redirects=True)
+
+    def user_psw_reset(self,uid,psw):
+        return self.app.post('/u/psw/reset',data=dict(
+            u_id=uid,
+            u_psw=psw
+        ),follow_redirects=True)
+
 
     def article_add(self, uid, psw, title, text, tags):
         return self.app.post('/t/add',data=dict(
@@ -257,6 +276,15 @@ servers.''', 'node.js')
         rv = self.app.get('/safe/secret_key', follow_redirects=True)
         assert  b'' in rv.data
 
+    def test_user_psw_change_reset(self):
+        rv = self.user_psw_change(self.u_id,'222222','333333')
+        assert '1' in json.loads(rv.data).get('code','')
+        rv = self.sign_in(self.name,'333333')
+        assert '1' in json.loads(rv.data).get('code','')
+        rv = self.user_psw_reset(self.u_id,'222222')
+        assert '1' in json.loads(rv.data).get('code','')
+        
+
     def test_user_update_then_query(self):
         #self, uid, psw, rn, bl, gh, waus, tags
         '''user_update_info'''
@@ -299,8 +327,14 @@ servers.''', 'node.js')
         rv = self.app.get('/public/get_verify', follow_redirects=True)
         verify_code = rv.data
         assert len(verify_code)==5
+        '''email_confirm'''
         rv = self.mail_send(self.ua_id, '1401520070@qq.com', verify_code)
         assert '1' in json.loads(rv.data).get('code','')
+        '''psw_change'''
+        rv = self.user_psw_verify(self.name2, verify_code)
+        print('sql 335', rv.data)
+        assert '1' in json.loads(rv.data).get('code','')
+
 
     def test_mail_confirm_change_suc(self):
         '''confirm user email'''
