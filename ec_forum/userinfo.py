@@ -402,3 +402,31 @@ def run(app):
             return jsonify(error.serverError)
 
         return jsonify({'code':'1'})
+
+
+    @app.route('/u/rep/history', methods=['POST'])
+    def user_reputation():
+        '''easy reset psw'''
+        if request.method != 'POST':
+            return jsonify(error.requestError)
+
+        u_id = request.values.get('u_id', '')
+        u_psw = request.values.get('u_psw','')
+
+        '''psw'''
+        err,res = sqlQ.signin_select(u_id, method='u_id')
+        if err:
+            return jsonify(error.serverError)
+        decrypt_psw = decrypt(res[2].encode('utf8'))
+        if decrypt_psw != u_psw:
+            return jsonify(error.pswWrong)
+
+        '''check reputation'''
+        rep_history = set()
+        err, rep_events = sqlQ.reputation_fetch_all(u_id)
+        print('ui 427: ',rep_events)
+        
+
+
+
+        return jsonify({'code':'1', 'history':list(rep_events)})

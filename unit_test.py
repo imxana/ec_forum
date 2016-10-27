@@ -219,6 +219,14 @@ servers.''', 'node.js')
             c_id=cid
         ),follow_redirects=True)
 
+    def reputation_history(self, uid, psw):
+        return self.app.post('/u/rep/history',data=dict(
+            u_id=uid,
+            u_psw=psw,
+        ),follow_redirects=True)
+
+
+
 
     def test_sign_up_fail(self):
         rv = self.app.get('/sign_up?u_name=test.good.name&psw=222222&goodemail@gmail.com', follow_redirects=True)
@@ -461,6 +469,9 @@ for a specific version of pydoc, for example, use
         rv = self.article_query_pro(self.t_id, self.ua_id, '222222')
         assert '0' in json.loads(rv.data).get('t_star_bool','')
         assert '1' in json.loads(rv.data).get('t_recommend_bool','')
+        '''rep test'''
+        rv = self.reputation_history(self.u_id,'222222')
+        print('ut 474: ', rv.data)
         '''test end'''
         rv = self.article_recommend(self.ua_id, '222222', self.t_id, '0')
         assert '1' in json.loads(rv.data).get('code','')
@@ -473,6 +484,9 @@ for a specific version of pydoc, for example, use
         rv = self.article_query_pro(self.t_id, self.ua_id, '222222')
         assert '1' in json.loads(rv.data).get('t_star_bool','')
         assert '0' in json.loads(rv.data).get('t_recommend_bool','')
+        '''rep test'''
+        rv = self.reputation_history(self.u_id,'222222')
+        print('ut 489: ', rv.data)
         '''test end'''
         rv = self.article_star(self.ua_id, '222222', self.t_id, '0')
         assert '1' in json.loads(rv.data).get('code','')

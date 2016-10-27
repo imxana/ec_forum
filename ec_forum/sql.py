@@ -386,3 +386,28 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             cursor.close()
             socket_pool.append(conn)
         return err, res
+
+    def reputation_fetch_all(self,u_id):
+        '''query user reputation history'''
+        conn = socket_pool.pop()
+        cursor = conn.cursor()
+        err,res = False, ()
+        sql = 'select * from ec_reputation where ua_id=%s or ub_id=%s;'%(u_id, u_id)
+        try:
+            rv = cursor.execute(sql)
+            print('ffffffff',rv)
+            res = cursor.fetchall()
+        except BrokenPipeError as e:
+            conn = get_conn()
+            err = True
+            raise e
+        except Exception as e:
+            conn.rollback()
+            err = True
+            raise e
+        finally:
+            cursor.close()
+            socket_pool.append(conn)
+        return err, res
+
+
