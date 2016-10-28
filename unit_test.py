@@ -340,7 +340,6 @@ servers.''', 'node.js')
         assert '1' in json.loads(rv.data).get('code','')
         '''psw_change'''
         rv = self.user_psw_verify(self.name2, verify_code)
-        print('sql 335', rv.data)
         assert '1' in json.loads(rv.data).get('code','')
 
 

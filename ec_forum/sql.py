@@ -345,7 +345,6 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             r_id = gene_id()
         sql = 'insert into ec_reputation(r_id, r_type, ec_type, ec_id, ua_id, ub_id, ua_rep, ub_rep, r_date)\
         values(%s,%r,%r,%s,%s,%s,%s,%s,now());'%(r_id, r_type, ec_type, ec_id, ua_id, ub_id, ua_rep, ub_rep)
-        # print('sql 347',sql)
         try:
             if cursor.execute(sql) == 1:
                 if cursor.rowcount == 1:
@@ -395,7 +394,6 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
         sql = 'select * from ec_reputation where ua_id=%s or ub_id=%s;'%(u_id, u_id)
         try:
             rv = cursor.execute(sql)
-            print('ffffffff',rv)
             res = cursor.fetchall()
         except BrokenPipeError as e:
             conn = get_conn()

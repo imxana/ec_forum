@@ -6,7 +6,7 @@ from ec_forum.salt import encrypt, decrypt
 from ec_forum.public import mail_sender
 from ec_forum.id_dealer import unpack_id, pack_id
 from config import MyConfig
-from ec_forum.reputation import event, rule
+from ec_forum.reputation import event, rule, event_translator
 
 sqlQ = sqlQ()
 
@@ -422,11 +422,23 @@ def run(app):
             return jsonify(error.pswWrong)
 
         '''check reputation'''
-        rep_history = set()
+        rep_history = list()
         err, rep_events = sqlQ.reputation_fetch_all(u_id)
-        print('ui 427: ',rep_events)
-        
+        for e in rep_events:
+#            rep_history.append({
+#                'r_id':e[0],
+#                'r_type':e[1],
+#                'ec_type':e[2],
+#                'ec_id':e[3],
+#                'ua_id':e[4],
+#                'ua_rep':e[5],
+#                'ub_id':e[6],
+#                'ub_rep':e[7],
+#                'r_date':int(e[8].timestamp())
+#            })
+            #the_event = event_translator(r_type,ec_type,ec_id,u_id,ua_id,ua_rep,ub_id,ub_rep)
+            score, text = event_translator(e[1],e[2],e[3],u_id,e[4],e[5],e[6],e[7])
+            rep_history.append({'rep':score,'action':text,'date':int(e[8].timestamp())})
+        print('ui 440: ',rep_history)
 
-
-
-        return jsonify({'code':'1', 'history':list(rep_events)})
+        return jsonify({'code':'1', 'history':list(rep_history)})
