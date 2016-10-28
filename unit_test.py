@@ -460,6 +460,10 @@ for a specific version of pydoc, for example, use
 
 
     def test_article_starlike_and_querypro(self):
+        '''rep test'''
+        rv = self.reputation_history(self.u_id,'222222')
+        assert len(json.loads(rv.data).get('history','')) == 1
+
         rv = self.article_recommend(self.ua_id, '222222', self.t_id, '0')
         assert 'article not recommend' in json.loads(rv.data).get('codeState','')
         rv = self.article_recommend(self.ua_id, '222222', self.t_id, '1')
@@ -470,7 +474,7 @@ for a specific version of pydoc, for example, use
         assert '1' in json.loads(rv.data).get('t_recommend_bool','')
         '''rep test'''
         rv = self.reputation_history(self.u_id,'222222')
-        print('ut 474: ', rv.data)
+        assert len(json.loads(rv.data).get('history','')) == 2
         '''test end'''
         rv = self.article_recommend(self.ua_id, '222222', self.t_id, '0')
         assert '1' in json.loads(rv.data).get('code','')
@@ -483,9 +487,6 @@ for a specific version of pydoc, for example, use
         rv = self.article_query_pro(self.t_id, self.ua_id, '222222')
         assert '1' in json.loads(rv.data).get('t_star_bool','')
         assert '0' in json.loads(rv.data).get('t_recommend_bool','')
-        '''rep test'''
-        rv = self.reputation_history(self.u_id,'222222')
-        print('ut 489: ', rv.data)
         '''test end'''
         rv = self.article_star(self.ua_id, '222222', self.t_id, '0')
         assert '1' in json.loads(rv.data).get('code','')

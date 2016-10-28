@@ -436,9 +436,7 @@ def run(app):
 #                'ub_rep':e[7],
 #                'r_date':int(e[8].timestamp())
 #            })
-            #the_event = event_translator(r_type,ec_type,ec_id,u_id,ua_id,ua_rep,ub_id,ub_rep)
+            #event_translator(r_type,ec_type,ec_id,u_id,ua_id,ua_rep,ub_id,ub_rep)
             score, text = event_translator(e[1],e[2],e[3],u_id,e[4],e[5],e[6],e[7])
             rep_history.append({'rep':score,'action':text,'date':int(e[8].timestamp())})
-        print('ui 440: ',rep_history)
-
         return jsonify({'code':'1', 'history':list(rep_history)})

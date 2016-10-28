@@ -337,6 +337,43 @@ fail:
 code|<=0
 codeState| str
 
+## 查询声望记录 ./u/rep/history
+
+要求：查询记录时会更新个人声望值，希望界面ui做出反馈，比如 <个人声望已更新>
+
+method:post
+
+字段|类型|要求
+------------ | ------------- | ------------
+u_id | int | 必填
+u_psw | str | 用于验证
+
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code | 1
+history | [^history array]
+
+^history info
+
+字段|类型或值
+------------ | -------------
+rep | int
+action | str
+date | int
+
+
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code|<=0
+codeState| str
+
+
 
 # Article
 
