@@ -409,3 +409,30 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
         return err, res
 
 
+    def question_insert(self,u_id,q_title,q_tags,q_text):
+        '''add a new question'''
+        conn = socket_pool.pop()
+        cursor = conn.cursor()
+        err,q_id = True,gene_id()
+        while self.id_search(q_id, table='ec_question'):
+            q_id = gene_id()
+        sql = "insert into ec_question(q_id, u_id, q_title, q_tags, q_text, q_date, q_like, \
+                q_close, q_report,q_answers,q_comments,q_date_latest) \
+                values(%s,%s,%r,%r,%r,now(),0,0,0,'','',now());"%(q_id, u_id, q_title, q_tags, q_text)
+        try:
+            if cursor.execute(sql) == 1:
+                if cursor.rowcount == 1:
+                    conn.commit()
+                    err = False
+        except BrokenPipeError as e:
+            conn = get_conn()
+            raise e
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            cursor.close()
+            socket_pool.append(conn)
+        return err,q_id
+
+ 

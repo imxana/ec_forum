@@ -28,13 +28,15 @@ create table ec_question
     q_id integer comment '问题id',
     u_id integer comment '提问用户id',
     q_title text comment '问题标题',
-    q_tag text comment '问题标签',
+    q_tags text comment '问题标签',
     q_text text comment '问题正文',
     q_date datetime comment '提问日期',
+    q_like integer comment '提问被赞数',
     q_close integer comment '是否关闭',
     q_report integer comment '被举报次数',
     q_answers text comment '回答ID组',
     q_comments text comment '评论ID组'
+    q_date_latest datetime comment '最后修改时间',
 );
 
 create table ec_answer

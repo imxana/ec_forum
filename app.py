@@ -12,7 +12,7 @@ import ec_forum.userinfo as uinfo
 import ec_forum.article as article
 import ec_forum.public as public
 import ec_forum.comment as comment
-# import ec.forum.question as question
+import ec_forum.question as question
 
 
 
@@ -22,7 +22,7 @@ uinfo.run(app)
 article.run(app)
 public.run(app)
 comment.run(app)
-# question.run(app)
+question.run(app)
 
 
 if __name__ == '__main__':

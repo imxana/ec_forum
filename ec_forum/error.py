@@ -55,3 +55,25 @@ commentidEmpty       = { 'code': '-82', 'codeState': 'comment id empty'        }
 commentNotExisted    = { 'code': '-83', 'codeState': 'comment not existed'     }
 commentExsited       = { 'code': '-84', 'codeState': 'comment exists in event' }
 commentAccess        = { 'code': '-85', 'codeState': 'no access to del comment'}
+
+questionTitleEmpty   = { 'code': '-90', 'codeState': 'question title empty'     }
+questionTitleIllegal = { 'code': '-91', 'codeState': 'question title illegal'   }
+questionTextEmpty    = { 'code': '-92', 'codeState': 'question text empty'      }
+questionNotExisted   = { 'code': '-93', 'codeState': 'question not existed'     }
+questionidEmpty      = { 'code': '-94', 'codeState': 'question id empty'        }
+questionAccess       = { 'code': '-95', 'codeState': 'no access to del question'}
+questionExist        = { 'code': '-96', 'codeState': 'question exists'          }
+questionStarAlready  = { 'code': '-97', 'codeState': 'question star already'    }
+questionNotStar      = { 'code': '-98', 'codeState': 'question not star'        }
+questionLikeAlready  = { 'code': '-99', 'codeState': 'question like already'    }
+questionNotLike      = { 'code': '-9A', 'codeState': 'question not like'        }
+questionDislikeAlready={ 'code': '-9B', 'codeState': 'question dislike already' }
+questionNotDislike   = { 'code': '-9C', 'codeState': 'question not dislike'     }
+
+
+
+
+
+
+
+

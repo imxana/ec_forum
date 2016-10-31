@@ -6,6 +6,8 @@ event = {
     # 'email_confirm_change'         : [-1],
     'article_add'                  : [ 0],
     # 'article_del'                  : [ 0],
+    'question_add'                 : [+1],
+    'answer_add'                   : [+1, +1],
     'comment_add'                  : [ 0,  0],
     # 'comment_del'                  : [ 0,  0],
     'article_del_other'            : [-1, -1],
