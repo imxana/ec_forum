@@ -319,6 +319,11 @@ def run(app):
 
 
 
+
+
+
+
+
     @app.route('/t/update', methods=['POST'])
     def article_update():
         if request.method != 'POST':
@@ -621,3 +626,6 @@ def run(app):
             return jsonify({'code':'1'})
         else:
             return jsonify(error.argsIllegal)
+
+
+

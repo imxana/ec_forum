@@ -35,8 +35,9 @@ create table ec_question
     q_close integer comment '是否关闭',
     q_report integer comment '被举报次数',
     q_answers text comment '回答ID组',
-    q_comments text comment '评论ID组'
+    q_comments text comment '评论ID组',
     q_date_latest datetime comment '最后修改时间',
+    q_star integer comment '问题收藏数'
 );
 
 create table ec_answer
