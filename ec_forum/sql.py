@@ -467,3 +467,33 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
 
 
 
+    def question_select_tag(self, t_tags=''):
+        '''select question just by tag.(copy from article_select_tag)'''
+        conn = socket_pool.pop()
+        cursor = conn.cursor()
+        err,res = True,()
+        sql = 'select * from ec_question'
+        if not bool(t_tags):
+            sql += ";"
+        else:
+            sql += " where "
+            for tag in t_tags:
+                sql += "q_tags like '%%%s%%' and "%tag
+            sql = sql[:-5] + ";"
+        try:
+            cursor.execute(sql)
+            rs = cursor.fetchall()
+            if bool(rs):
+                err,res = False,rs
+        except BrokenPipeError as e:
+            conn = get_conn()
+            raise e
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            cursor.close()
+            socket_pool.append(conn)
+        return err,res
+
+

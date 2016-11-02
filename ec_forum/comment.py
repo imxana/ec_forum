@@ -52,7 +52,7 @@ def run(app):
         if err:
             return jsonify(error.serverError)
 
-        '''update to event_info'''
+        '''update event_info'''
         err,res = sqlQ.id_select(ec_id, table='ec_'+ec_type)
         if err:
             return jsonify(error.serverError)
@@ -66,6 +66,25 @@ def run(app):
             t_comments[0].append(c_id)
             if sqlQ.article_update(ec_id, {'t_comments':pack_id(t_comments)}):
                 return jsonify(error.serverError)
+        elif ec_type == 'question':
+            ub_id = res[1]
+            q_comments = unpack_id(res[10])
+            if int(c_id) in q_comments[0]:
+                return jsonify(error.commentExsited)
+            q_comments[0].append(c_id)
+            if sqlQ.question_update(ec_id, {'q_comments':pack_id(q_comments)}):
+                return jsonify(error.serverError)
+        elif ec_type == 'answer':
+            ub_id = res[1]
+            a_comments = unpack_id(res[5])
+            if int(c_id) in a_comments[0]:
+                return jsonify(error.commentExsited)
+            a_comments[0].append(c_id)
+            #if sqlQ.answer_update(ec_id, {'a_comments':pack_id(a_comments)}):
+            #    return jsonify(error.serverError)
+            
+
+
 
         '''rep'''
         r_type = 'comment_add'

@@ -122,7 +122,7 @@ def run(app):
 
 
 
-    @app.route('/q/query_pro', methods=['GET'])
+    @app.route('/q/query_pro', methods=['POST'])
     def question_query_pro():
         if request.method != 'POST':
             return jsonify(error.requestError)
@@ -165,19 +165,19 @@ def run(app):
         err,rep_event = sqlQ.reputation_select('question_like', 'question', q_id, u_id, qo_id)
         if err:
             return jsonify(error.serverError)
-        if rep_event != ():
+        if bool(rep_event):
             q_like_state = '1'
 
         err,rep_event = sqlQ.reputation_select('question_dislike', 'question', q_id, u_id, qo_id)
         if err:
             return jsonify(error.serverError)
-        if rep_event != ():
+        if bool(rep_event):
             q_like_state = '-1'
 
         err,rep_event = sqlQ.reputation_select('question_star', 'question', q_id, u_id, qo_id)
         if err:
             return jsonify(error.serverError)
-        if rep_event != ():
+        if bool(rep_event):
             q_star_bool = '1'
 
 
@@ -197,9 +197,48 @@ def run(app):
         if request.method != 'POST':
             return jsonify(error.requestError)
 
-        
+        q_tags = request.values.get('q_tags', '')
+        show_count = request.values.get('show_count', '30')
 
-        return jsonify({'code':'1'})
+        '''expr'''
+        if not expr.validPack(q_tags):
+            return jsonify(error.tagNotIllegal)
+
+        q_tags_set = set(unpack_id(q_tags)[0])
+
+        if not set(default_tags).issuperset(q_tags_set):
+            return jsonify(error.tagNotExisted)
+
+        '''note: empty is not an error'''
+        origin_ids = set()
+        for tag in q_tags_set:
+            err,res = sqlQ.question_select_tag([tag])
+            for q_tuple in res:
+                # 0 q_id int, 6 like int, 12 star int, 5 data, 11 last_date
+                q_id,like,star,timestamp = q_tuple[0], int(q_tuple[6]), int(q_tuple[12]), q_tuple[11].timestamp()
+                origin_ids.add((q_id,like,star,timestamp))
+
+        origin_ids = list(origin_ids)
+        show_ids = {0:[],1:[]}
+        origin_ids_sorted_by_hot = sorted(origin_ids, key=lambda x: x[1]+x[2], reverse=True)
+        origin_ids_sorted_by_date = sorted(origin_ids, key=lambda x: x[3], reverse=True)
+        origin_ids_sorted_by_hot = origin_ids_sorted_by_hot[:int(show_count)]
+        origin_ids_sorted_by_date = origin_ids_sorted_by_date[:int(show_count)]
+
+        for q_tuple in origin_ids_sorted_by_hot:
+            show_ids[0].append(str(q_tuple[0]))
+        for q_tuple in origin_ids_sorted_by_date:
+            show_ids[1].append(str(q_tuple[0]))
+        # for tag in q_tags_set:
+        #     err,res = sqlQ.question_select_tag([tag])
+        #     for t_tuple in res:
+        #         show_ids.add(t_tuple[8])
+        #print('ar 184: ', show_ids)
+        return jsonify({'code':'1','q_ids':pack_id(show_ids)})
+
+
+
+
 
 
 
@@ -415,7 +454,7 @@ def run(app):
             return jsonify({'code':'1', 'r_id':r_id})
 
         elif u_act =='0':
-            if rep_event == ():
+            if not bool(rep_event):
                 return jsonify(error.questionNotStar)
 
             '''update userinfo'''
