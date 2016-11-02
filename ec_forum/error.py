@@ -50,7 +50,7 @@ tagNotExisted        = { 'code': '-74', 'codeState': 'some tag not existed'    }
 tagNotIllegal        = { 'code': '-75', 'codeState': 'tags not illegal'        }
 
 commentTextEmpty     = { 'code': '-80', 'codeState': 'comment text empty'      }
-commentEventNotExsited={ 'code': '-81', 'codeState': 'comment event not existed' }
+commentEventNotExsited={ 'code': '-81', 'codeState': 'comment event not exists '}
 commentidEmpty       = { 'code': '-82', 'codeState': 'comment id empty'        }
 commentNotExisted    = { 'code': '-83', 'codeState': 'comment not existed'     }
 commentExsited       = { 'code': '-84', 'codeState': 'comment exists in event' }
@@ -69,7 +69,7 @@ questionLikeAlready  = { 'code': '-99', 'codeState': 'question like already'    
 questionNotLike      = { 'code': '-9A', 'codeState': 'question not like'        }
 questionDislikeAlready={ 'code': '-9B', 'codeState': 'question dislike already' }
 questionNotDislike   = { 'code': '-9C', 'codeState': 'question not dislike'     }
-
+questionSelfAction   = { 'code': '-9D', 'codeState': 'question self action'     }
 
 
 

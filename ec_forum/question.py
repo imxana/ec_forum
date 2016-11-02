@@ -206,8 +206,67 @@ def run(app):
 
     @app.route('/q/del', methods=['POST'])
     def question_del():
+        u_id = request.values.get('u_id', '')
+        u_psw = request.values.get('u_psw', '')
+        q_id = request.values.get('q_id', '')
 
-        return jsonify({'code':'1'})
+        '''empty'''
+        if u_id == '':
+            return jsonify(error.useridEmpty)
+        if u_psw == '':
+            return jsonify(error.pswEmpty)
+        if q_id == '':
+            return jsonify(error.questionidEmpty)
+
+        '''exist'''
+        if not sqlQ.id_search(u_id):
+            return jsonify(error.userNotExisted)
+        if not sqlQ.id_search(q_id, table='ec_question'):
+            return jsonify(error.questionNotExisted)
+
+        '''psw'''
+        err,res = sqlQ.signin_select(u_id, method='u_id')
+        if err:
+            return jsonify(error.serverError)
+        decrypt_psw = decrypt(res[2].encode('utf8'))
+        if decrypt_psw != u_psw:
+            return jsonify(error.pswWrong)
+
+        '''question owner'''
+        err,res = sqlQ.id_select(q_id, table='ec_question')
+        if err:
+            return jsonify(error.serverError)
+        # print('_%s_%s_'%(res[1],u_id), res[1]==int(u_id),type(res[1]),type(u_id))
+        if res[1] != int(u_id):
+            return jsonify(error.questionAccess)
+
+        '''db'''
+        err = sqlQ.id_delete(q_id, table='ec_question')
+        if err:
+            return jsonify(error.serverError)
+
+
+        '''update userinfo'''
+        err,res = sqlQ.id_select(u_id, table='ec_user')
+        if err:
+            return jsonify(error.serverError)
+        u_questions = unpack_id(res[11])
+        if q_id in u_questions[0]:
+            u_questions[0].remove(q_id)
+        if sqlQ.user_update(u_id, {'u_questions':pack_id(u_questions)}):
+            return jsonify(error.serverError)
+
+
+        '''rep'''
+        err, rep_event = sqlQ.reputation_select('question_add', 'question', q_id, u_id, u_id)
+        if err:
+            return jsonify(error.questionNotExisted)
+        if sqlQ.id_delete(rep_event[0], table='ec_reputation'):
+            return jsonify(error.serverError)
+
+        return jsonify({'code':'1','q_id':q_id})
+
+
 
 
 
@@ -484,39 +543,67 @@ def run(app):
         ub_id,q_like = res[1],res[6]
 
 
-        '''todo: fix below'''
         '''get rep_info'''
-        r_type, ec_type, r_id = 'question_like', 'question', ''
-        ev = event[r_type]
+        r_type, r_type2, ec_type, r_id = 'question_like', 'question_dislike', 'question', ''
+        ev,ev2 = event[r_type],event[r_type2]
+
         err,rep_event = sqlQ.reputation_select(r_type, ec_type, q_id, u_id, ub_id)
         if err:
             return jsonify(error.serverError)
+        err,rep_event2 = sqlQ.reputation_select(r_type2, ec_type, q_id, u_id, ub_id)
+        if err:
+            return jsonify(error.serverError)
+
 
         '''update rep & question_info'''
         if u_act =='1':
             if bool(rep_event):
                 return jsonify(error.questionLikeAlready)
             if u_id == ub_id:
-                err,r_id = sqlQ.reputation_add(r_type, ec_type, q_id, u_id, 0, ub_id, 0)
-                if err:
-                    return jsonify(error.serverError)
-            else:
-                err,r_id = sqlQ.reputation_add(r_type, ec_type, q_id, u_id, ev[0], ub_id, ev[1])
-                if err:
-                    return jsonify(error.serverError)
-            if sqlQ.question_update(q_id, {'q_like':int(q_like)+1}):
+                return jsonify(error.questionSelfAction)
+            '''if dislike, del it'''
+            err,r_id = sqlQ.reputation_add(r_type, ec_type, q_id, u_id, ev[0], ub_id, ev[1])
+            if err:
                 return jsonify(error.serverError)
-            return jsonify({'code':'1', 'r_id':r_id})
-        elif u_act =='0':
-            if rep_event == ():
-                return jsonify(error.questionNotLike)
             if sqlQ.question_update(q_id, {'q_like':int(q_like)-1}):
                 return jsonify(error.serverError)
-            if sqlQ.id_delete(rep_event[0], table='ec_reputation'):
-                return jsonify(error.serverError)
-            return jsonify({'code':'1'})
+            if bool(rep_event2):
+                if sqlQ.id_delete(rep_event2[0], table='ec_reputation'):
+                    return jsonify(error.serverError)
+                if sqlQ.question_update(q_id, {'q_like':int(q_like)+1}):
+                    return jsonify(error.serverError)
+            return jsonify({'code':'1', 'r_id':r_id})
+        elif u_act =='0':
+            if bool(rep_event):
+                if sqlQ.id_delete(rep_event[0], table='ec_reputation'):
+                    return jsonify(error.serverError)
+                if sqlQ.question_update(q_id, {'q_like':int(q_like)-1}):
+                    return jsonify(error.serverError)
+                return jsonify({'code':'1','codeState':'like cancel'})
+            if bool(rep_event2):
+                if sqlQ.id_delete(rep_event2[0], table='ec_reputation'):
+                    return jsonify(error.serverError)
+                if sqlQ.question_update(q_id, {'q_like':int(q_like)+1}):
+                    return jsonify(error.serverError)
+                return jsonify({'code':'1','codeState':'dislike cancel'})
+            return jsonify({'code':'1','codeState':'nothing happended'})
         elif u_act == '-1':
-            return jsonify({'code':'1'})
+            if bool(rep_event2):
+                return jsonify(error.questionDislikeAlready)
+            if u_id == ub_id:
+                return jsonify(error.questionSelfAction)
+            '''if like, del it'''
+            err,r_id = sqlQ.reputation_add(r_type2, ec_type, q_id, u_id, ev2[0], ub_id, ev2[1])
+            if err:
+                return jsonify(error.serverError)
+            if sqlQ.question_update(q_id, {'q_like':int(q_like)-1}):
+                return jsonify(error.serverError)
+            if bool(rep_event):
+                if sqlQ.id_delete(rep_event[0], table='ec_reputation'):
+                    return jsonify(error.serverError)
+                if sqlQ.question_update(q_id, {'q_like':int(q_like)+1}):
+                    return jsonify(error.serverError)
+            return jsonify({'code':'1', 'r_id':r_id})
         else:
             return jsonify(error.argsIllegal)
 
