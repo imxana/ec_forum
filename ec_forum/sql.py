@@ -497,3 +497,30 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
         return err,res
 
 
+    def answer_insert(self, q_id, u_id, a_text):
+        '''insert an answer without check'''
+        conn = socket_pool.pop()
+        cursor = conn.cursor()
+        err,a_id = True,gene_id()
+        while self.id_search(q_id, table='ec_answer'):
+            a_id = gene_id()
+        sql = "insert into ec_answer(a_id, u_id, a_text, c_date, a_like, a_comments)\
+         values(%s,%s,%r,now(),0,'');"%(a_id, u_id, a_text)
+        # print('sql.py 145',sql)
+        try:
+            if cursor.execute(sql) == 1:
+                if cursor.rowcount == 1:
+                    conn.commit()
+                    err = False
+        except BrokenPipeError as e:
+            conn = get_conn()
+            raise e
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            cursor.close()
+            socket_pool.append(conn)
+        return err,a_id
+
+ 

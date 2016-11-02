@@ -698,11 +698,19 @@ codeState | str
 # Question
 
 ## ./q/add
-## ./q/edit
+## ./q/update
+## ./q/query
+## ./q/query_pro
 ## ./q/del
+## ./q/display
+## ./q/star
+## ./q/star_unlink
+## ./q/like
 
 # Answer
 
 ## ./a/add
-## ./a/edit
+## ./a/query
+## ./a/update
 ## ./a/del
+

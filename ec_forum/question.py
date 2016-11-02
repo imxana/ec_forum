@@ -476,11 +476,11 @@ def run(app):
             if sqlQ.id_delete(rep_event[0], table='ec_reputation'):
                 return jsonify(error.serverError)
             return jsonify({'code':'1'})
+
         else:
             return jsonify(error.argsIllegal)
 
 
-        return jsonify({'code':'1', 'r_id':r_id})
 
 
 
@@ -618,14 +618,14 @@ def run(app):
                     return jsonify(error.serverError)
                 if sqlQ.question_update(q_id, {'q_like':int(q_like)-1}):
                     return jsonify(error.serverError)
-                return jsonify({'code':'1','codeState':'like cancel'})
+                return jsonify({'code':'1','message':'like cancel'})
             if bool(rep_event2):
                 if sqlQ.id_delete(rep_event2[0], table='ec_reputation'):
                     return jsonify(error.serverError)
                 if sqlQ.question_update(q_id, {'q_like':int(q_like)+1}):
                     return jsonify(error.serverError)
-                return jsonify({'code':'1','codeState':'dislike cancel'})
-            return jsonify({'code':'1','codeState':'nothing happended'})
+                return jsonify({'code':'1','message':'dislike cancel'})
+            return jsonify({'code':'1','message':'nothing happended'})
         elif u_act == '-1':
             if bool(rep_event2):
                 return jsonify(error.questionDislikeAlready)
