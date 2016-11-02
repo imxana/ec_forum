@@ -538,7 +538,7 @@ def run(app):
         if err:
             return jsonify(error.serverError)
         u_articles = unpack_id(res[10])
-        if int(t_id) in u_articles[1]:
+        if t_id in u_articles[1]:
             u_articles[1].remove(t_id)
         if sqlQ.user_update(u_id, {'u_articles':pack_id(u_articles)}):
             return jsonify(error.serverError)

@@ -435,4 +435,35 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             socket_pool.append(conn)
         return err,q_id
 
- 
+    def question_update(self, q_id, info, modify=False):
+        '''update the infomation'''
+        conn = socket_pool.pop()
+        cursor = conn.cursor()
+        err = True
+        if len(info) == 0:
+            return err
+        sql = "update ec_question set "
+        for k,v in info.items():
+            sql += "%s=%r,"%(k,v)
+        if modify:
+            sql = sql + "q_date_latest=now() where q_id=%r;"%q_id
+        else:
+            sql = sql[:-1] + " where q_id=%r;"%q_id
+        try:
+            fs = cursor.execute(sql)
+            if fs == 1:
+                err = False
+                conn.commit()
+        except BrokenPipeError as e:
+            conn = get_conn()
+            raise e
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            cursor.close()
+            socket_pool.append(conn)
+        return err
+
+
+
