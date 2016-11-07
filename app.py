@@ -13,8 +13,7 @@ import ec_forum.article as article
 import ec_forum.public as public
 import ec_forum.comment as comment
 import ec_forum.question as question
-
-
+import ec_forum.answer as answer
 
 ac.run(app)
 salt.run(app)
@@ -23,6 +22,8 @@ article.run(app)
 public.run(app)
 comment.run(app)
 question.run(app)
+answer.run(app)
+
 
 
 if __name__ == '__main__':

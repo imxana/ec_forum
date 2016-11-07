@@ -414,7 +414,7 @@ servers.''', 'node.js')
         rv = self.article_del(self.u_id, '222222', '100000')
         assert 'article not existed' in json.loads(rv.data).get('codeState','')
         rv = self.article_del(self.ua_id, '222222', self.t_id)
-        assert 'no access to del article' in json.loads(rv.data).get('codeState','')
+        assert 'no access to modify article' in json.loads(rv.data).get('codeState','')
 
 
     def test_article_display(self):

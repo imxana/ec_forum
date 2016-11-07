@@ -497,6 +497,8 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
         return err,res
 
 
+
+
     def answer_insert(self, q_id, u_id, a_text):
         '''insert an answer without check'''
         conn = socket_pool.pop()
@@ -504,8 +506,8 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
         err,a_id = True,gene_id()
         while self.id_search(q_id, table='ec_answer'):
             a_id = gene_id()
-        sql = "insert into ec_answer(a_id, u_id, a_text, c_date, a_like, a_comments)\
-         values(%s,%s,%r,now(),0,'');"%(a_id, u_id, a_text)
+        sql = "insert into ec_answer(a_id, u_id, a_text, c_date, a_like, a_comments,a_date_latest)\
+         values(%s,%s,%r,now(),0,'',now());"%(a_id, u_id, a_text)
         # print('sql.py 145',sql)
         try:
             if cursor.execute(sql) == 1:
@@ -523,4 +525,38 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             socket_pool.append(conn)
         return err,a_id
 
+
+
+
+    def answer_update(self, a_id, info, modify=False):
+        '''update the answer information'''
+        conn = socket_pool.pop()
+        cursor = conn.cursor()
+        err = True
+        if len(info) == 0:
+            return err
+        sql = "update ec_answer set "
+        for k,v in info.items():
+            sql += "%s=%r,"%(k,v)
+        if modify:
+            sql = sql + "a_date_latest=now() where a_id=%r;"%a_id
+        else:
+            sql = sql[:-1] + " where a_id=%r;"%a_id
+        try:
+            fs = cursor.execute(sql)
+            if fs == 1:
+                err = False
+                conn.commit()
+        except BrokenPipeError as e:
+            conn = get_conn()
+            raise e
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            cursor.close()
+            socket_pool.append(conn)
+        return err
+
  
+     
