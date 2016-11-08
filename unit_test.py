@@ -225,6 +225,115 @@ servers.''', 'node.js')
             u_psw=psw,
         ),follow_redirects=True)
 
+    def question_add(self, uid, psw, title, text, tags):
+        return self.app.post('/q/add',data=dict(
+            u_id=uid,
+            u_psw=psw,
+            q_title=title,
+            q_text=text,
+            q_tags=tags
+        ),follow_redirects=True)
+
+    def question_query(self, qid):
+        return self.app.post('/q/query',data=dict(
+            q_id=qid
+        ),follow_redirects=True)
+
+    def question_query_pro(self, qid, uid, psw):
+        return self.app.post('/q/query_pro',data=dict(
+            q_id=qid,
+            u_id=uid,
+            u_psw=psw
+        ),follow_redirects=True)
+
+    def question_del(self, uid, psw, qid):
+        return self.app.post('/q/del',data=dict(
+            u_id=uid,
+            u_psw=psw,
+            q_id=qid
+        ),follow_redirects=True)
+
+    def question_update(self, uid, psw, qid, title, text, tags):
+        return self.app.post('/q/update',data=dict(
+            u_id=uid,
+            u_psw=psw,
+            q_id=qid,
+            q_title=title,
+            q_text=text,
+            q_tags=tags
+        ),follow_redirects=True)
+
+    def question_display(self, tags):
+        return self.app.post('/q/display', data=dict(
+            q_tags=tags
+        ),follow_redirects=True)
+
+
+    def question_star(self,uid,psw,qid,act):
+        return self.app.post('/q/star', data=dict(
+            u_id=uid,
+            u_psw=psw,
+            q_id=qid,
+            u_act=act
+        ),follow_redirects=True)
+
+    def question_star_unlink(self,uid,psw,qid):
+        return self.app.post('/q/star_unlink', data=dict(
+            u_id=uid,
+            u_psw=psw,
+            q_id=qid,
+        ),follow_redirects=True)
+
+
+    def answer_add(self, uid, qid, psw, title):
+        return self.app.post('/a/add',data=dict(
+            u_id=uid,
+            q_id=qid,
+            u_psw=psw,
+            a_text=text,
+        ),follow_redirects=True)
+
+    def answer_query(self, aid):
+        return self.app.post('/a/auery',data=dict(
+            a_id=aid
+        ),follow_redirects=True)
+
+    def answer_query_pro(self, aid, uid, psw):
+        return self.app.post('/a/auery_pro',data=dict(
+            a_id=aid,
+            u_id=uid,
+            u_psw=psw
+        ),follow_redirects=True)
+
+    def answer_del(self, uid, psw, aid):
+        return self.app.post('/a/del',data=dict(
+            u_id=uid,
+            u_psw=psw,
+            a_id=aid
+        ),follow_redirects=True)
+
+    def answer_update(self, uid, psw, aid, text):
+        return self.app.post('/a/update',data=dict(
+            u_id=uid,
+            u_psw=psw,
+            a_id=aid,
+            a_text=text,
+        ),follow_redirects=True)
+
+    def answer_star(self,uid,psw,aid,act):
+        return self.app.post('/a/star', data=dict(
+            u_id=uid,
+            u_psw=psw,
+            a_id=aid,
+            u_act=act
+        ),follow_redirects=True)
+
+    def answer_star_unlink(self,uid,psw,aid):
+        return self.app.post('/a/star_unlink', data=dict(
+            u_id=uid,
+            u_psw=psw,
+            a_id=aid,
+        ),follow_redirects=True)
 
 
 
@@ -491,6 +600,12 @@ for a specific version of pydoc, for example, use
         rv = self.article_star(self.ua_id, '222222', self.t_id, '0')
         assert '1' in json.loads(rv.data).get('code','')
 
+
+    def test_question(self):
+        pass
+
+    def test_answer(self):
+        pass
 
 
 

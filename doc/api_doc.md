@@ -385,9 +385,9 @@ method:post
 ------------ | ------------- | ------------
 u_id | int | 必填
 u_psw | str | 用于验证
-u_title | str | 非空
-u_text | str | 非空
-u_tags | str | 无要求
+t_title | str | 非空
+t_text | str | 非空
+t_tags | str | 无要求
 
 
 suc:
@@ -778,7 +778,7 @@ code | !1
 codeState | str
 
 
-## 获取问题展示列表 ./t/display
+## 获取问题展示列表 ./q/display
 
 
 method:post

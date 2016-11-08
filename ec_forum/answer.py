@@ -115,7 +115,7 @@ def run(app):
             'a_date':int(res[3].timestamp()),
             'a_like':res[4],
             'a_comments':res[5],
-            'a_star':res[6]
+            'a_star':res[6],
             'a_date_latest':int(res[7].timestamp()),
         })
 
