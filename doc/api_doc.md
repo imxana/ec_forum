@@ -354,7 +354,7 @@ suc:
 字段|类型或值
 ------------ | -------------
 code | 1
-history | [^history array]
+history | ^(history array)
 
 ^history info
 

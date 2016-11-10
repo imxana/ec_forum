@@ -48,8 +48,9 @@ create table ec_answer
     a_date datetime comment '回答日期',
     a_like integer comment '回答被赞数',
     a_comments text comment '评论ID组',
-    a_star integer comment '回答被收藏数'
+    a_star integer comment '回答被收藏数',
     a_date_latest datetime comment '最后修改回答日期',
+    q_id integer comment '所属问题'
 );
 
 create table ec_article

@@ -18,28 +18,28 @@ class ECTestCase(unittest.TestCase):
         '''sign_up suc'''
         rv = self.sign_up(self.name,'222222',self.email)
         self.u_id = json.loads(rv.data).get('u_id','')
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
         rv = self.sign_up(self.name2,'222222','1401520070@qq.com')
         self.ua_id = json.loads(rv.data).get('u_id','')
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
         '''article_add_suc'''
         rv = self.article_add(self.u_id, '222222', 'What\'s nodejs',
 '''Node.js  is a set of libraries for JavaScript which allows it to be used outside of the
 browser. It is primarily focused on creating simple, easy to build network clients  and
 servers.''', 'node.js')
         self.t_id = json.loads(rv.data).get('t_id','')
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
 
 
     def tearDown(self):
         '''article_del_suc'''
         rv = self.article_del(self.u_id, '222222', self.t_id)
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
         '''sign_del suc'''
         rv = self.sign_del(self.u_id,'222222')
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
         rv = self.sign_del(self.ua_id,'222222')
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
 
 
 
@@ -284,8 +284,16 @@ servers.''', 'node.js')
             q_id=qid,
         ),follow_redirects=True)
 
+    def question_like(self,uid,psw,qid,act):
+        return self.app.post('/q/like', data=dict(
+            u_id=uid,
+            u_psw=psw,
+            q_id=qid,
+            u_act=act
+        ),follow_redirects=True)
 
-    def answer_add(self, uid, qid, psw, title):
+
+    def answer_add(self, uid, qid, psw, text):
         return self.app.post('/a/add',data=dict(
             u_id=uid,
             q_id=qid,
@@ -373,10 +381,10 @@ servers.''', 'node.js')
 
     def test_sign_in_suc(self):
         rv = self.sign_in(self.name,'222222')
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
         assert self.email in json.loads(rv.data).get('u_email','')
         rv = self.sign_in(self.email,'222222')
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
         assert self.name in json.loads(rv.data).get('u_name','')
 
     def test_sign_del_fail(self):
@@ -395,18 +403,18 @@ servers.''', 'node.js')
 
     def test_user_psw_change_reset(self):
         rv = self.user_psw_change(self.u_id,'222222','333333')
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
         rv = self.sign_in(self.name,'333333')
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
         rv = self.user_psw_reset(self.u_id,'222222')
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
         
 
     def test_user_update_then_query(self):
         #self, uid, psw, rn, bl, gh, waus, tags
         '''user_update_info'''
         rv = self.user_update_info(self.u_id, '222222', 'Good Name', 'goodblog.com', 'github.com/good', 'node.js', 'I am good~')
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
         rv = self.user_update_info(self.u_id, '222223', 'Good Name', 'goodblog.com', 'github.com/good', 'node.js', 'I am good~')
         assert 'wrong password' in json.loads(rv.data).get('codeState','')
 
@@ -421,7 +429,7 @@ servers.''', 'node.js')
     def test_user_watch(self):
         '''watch and unwatch, suc and fail'''
         rv = self.user_watch(self.u_id, '222222', self.ua_id, '1')
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
         rv = self.sign_in(self.name,'222222')
         assert self.ua_id in json.loads(rv.data).get('u_watchusers','')
         rv = self.sign_in(self.name2,'222222')
@@ -430,7 +438,7 @@ servers.''', 'node.js')
         assert 'user already watched' in json.loads(rv.data).get('codeState','')
 
         rv = self.user_watch(self.u_id, '222222', self.ua_id, '0')
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
         rv = self.sign_in(self.name,'222222')
         assert self.ua_id not in json.loads(rv.data).get('u_watchusers','')
         rv = self.sign_in(self.name2,'222222')
@@ -446,21 +454,21 @@ servers.''', 'node.js')
         assert len(verify_code)==5
         '''email_confirm'''
         rv = self.mail_send(self.ua_id, '1401520070@qq.com', verify_code)
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
         '''psw_change'''
         rv = self.user_psw_verify(self.name2, verify_code)
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
 
 
     def test_mail_confirm_change_suc(self):
         '''confirm user email'''
         rv = self.mail_pass(self.ua_id,'222222')
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
         rv = self.sign_in(self.name2,'222222')
         assert 1 == json.loads(rv.data).get('u_email_confirm','')
         '''change email'''
         rv = self.mail_change(self.ua_id,'222222','anotheremail@gmail.com')
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
         rv = self.sign_in('anotheremail@gmail.com','222222')
         assert 0 == json.loads(rv.data).get('u_email_confirm','')
 
@@ -543,29 +551,31 @@ for a specific version of pydoc, for example, use
 ''', 'python')
         self.ta_id = json.loads(rv.data).get('t_id','')
         rv = self.article_display('node.js,python')
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
+        rv = self.article_display('')
+        assert '1' == json.loads(rv.data).get('code','')
         rv = self.article_del(self.ua_id, '222222', self.ta_id)
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
 
     def test_article_update(self):
         '''check if text changed'''
         text = gene_id(num=20,letter=True)
         rv = self.article_update(self.u_id, '222222', self.t_id, 'What\'s nodejs', text, 'nodejs')
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
         rv = self.article_query(self.t_id)
         assert text in json.loads(rv.data).get('t_text','')
 
     def test_comment_add_del_query_suc(self):
         rv = self.comment_add(self.ua_id, '222222', 'article', self.t_id, 'js is shit!')
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
         self.c_id = json.loads(rv.data).get('c_id','')
 
         rv = self.comment_query(self.c_id)
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
         rv = self.article_query(self.t_id)
         assert self.c_id in json.loads(rv.data).get('t_comments','')
         rv = self.comment_del(self.ua_id, '222222', self.c_id)
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
 
 
     def test_article_starlike_and_querypro(self):
@@ -576,38 +586,103 @@ for a specific version of pydoc, for example, use
         rv = self.article_recommend(self.ua_id, '222222', self.t_id, '0')
         assert 'article not recommend' in json.loads(rv.data).get('codeState','')
         rv = self.article_recommend(self.ua_id, '222222', self.t_id, '1')
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
         '''query_pro test'''
         rv = self.article_query_pro(self.t_id, self.ua_id, '222222')
-        assert '0' in json.loads(rv.data).get('t_star_bool','')
-        assert '1' in json.loads(rv.data).get('t_recommend_bool','')
+        assert '0' == json.loads(rv.data).get('t_star_bool','')
+        assert '1' == json.loads(rv.data).get('t_recommend_bool','')
         '''rep test'''
         rv = self.reputation_history(self.u_id,'222222')
         assert len(json.loads(rv.data).get('history','')) == 2
         '''test end'''
         rv = self.article_recommend(self.ua_id, '222222', self.t_id, '0')
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
 
         rv = self.article_star(self.ua_id, '222222', self.t_id, '0')
         assert 'article not star' in json.loads(rv.data).get('codeState','')
         rv = self.article_star(self.ua_id, '222222', self.t_id, '1')
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
         '''query_pro test'''
         rv = self.article_query_pro(self.t_id, self.ua_id, '222222')
-        assert '1' in json.loads(rv.data).get('t_star_bool','')
-        assert '0' in json.loads(rv.data).get('t_recommend_bool','')
+        assert '1' == json.loads(rv.data).get('t_star_bool','')
+        assert '0' == json.loads(rv.data).get('t_recommend_bool','')
         '''test end'''
         rv = self.article_star(self.ua_id, '222222', self.t_id, '0')
-        assert '1' in json.loads(rv.data).get('code','')
+        assert '1' == json.loads(rv.data).get('code','')
 
 
     def test_question(self):
-        pass
+        '''add'''
+        rv = self.question_add(self.u_id, '222222', 'who am i', 'RT', '')
+        assert '1' == json.loads(rv.data).get('code','')
+        self.q_id = json.loads(rv.data).get('q_id','')
+        '''update'''
+        rv = self.question_update(self.u_id, '222222', self.q_id, 'Who am I?', 'RT', 'node.js')
+        assert '1' == json.loads(rv.data).get('code','')
+        '''star and like question'''
+        rv = self.question_query_pro(self.q_id, self.u_id, '222222')
+        assert '0' == json.loads(rv.data).get('q_star_bool','')
+        rv = self.question_star(self.u_id,'222222',self.q_id,'1')
+        assert '1' == json.loads(rv.data).get('code','')
+        rv = self.question_query_pro(self.q_id, self.u_id, '222222')
+        assert '1' == json.loads(rv.data).get('q_star_bool','')
+        rv = self.question_star(self.u_id,'222222',self.q_id,'1')
+        assert 'question star already' == json.loads(rv.data).get('codeState','')
+        rv = self.question_star(self.u_id,'222222',self.q_id,'0')
+        assert '1' == json.loads(rv.data).get('code','')
+        rv = self.question_query_pro(self.q_id, self.u_id, '222222')
+        assert '0' == json.loads(rv.data).get('q_star_bool','')
+        '''like'''
+        rv = self.question_query_pro(self.q_id, self.u_id, '222222')
+        assert '0' == json.loads(rv.data).get('q_like_state','')
+        rv = self.question_like(self.u_id,'222222',self.q_id,'1')
+        assert '1' == json.loads(rv.data).get('code','')
+        #rv = self.question_like(self.u_id,'222222',self.q_id,'1')
+        #assert '1' == json.loads(rv.data).get('q_like_state','')
+        #rv = self.question_like(self.u_id,'222222',self.q_id,'1')
+        #assert 'question like already' == json.loads(rv.data).get('codeState','')
 
-    def test_answer(self):
-        pass
+        '''query'''
+        rv = self.question_query(self.q_id)
+        assert '1' == json.loads(rv.data).get('code','')
+        '''display'''
+        rv = self.question_display('node.js,python')
+        assert '1' == json.loads(rv.data).get('code','')
+        '''del'''
+        rv = self.question_del(self.ua_id, '222222', self.q_id)
+        assert 'no access to modify question' in json.loads(rv.data).get('codeState','')
+        rv = self.question_del(self.u_id, '222222', self.q_id)
+        assert '1' == json.loads(rv.data).get('code','')
 
+
+
+
+    def not_test_answer(self):
+        '''setUp: question_add'''
+        rv = self.question_add(self.u_id, '222222', 'Who am I?', 'RT', '')
+        assert '1' == json.loads(rv.data).get('code','')
+        self.q_id = json.loads(rv.data).get('q_id','')
+
+        '''add'''
+        rv = self.answer_add(self.ua_id, self.q_id, '222222', 'You are %s'%self.name)
+        assert '1' == json.loads(rv.data).get('code','')
+        self.a_id = json.loads(rv.data).get('a_id','')
+        '''update'''
+        rv = self.answer_update(self.u_id, '222222', self.a_id, 'I don\'t know...')
+        assert 'no access to modify answer' in json.loads(rv.data).get('codeState','')
+        rv = self.answer_update(self.ua_id, '222222', self.a_id, 'I don\'t know...')
+        assert '1' == json.loads(rv.data).get('code','')
+        '''delete'''
+        rv = self.answer_del(self.u_id, '222222', self.a_id)
+        assert '1' == json.loads(rv.data).get('code','')
+        rv = self.answer_del(self.ua_id, '222222', self.a_id)
+        assert 'answer not existed' in json.loads(rv.data).get('codeState','')
+
+        '''tearDown: question_del'''
+        rv = self.question_del(self.u_id, '222222', self.q_id)
+        assert '1' == json.loads(rv.data).get('code','')
 
 
 if __name__ == '__main__':
     unittest.main()
+

@@ -12,7 +12,7 @@ sqlQ = sqlQ()
 
 def run(app):
 
-    @app.route('/a/add')
+    @app.route('/a/add', methods=['POST'])
     def answer_add():
         if request.method != 'POST':
             return jsonify(error.requestError)
@@ -48,7 +48,7 @@ def run(app):
             return jsonify(error.pswWrong)
 
         '''db'''
-        err,a_id = sqlQ.answer_insert(self, q_id, u_id, a_text)
+        err,a_id = sqlQ.answer_insert(q_id, u_id, a_text)
         if err:
             return jsonify(error.serverError)
 
@@ -223,8 +223,16 @@ def run(app):
         err,res = sqlQ.id_select(a_id, table='ec_answer')
         if err:
             return jsonify(error.serverError)
-        if res[1] != int(u_id):
+        ao_id, q_id = res[1], res[8]
+
+        '''question owner'''
+        err, res = sqlQ.id_select(q_id, table='ec_question')
+        if err:
+            return jsonify(error.serverError)
+        qo_id = res[1]
+        if int(u_id) not in (ao_id, qo_id):
             return jsonify(error.answerAccess)
+        
 
         '''db'''
         err = sqlQ.id_delete(a_id, table='ec_answer')
@@ -239,12 +247,12 @@ def run(app):
         u_answers = unpack_id(res[12])
         if a_id in u_answers[0]:
             u_answers[0].remove(a_id)
-        if sqlQ.user_update(u_id, {'u_answers':pack_id(u_answers)}):
+        if sqlQ.user_update(ao_id, {'u_answers':pack_id(u_answers)}):
             return jsonify(error.serverError)
 
 
         '''rep'''
-        err, rep_event = sqlQ.reputation_select('answer_add', 'answer', a_id, u_id, u_id)
+        err, rep_event = sqlQ.reputation_select('answer_add', 'answer', a_id, ao_id, qo_id)
         if err:
             return jsonify(error.answerNotExisted)
         if sqlQ.id_delete(rep_event[0], table='ec_reputation'):

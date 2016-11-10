@@ -287,6 +287,13 @@ def run(app):
 
         '''note: empty is not an error'''
         origin_ids = set()
+        if not bool(t_tags_set):
+            err,res = sqlQ.article_select_tag()
+            for t_tuple in res:
+                # 0 t_id int, 5 like int, 9 star int, 8 date, the date type is datetime.datetime, i shock
+                t_id,like,star,timestamp = t_tuple[0], int(t_tuple[5]), int(t_tuple[9]), t_tuple[8].timestamp()
+                origin_ids.add((t_id,like,star,timestamp))
+            
         for tag in t_tags_set:
             err,res = sqlQ.article_select_tag([tag])
             for t_tuple in res:

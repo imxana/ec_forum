@@ -5,12 +5,12 @@ from ec_forum.sql import sqlQ
 from ec_forum.salt import encrypt, decrypt
 from ec_forum.id_dealer import pack_id, unpack_id
 from ec_forum.public import default_tags
-
+from ec_forum.reputation import event, rule
 sqlQ = sqlQ()
 
 def run(app):
 
-    @app.route('/q/add')
+    @app.route('/q/add', methods=['POST'])
     def question_add():
         if request.method != 'POST':
             return jsonify(error.requestError)

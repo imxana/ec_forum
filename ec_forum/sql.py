@@ -259,6 +259,7 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             for tag in t_tags:
                 sql += "t_tags like '%%%s%%' and "%tag
             sql = sql[:-5] + ";"
+        print('sql 262:',sql)
         try:
             cursor.execute(sql)
             rs = cursor.fetchall()
@@ -416,9 +417,7 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
         err,q_id = True,gene_id()
         while self.id_search(q_id, table='ec_question'):
             q_id = gene_id()
-        sql = "insert into ec_question(q_id, u_id, q_title, q_tags, q_text, q_date, q_like, \
-                q_close, q_report,q_answers,q_comments,q_date_latest) \
-                values(%s,%s,%r,%r,%r,now(),0,0,0,'','',now());"%(q_id, u_id, q_title, q_tags, q_text)
+        sql = "insert into ec_question(q_id, u_id, q_title, q_tags, q_text, q_date, q_like, q_close, q_report,q_answers,q_comments,q_date_latest,q_star)values(%s,%s,%r,%r,%r,now(),0,0,0,'','',now(),0);"%(q_id, u_id, q_title, q_tags, q_text)
         try:
             if cursor.execute(sql) == 1:
                 if cursor.rowcount == 1:
@@ -506,8 +505,8 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
         err,a_id = True,gene_id()
         while self.id_search(q_id, table='ec_answer'):
             a_id = gene_id()
-        sql = "insert into ec_answer(a_id, u_id, a_text, c_date, a_like, a_comments,a_date_latest)\
-         values(%s,%s,%r,now(),0,'',now());"%(a_id, u_id, a_text)
+        sql = "insert into ec_answer(a_id, u_id, a_text, a_date, a_like, a_comments, a_star, a_date_latest, q_id)\
+         values(%s,%s,%r,now(),0,'',0,now(),%s);"%(a_id, u_id, a_text, q_id)
         # print('sql.py 145',sql)
         try:
             if cursor.execute(sql) == 1:
