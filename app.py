@@ -1,7 +1,9 @@
 from flask import Flask, request, url_for
+from flask_cors import *
 import config
 
 app = Flask(__name__)
+CORS(app, supports_credentials=True)
 
 # config_mode = ['TestingConfig','DevelopmentConfig','ProductionConfig']
 # app.config.from_object('config.'+config_mode[0])

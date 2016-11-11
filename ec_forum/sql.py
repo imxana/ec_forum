@@ -259,7 +259,6 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             for tag in t_tags:
                 sql += "t_tags like '%%%s%%' and "%tag
             sql = sql[:-5] + ";"
-        print('sql 262:',sql)
         try:
             cursor.execute(sql)
             rs = cursor.fetchall()
