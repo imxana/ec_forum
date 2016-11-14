@@ -36,6 +36,7 @@ def run(app):
             return jsonify(error.serverError)
 
         return jsonify({
+            'code':'1',
             # 'u_id':res[0],
             'u_name':res[1],
             # 'u_psw':res[2],
