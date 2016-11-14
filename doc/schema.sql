@@ -21,7 +21,7 @@ create table ec_user
     u_tags text comment '关注标签',
     u_intro text comment '个人签名',
     u_img text comment '用户头像链接'
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 create table ec_question
 (
@@ -38,7 +38,7 @@ create table ec_question
     q_comments text comment '评论ID组',
     q_date_latest datetime comment '最后修改时间',
     q_star integer comment '问题收藏数'
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 create table ec_answer
 (
@@ -51,7 +51,7 @@ create table ec_answer
     a_star integer comment '回答被收藏数',
     a_date_latest datetime comment '最后修改回答日期',
     q_id integer comment '所属问题'
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 create table ec_article
 (
@@ -65,7 +65,7 @@ create table ec_article
     t_tags text comment '文章标签',
     t_date_latest datetime comment '最后修改时间',
     t_star int comment '收藏文章的用户数'
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 create table ec_comment
 (
@@ -76,7 +76,7 @@ create table ec_comment
     c_text text comment '评论正文',
     c_date datetime comment '评论日期',
     c_like int comment '评论被赞数'
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 create table ec_reputation
 (
@@ -89,6 +89,6 @@ create table ec_reputation
     ub_id integer comment '接受用户id',
     ub_rep integer comment '接受用户声望变化',
     r_date datetime comment '事件日期'
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /* comment '(.*)' */

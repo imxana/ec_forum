@@ -499,11 +499,11 @@ u_id | int
 t_title | str
 t_text | str
 t_date | int
-t_like | str
+t_like | int
 t_comments | str
 t_tags | str
 t_date_latest | int
-t_star | str
+t_star | int
 
 fail:
 
@@ -684,8 +684,34 @@ u_id | int
 ec_type | article/question/answer
 ec_id | int
 c_date | int
-c_like | str
+c_like | int
 
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code | !1
+codeState | str
+
+## 评论点赞 ./c/like
+
+method:post
+
+字段|类型
+------------ | -------------
+u_id | int
+u_psw| str
+c_id | int
+u_act | str(1表示赞同,0表示取消赞同或反对,-1表示反对)
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code | 1
+r_id | int(如果u_act=='0'则无此参数)
+message | str(u_act=='0'时的消息，显示变化情况)
 
 fail:
 
@@ -752,7 +778,7 @@ fail:
 code | !1
 codeState | str
 
-## 删除文章 ./q/del
+## 删除问题 ./q/del
 
 method:post
 
@@ -821,13 +847,13 @@ q_title | str
 q_tags | str
 q_text | str
 q_date | int
-q_like | str
+q_like | int
 q_close | int
 q_report | int
 q_answers | str
 q_comments | str
 q_date_latest | int
-q_star | str
+q_star | int
 
 fail:
 
@@ -939,16 +965,219 @@ code | !1
 codeState | str
 
 
+
 # Answer
 
-## ./a/add
-## ./a/query
-## ./a/update
-## ./a/del
-## ./a/query
-## ./a/query_pro
-## ./a/star
-## ./a/star_unlink
-## ./a/like
 
 
+## 添加回答 ./a/add
+
+method:post
+
+字段|类型|要求
+------------ | ------------- | ------------
+u_id | int | 必填
+u_psw | str | 用于验证
+q_id | int | 必填
+a_text | str | 非空
+
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code | 1
+a_id | int
+
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code|<=0
+codeState| str
+
+
+## 更新问题信息./a/update
+
+method:post
+
+字段|类型
+------------ | -------------
+u_id | int
+u_psw | str
+a_id | int
+a_text| str
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code|1
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code | !1
+codeState | str
+
+## 删除答案 ./a/del
+
+method:post
+
+字段|类型
+------------ | -------------
+u_id | int
+u_psw| str
+a_id | int
+
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code|1
+a_id | int
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code | !1
+codeState | str
+
+
+
+
+
+## 查询回答信息 ./a/query
+
+method:post
+
+字段|类型
+------------ | -------------
+a_id | int
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code | 1
+a_id | int
+u_id | int
+a_text | str
+a_date | int
+a_like | int
+a_comments | str
+a_star | int
+a_date_latest | int
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code | !1
+codeState | str
+
+
+## 查询回答信息UI ./a/query_pro
+
+method:post
+
+字段|类型
+------------ | -------------
+a_id | int
+u_id | int
+u_psw | str
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code | 1
+a_star_bool | 1/0
+a_like_state | 1/0/-1
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code | !1
+codeState | str
+
+## 收藏回答 ./a/star
+
+
+method:post
+
+字段|类型
+------------ | -------------
+u_id | int
+u_psw| str
+a_id | int
+u_act | str(1表示收藏,0表示取消收藏)
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code | 1
+r_id | int(如果u_act=='0'则无此参数)
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code | !1
+codeState | str
+
+## 静默移除失效收藏回答 ./a/star_unlink
+
+method:post
+
+字段|类型
+------------ | -------------
+u_id | int
+u_psw| str
+a_id | int
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code | 1
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code | !1
+codeState | str
+
+## 赞同回答 ./a/like
+
+
+method:post
+
+字段|类型
+------------ | -------------
+u_id | int
+u_psw| str
+a_id | int
+u_act | str(1表示赞同,0表示取消赞同或反对,-1表示反对)
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code | 1
+r_id | int(如果u_act=='0'则无此参数)
+message | str(u_act=='0'时的消息，显示变化情况)
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code | !1
+codeState | str

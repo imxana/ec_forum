@@ -464,7 +464,7 @@ def run(app):
             u_questions = unpack_id(res[11])
             if q_id not in u_questions[1]:
                 return jsonify(error.questionNotStar)
-            u_questions[1].append(q_id)
+            u_questions[1].remove(q_id)
             if sqlQ.user_update(u_id, {'u_questions':pack_id(u_questions)}):
                 return jsonify(error.serverError)
 

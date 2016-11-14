@@ -54,6 +54,9 @@ commentidEmpty       = { 'code': '-82', 'codeState': 'comment id empty'        }
 commentNotExisted    = { 'code': '-83', 'codeState': 'comment not existed'     }
 commentExsited       = { 'code': '-84', 'codeState': 'comment exists in event' }
 commentAccess        = { 'code': '-85', 'codeState': 'no access to modify comment'}
+commentLikeAlready   = { 'code': '-86', 'codeState': 'comment like already'    }
+commentDislikeAlready= { 'code': '-87', 'codeState': 'comment dislike already' }
+commentSelfAction    = { 'code': '-88', 'codeState': 'comment self action'     }
 
 questionTitleEmpty   = { 'code': '-90', 'codeState': 'question title empty'    }
 questionTitleIllegal = { 'code': '-91', 'codeState': 'question title illegal'  }

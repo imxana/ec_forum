@@ -200,4 +200,108 @@ def run(app):
         })
 
 
-    
+   
+    @app.route('/c/like', methods=['POST'])
+    def comment_like():
+        if request.method != 'POST':
+            return jsonify(error.requestError)
+        u_id = request.values.get('u_id', '')
+        u_psw = request.values.get('u_psw', '')
+        c_id = request.values.get('c_id', '')
+        u_act = request.values.get('u_act', '')
+
+        '''empty'''
+        if u_id == '':
+            return jsonify(error.useridEmpty)
+        if u_psw == '':
+            return jsonify(error.pswEmpty)
+        if c_id == '':
+            return jsonify(error.commentidEmpty)
+        if u_act == '':
+            return jsonify(error.argsEmpty)
+
+        '''exist'''
+        if not sqlQ.id_search(u_id):
+            return jsonify(error.userNotExisted)
+        if not sqlQ.id_search(c_id, table='ec_comment'):
+            return jsonify(error.commentNotExisted)
+
+        '''psw'''
+        err,res = sqlQ.signin_select(u_id, method='u_id')
+        if err:
+            return jsonify(error.serverError)
+        decrypt_psw = decrypt(res[2].encode('utf8'))
+        if decrypt_psw != u_psw:
+            return jsonify(error.pswWrong)
+
+        '''get comment_info'''
+        err,res = sqlQ.id_select(c_id, table='ec_comment')
+        if err:
+            return jsonify(error.serverError)
+        ub_id,c_like = res[3],res[6]
+
+
+        '''get rep_info'''
+        r_type, r_type2, ec_type, r_id = 'comment_like', 'comment_dislike', 'comment', ''
+        ev,ev2 = event[r_type],event[r_type2]
+
+        err,rep_event = sqlQ.reputation_select(r_type, ec_type, c_id, u_id, ub_id)
+        err2,rep_event2 = sqlQ.reputation_select(r_type2, ec_type, c_id, u_id, ub_id)
+        if err and err2:
+            return jsonify(error.serverError)
+
+
+        '''update rep & comment_info'''
+        if u_act =='1':
+            if bool(rep_event):
+                return jsonify(error.commentLikeAlready)
+            if u_id == ub_id:
+                return jsonify(error.commentSelfAction)
+            '''if dislike, del it'''
+            err,r_id = sqlQ.reputation_add(r_type, ec_type, c_id, u_id, ev[0], ub_id, ev[1])
+            if err:
+                return jsonify(error.serverError)
+            if sqlQ.comment_update(c_id, {'c_like':int(c_like)-1}):
+                return jsonify(error.serverError)
+            if bool(rep_event2):
+                if sqlQ.id_delete(rep_event2[0], table='ec_reputation'):
+                    return jsonify(error.serverError)
+                if sqlQ.comment_update(c_id, {'c_like':int(c_like)+1}):
+                    return jsonify(error.serverError)
+            return jsonify({'code':'1', 'r_id':r_id})
+        elif u_act =='0':
+            if bool(rep_event):
+                if sqlQ.id_delete(rep_event[0], table='ec_reputation'):
+                    return jsonify(error.serverError)
+                if sqlQ.comment_update(c_id, {'c_like':int(c_like)-1}):
+                    return jsonify(error.serverError)
+                return jsonify({'code':'1','message':'like cancel'})
+            if bool(rep_event2):
+                if sqlQ.id_delete(rep_event2[0], table='ec_reputation'):
+                    return jsonify(error.serverError)
+                if sqlQ.comment_update(c_id, {'c_like':int(c_like)+1}):
+                    return jsonify(error.serverError)
+                return jsonify({'code':'1','message':'dislike cancel'})
+            return jsonify({'code':'1','message':'nothing happended'})
+        elif u_act == '-1':
+            if bool(rep_event2):
+                return jsonify(error.commentDislikeAlready)
+            if u_id == ub_id:
+                return jsonify(error.commentSelfAction)
+            '''if like, del it'''
+            err,r_id = sqlQ.reputation_add(r_type2, ec_type, c_id, u_id, ev2[0], ub_id, ev2[1])
+            if err:
+                return jsonify(error.serverError)
+            if sqlQ.comment_update(c_id, {'c_like':int(c_like)-1}):
+                return jsonify(error.serverError)
+            if bool(rep_event):
+                if sqlQ.id_delete(rep_event[0], table='ec_reputation'):
+                    return jsonify(error.serverError)
+                if sqlQ.comment_update(c_id, {'c_like':int(c_like)+1}):
+                    return jsonify(error.serverError)
+            return jsonify({'code':'1', 'r_id':r_id})
+        else:
+            return jsonify(error.argsIllegal)
+
+
+ 

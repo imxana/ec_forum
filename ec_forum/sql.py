@@ -336,6 +336,38 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
         return err,c_id
 
 
+    def comment_update(self, c_id, info, modify=False):
+        '''update the infomation'''
+        conn = socket_pool.pop()
+        cursor = conn.cursor()
+        err = True
+        if len(info) == 0:
+            return err
+        sql = "update ec_comment set "
+        for k,v in info.items():
+            sql += "%s=%r,"%(k,v)
+        if modify:
+            sql = sql + "c_date_latest=now() where c_id=%r;"%c_id
+        else:
+            sql = sql[:-1] + " where c_id=%r;"%c_id
+        try:
+            fs = cursor.execute(sql)
+            if fs == 1:
+                err = False
+                conn.commit()
+        except BrokenPipeError as e:
+            conn = get_conn()
+            raise e
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            cursor.close()
+            socket_pool.append(conn)
+        return err
+
+
+
     def reputation_add(self, r_type, ec_type, ec_id, ua_id, ua_rep, ub_id, ub_rep):
         '''insert an article without check'''
         conn = socket_pool.pop()

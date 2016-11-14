@@ -219,6 +219,14 @@ servers.''', 'node.js')
             c_id=cid
         ),follow_redirects=True)
 
+    def comment_like(self,uid,psw,cid,act):
+        return self.app.post('/c/like', data=dict(
+            u_id=uid,
+            u_psw=psw,
+            c_id=cid,
+            u_act=act
+        ),follow_redirects=True)
+
     def reputation_history(self, uid, psw):
         return self.app.post('/u/rep/history',data=dict(
             u_id=uid,
@@ -569,13 +577,29 @@ for a specific version of pydoc, for example, use
         rv = self.comment_add(self.ua_id, '222222', 'article', self.t_id, 'js is shit!')
         assert '1' == json.loads(rv.data).get('code','')
         self.c_id = json.loads(rv.data).get('c_id','')
-
-        rv = self.comment_query(self.c_id)
+        '''like'''
+        rv = self.comment_like(self.u_id,'222222',self.c_id,'0')
+        assert 'nothing happended' == json.loads(rv.data).get('message','')
+        rv = self.comment_like(self.u_id,'222222',self.c_id,'1')
         assert '1' == json.loads(rv.data).get('code','')
+        rv = self.comment_like(self.u_id,'222222',self.c_id,'1')
+        assert 'comment like already' == json.loads(rv.data).get('codeState','')
+        rv = self.comment_like(self.u_id,'222222',self.c_id,'0')
+        assert 'like cancel' == json.loads(rv.data).get('message','')
+        rv = self.comment_like(self.u_id,'222222',self.c_id,'-1')
+        assert '1' == json.loads(rv.data).get('code','')
+        rv = self.comment_like(self.u_id,'222222',self.c_id,'-1')
+        assert 'comment dislike already' == json.loads(rv.data).get('codeState','')
+        rv = self.comment_like(self.u_id,'222222',self.c_id,'0')
+        assert 'dislike cancel' == json.loads(rv.data).get('message','')
+        
+        rv = self.comment_query(self.c_id)
+        assert json.loads(rv.data).get('c_id','') == int(self.c_id)
         rv = self.article_query(self.t_id)
         assert self.c_id in json.loads(rv.data).get('t_comments','')
         rv = self.comment_del(self.ua_id, '222222', self.c_id)
         assert '1' == json.loads(rv.data).get('code','')
+
 
 
     def test_article_starlike_and_querypro(self):
@@ -619,7 +643,7 @@ for a specific version of pydoc, for example, use
         '''update'''
         rv = self.question_update(self.u_id, '222222', self.q_id, 'Who am I?', 'RT', 'node.js')
         assert '1' == json.loads(rv.data).get('code','')
-        '''star and like question'''
+        '''star'''
         rv = self.question_query_pro(self.q_id, self.u_id, '222222')
         assert '0' == json.loads(rv.data).get('q_star_bool','')
         rv = self.question_star(self.u_id,'222222',self.q_id,'1')
@@ -632,6 +656,8 @@ for a specific version of pydoc, for example, use
         assert '1' == json.loads(rv.data).get('code','')
         rv = self.question_query_pro(self.q_id, self.u_id, '222222')
         assert '0' == json.loads(rv.data).get('q_star_bool','')
+        rv = self.question_star(self.u_id,'222222',self.q_id,'0')
+        assert 'question not star' == json.loads(rv.data).get('codeState','')
         '''like'''
         rv = self.question_query_pro(self.q_id, self.u_id, '222222')
         assert '0' == json.loads(rv.data).get('q_like_state','')
