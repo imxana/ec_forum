@@ -376,7 +376,7 @@ def run(app):
             err,res = sqlQ.id_select(u_id, table='ec_user')
             if err:
                 return jsonify(error.serverError)
-            u_answers = unpack_id(res[11])
+            u_answers = unpack_id(res[12])
             if a_id in u_answers[1]:
                 return jsonify(error.answerStarAlready)
             u_answers[1].append(a_id)
@@ -405,8 +405,9 @@ def run(app):
             err,res = sqlQ.id_select(u_id, table='ec_user')
             if err:
                 return jsonify(error.serverError)
-            u_answers = unpack_id(res[11])
+            u_answers = unpack_id(res[12])
             if a_id not in u_answers[1]:
+                print(410,a_id,u_answers[1])
                 return jsonify(error.answerNotStar)
             u_answers[1].append(a_id)
             if sqlQ.user_update(u_id, {'u_answers':pack_id(u_answers)}):
@@ -435,7 +436,7 @@ def run(app):
 
 
 
-    @app.route('/q/star_unlink', methods=['POST'])
+    @app.route('/a/star_unlink', methods=['POST'])
     def answer_star_unlink():
         if request.method != 'POST':
             return jsonify(error.requestError)
@@ -486,7 +487,7 @@ def run(app):
 
 
 
-    @app.route('/q/like', methods=['POST'])
+    @app.route('/a/like', methods=['POST'])
     def answer_like():
         if request.method != 'POST':
             return jsonify(error.requestError)

@@ -310,12 +310,12 @@ servers.''', 'node.js')
         ),follow_redirects=True)
 
     def answer_query(self, aid):
-        return self.app.post('/a/auery',data=dict(
+        return self.app.post('/a/query',data=dict(
             a_id=aid
         ),follow_redirects=True)
 
     def answer_query_pro(self, aid, uid, psw):
-        return self.app.post('/a/auery_pro',data=dict(
+        return self.app.post('/a/query_pro',data=dict(
             a_id=aid,
             u_id=uid,
             u_psw=psw
@@ -351,6 +351,13 @@ servers.''', 'node.js')
             a_id=aid,
         ),follow_redirects=True)
 
+    def answer_like(self,uid,psw,aid,act):
+        return self.app.post('/a/like', data=dict(
+            u_id=uid,
+            u_psw=psw,
+            a_id=aid,
+            u_act=act
+        ),follow_redirects=True)
 
 
     def test_sign_up_fail(self):
@@ -373,7 +380,8 @@ servers.''', 'node.js')
         rv = self.sign_up('badname','222222','badname.gmail.com')
         assert 'email illegal' in json.loads(rv.data).get('codeState','')
 
-    def test_sign_in_failed(self):
+    def test_sign_in(self):
+        '''fail'''
         rv = self.app.get('/sign_in?u_loginname=test.good.name&psw=222222', follow_redirects=True)
         assert b'The method is not allowed for the requested URL.' in rv.data
         rv = self.sign_in('','222222')
@@ -386,8 +394,7 @@ servers.''', 'node.js')
         assert 'email not existed' in json.loads(rv.data).get('codeState','')
         rv = self.sign_in(self.name,'222223')
         assert 'wrong password' in json.loads(rv.data).get('codeState','')
-
-    def test_sign_in_suc(self):
+        '''suc'''
         rv = self.sign_in(self.name,'222222')
         assert '1' == json.loads(rv.data).get('code','')
         assert self.email in json.loads(rv.data).get('u_email','')
@@ -405,7 +412,7 @@ servers.''', 'node.js')
         rv = self.sign_del(self.u_id,'222223')
         assert 'wrong password' in json.loads(rv.data).get('codeState','')
 
-    def test_get_key(self):
+    def not_test_get_key(self):
         rv = self.app.get('/safe/secret_key', follow_redirects=True)
         assert  b'' in rv.data
 
@@ -468,7 +475,7 @@ servers.''', 'node.js')
         assert '1' == json.loads(rv.data).get('code','')
 
 
-    def test_mail_confirm_change_suc(self):
+    def test_mail_confirm_change(self):
         '''confirm user email'''
         rv = self.mail_pass(self.ua_id,'222222')
         assert '1' == json.loads(rv.data).get('code','')
@@ -479,8 +486,7 @@ servers.''', 'node.js')
         assert '1' == json.loads(rv.data).get('code','')
         rv = self.sign_in('anotheremail@gmail.com','222222')
         assert 0 == json.loads(rv.data).get('u_email_confirm','')
-
-    def test_mail_confirm_fail(self):
+        '''fail'''
         rv = self.mail_pass('','222222')
         assert 'userid empty' in json.loads(rv.data).get('codeState','')
         rv = self.mail_pass('100000','222222')
@@ -516,13 +522,12 @@ servers.''', 'node.js')
         assert 'article title empty' in json.loads(rv.data).get('codeState','')
         rv = self.article_add(self.u_id, '222222', 'Title', '', 'node.js')
         assert 'article text empty' in json.loads(rv.data).get('codeState','')
-
-    def test_article_query_fail(self):
         '''query_fail, suc_test is everywhere'''
         rv = self.article_query('')
         assert 'article id empty' in json.loads(rv.data).get('codeState','')
         rv = self.article_query('100000')
         assert 'article not existed' in json.loads(rv.data).get('codeState','')
+
 
     def test_article_del_fail(self):
         '''delete_fail'''
@@ -659,15 +664,20 @@ for a specific version of pydoc, for example, use
         rv = self.question_star(self.u_id,'222222',self.q_id,'0')
         assert 'question not star' == json.loads(rv.data).get('codeState','')
         '''like'''
-        rv = self.question_query_pro(self.q_id, self.u_id, '222222')
-        assert '0' == json.loads(rv.data).get('q_like_state','')
+        rv = self.question_like(self.u_id,'222222',self.q_id,'0')
+        assert 'nothing happended' == json.loads(rv.data).get('message','')
         rv = self.question_like(self.u_id,'222222',self.q_id,'1')
         assert '1' == json.loads(rv.data).get('code','')
-        #rv = self.question_like(self.u_id,'222222',self.q_id,'1')
-        #assert '1' == json.loads(rv.data).get('q_like_state','')
-        #rv = self.question_like(self.u_id,'222222',self.q_id,'1')
-        #assert 'question like already' == json.loads(rv.data).get('codeState','')
-
+        rv = self.question_like(self.u_id,'222222',self.q_id,'1')
+        assert 'question like already' == json.loads(rv.data).get('codeState','')
+        rv = self.question_like(self.u_id,'222222',self.q_id,'0')
+        assert 'like cancel' == json.loads(rv.data).get('message','')
+        rv = self.question_like(self.u_id,'222222',self.q_id,'-1')
+        assert '1' == json.loads(rv.data).get('code','')
+        rv = self.question_like(self.u_id,'222222',self.q_id,'-1')
+        assert 'question dislike already' == json.loads(rv.data).get('codeState','')
+        rv = self.question_like(self.u_id,'222222',self.q_id,'0')
+        assert 'dislike cancel' == json.loads(rv.data).get('message','')
         '''query'''
         rv = self.question_query(self.q_id)
         assert '1' == json.loads(rv.data).get('code','')
@@ -683,7 +693,7 @@ for a specific version of pydoc, for example, use
 
 
 
-    def not_test_answer(self):
+    def test_answer(self):
         '''setUp: question_add'''
         rv = self.question_add(self.u_id, '222222', 'Who am I?', 'RT', '')
         assert '1' == json.loads(rv.data).get('code','')
@@ -698,12 +708,42 @@ for a specific version of pydoc, for example, use
         assert 'no access to modify answer' in json.loads(rv.data).get('codeState','')
         rv = self.answer_update(self.ua_id, '222222', self.a_id, 'I don\'t know...')
         assert '1' == json.loads(rv.data).get('code','')
+        '''star'''
+        rv = self.answer_query_pro(self.a_id, self.u_id, '222222')
+        assert '0' == json.loads(rv.data).get('a_star_bool','')
+        rv = self.answer_star(self.u_id,'222222',self.a_id,'1')
+        assert '1' == json.loads(rv.data).get('code','')
+        rv = self.answer_query_pro(self.a_id, self.u_id, '222222')
+        assert '1' == json.loads(rv.data).get('a_star_bool','')
+        rv = self.answer_star(self.u_id,'222222',self.a_id,'1')
+        assert 'answer star already' == json.loads(rv.data).get('codeState','')
+        rv = self.answer_star(self.u_id,'222222',self.a_id,'0')
+        assert '1' == json.loads(rv.data).get('code','')
+        rv = self.answer_query_pro(self.a_id, self.u_id, '222222')
+        assert '0' == json.loads(rv.data).get('a_star_bool','')
+        rv = self.answer_star(self.u_id,'222222',self.a_id,'0')
+        assert 'answer not star' == json.loads(rv.data).get('codeState','')
+        '''like'''
+        rv = self.answer_like(self.u_id,'222222',self.a_id,'0')
+        assert 'nothing happended' == json.loads(rv.data).get('message','')
+        rv = self.answer_like(self.u_id,'222222',self.a_id,'1')
+        assert '1' == json.loads(rv.data).get('code','')
+        rv = self.answer_like(self.u_id,'222222',self.a_id,'1')
+        assert 'answer like already' == json.loads(rv.data).get('codeState','')
+        rv = self.answer_like(self.u_id,'222222',self.a_id,'0')
+        assert 'like cancel' == json.loads(rv.data).get('message','')
+        rv = self.answer_like(self.u_id,'222222',self.a_id,'-1')
+        assert '1' == json.loads(rv.data).get('code','')
+        rv = self.answer_like(self.u_id,'222222',self.a_id,'-1')
+        assert 'answer dislike already' == json.loads(rv.data).get('codeState','')
+        rv = self.answer_like(self.u_id,'222222',self.a_id,'0')
+        assert 'dislike cancel' == json.loads(rv.data).get('message','')
+
         '''delete'''
         rv = self.answer_del(self.u_id, '222222', self.a_id)
         assert '1' == json.loads(rv.data).get('code','')
         rv = self.answer_del(self.ua_id, '222222', self.a_id)
         assert 'answer not existed' in json.loads(rv.data).get('codeState','')
-
         '''tearDown: question_del'''
         rv = self.question_del(self.u_id, '222222', self.q_id)
         assert '1' == json.loads(rv.data).get('code','')

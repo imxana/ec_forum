@@ -3,7 +3,9 @@ import pymysql, threading
 from ec_forum.id_dealer import gene_id
 from config import MyConfig
 
-def get_conn():
+def get_conn(sock=MyConfig.UNIX_SOCKET):
+    if sock != '':
+        return pymysql.Connect(user=MyConfig.USERNAME,passwd=MyConfig.PASSWORD,db='ec_forum',charset='utf8',unix_socket=sock)
     return pymysql.Connect(host='127.0.0.1',user=MyConfig.USERNAME,passwd=MyConfig.PASSWORD,db='ec_forum',charset='utf8')
 
 '''pymysql socket pool'''
