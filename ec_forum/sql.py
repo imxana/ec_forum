@@ -1,7 +1,8 @@
 # coding:utf8
-import pymysql, threading
+import pymysql, threading, datetime
 from ec_forum.id_dealer import gene_id
 from config import MyConfig
+
 
 def get_conn(sock=MyConfig.UNIX_SOCKET):
     if sock != '':
@@ -18,17 +19,22 @@ for i in range(socket_limit):
 
 
 def update_conn():
+    update_time = 15 * 60
     global socket_update
     socket_update+=1
     if socket_update >= socket_limit:
         socket_update = 0
-    print("[update pymysql connection.. Pipe %s]"%socket_update)
-    socket_pool[socket_update] = get_conn()
+    print("[update pymysql connection.. Pipe %s, all %s, %s]"%(socket_update+1, socket_limit,datetime.datetime.now()))
+    '''not get a new, or just touch the db?'''
+    #socket_pool[socket_update] = get_conn()
+    cur = socket_pool[socket_update].cursor()
+    cur.execute('show databases;')
+    cur.close()
     global t    #Notice: use global variable!
-    t = threading.Timer(7200.0, update_conn)
+    t = threading.Timer(update_time, update_conn)
     t.start()
 
-t = threading.Timer(7200.0, update_conn)
+t = threading.Timer(0, update_conn)
 if not MyConfig.TESTING:
     t.start()
 

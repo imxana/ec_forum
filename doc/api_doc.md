@@ -126,7 +126,6 @@ suc:
 字段|类型或值
 ------------ | -------------
 code|1
-u_id|int
 u_name|str
 u_email | str
 u_level |  int
@@ -1181,3 +1180,4 @@ fail:
 ------------ | -------------
 code | !1
 codeState | str
+

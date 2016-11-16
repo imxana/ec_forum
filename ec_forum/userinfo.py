@@ -425,19 +425,11 @@ def run(app):
         '''check reputation'''
         rep_history = list()
         err, rep_events = sqlQ.reputation_fetch_all(u_id)
+        sum_score = 0
         for e in rep_events:
-#            rep_history.append({
-#                'r_id':e[0],
-#                'r_type':e[1],
-#                'ec_type':e[2],
-#                'ec_id':e[3],
-#                'ua_id':e[4],
-#                'ua_rep':e[5],
-#                'ub_id':e[6],
-#                'ub_rep':e[7],
-#                'r_date':int(e[8].timestamp())
-#            })
             #event_translator(r_type,ec_type,ec_id,u_id,ua_id,ua_rep,ub_id,ub_rep)
             score, text = event_translator(e[1],e[2],e[3],u_id,e[4],e[5],e[6],e[7])
+            sum_score += score
             rep_history.append({'rep':score,'action':text,'date':int(e[8].timestamp())})
-        return jsonify({'code':'1', 'history':list(rep_history)})
+
+        return jsonify({'code':'1', 'history':list(rep_history), 'score':sum_score})
