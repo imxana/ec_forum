@@ -16,7 +16,7 @@ def run(app):
     def answer_add():
         if request.method != 'POST':
             return jsonify(error.requestError)
-        
+
         u_id = request.values.get('u_id', '')
         u_psw = request.values.get('u_psw', '')
         q_id = request.values.get('q_id', '')
@@ -119,7 +119,7 @@ def run(app):
             'a_date_latest':int(res[7].timestamp()),
         })
 
-        
+
     @app.route('/a/query_pro', methods=['POST'])
     def answer_query_pro():
         if request.method != 'POST':
@@ -185,7 +185,7 @@ def run(app):
             'a_star_bool':a_star_bool
         })
 
- 
+
 
 
 
@@ -232,7 +232,7 @@ def run(app):
         qo_id = res[1]
         if int(u_id) not in (ao_id, qo_id):
             return jsonify(error.answerAccess)
-        
+
 
         '''db'''
         err = sqlQ.id_delete(a_id, table='ec_answer')
@@ -265,8 +265,8 @@ def run(app):
 
 
 
-   
-    @app.route('/a/update', methods=['POST'])    
+
+    @app.route('/a/update', methods=['POST'])
     def answer_update():
         if request.method != 'POST':
             return jsonify(error.requestError)
@@ -312,7 +312,7 @@ def run(app):
 
         return jsonify({'code':'1'})
 
-  
+
 
 
 
@@ -407,9 +407,8 @@ def run(app):
                 return jsonify(error.serverError)
             u_answers = unpack_id(res[12])
             if a_id not in u_answers[1]:
-                print(410,a_id,u_answers[1])
                 return jsonify(error.answerNotStar)
-            u_answers[1].append(a_id)
+            u_answers[1].remove(a_id)
             if sqlQ.user_update(u_id, {'u_answers':pack_id(u_answers)}):
                 return jsonify(error.serverError)
 
@@ -429,8 +428,8 @@ def run(app):
 
 
 
- 
-        
+
+
 
 
 
@@ -590,11 +589,3 @@ def run(app):
             return jsonify({'code':'1', 'r_id':r_id})
         else:
             return jsonify(error.argsIllegal)
-
-
-
-
-
-
-    
-

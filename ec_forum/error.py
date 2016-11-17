@@ -81,5 +81,3 @@ answerNotStar        = { 'code': '-A6', 'codeState': 'answer not star'         }
 answerLikeAlready    = { 'code': '-A7', 'codeState': 'answer like already'     }
 answerDislikeAlready = { 'code': '-A8', 'codeState': 'answer dislike already'  }
 answerSelfAction     = { 'code': '-A9', 'codeState': 'answer self action'      }
-
-

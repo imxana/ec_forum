@@ -631,10 +631,12 @@ for a specific version of pydoc, for example, use
         assert 'article not star' in json.loads(rv.data).get('codeState','')
         rv = self.article_star(self.ua_id, '222222', self.t_id, '1')
         assert '1' == json.loads(rv.data).get('code','')
+
         '''query_pro test'''
         rv = self.article_query_pro(self.t_id, self.ua_id, '222222')
         assert '1' == json.loads(rv.data).get('t_star_bool','')
         assert '0' == json.loads(rv.data).get('t_recommend_bool','')
+
         '''test end'''
         rv = self.article_star(self.ua_id, '222222', self.t_id, '0')
         assert '1' == json.loads(rv.data).get('code','')
