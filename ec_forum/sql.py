@@ -211,11 +211,10 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
         for k,v in info.items():
             sql += "%s=%r,"%(k,v)
         sql = sql[:-1] + " where u_id=%r;"%u_id
-        # print('sql 206',sql)
         try:
-            if cursor.execute(sql) == 1:
-                err = False
-                conn.commit()
+            cursor.execute(sql)
+            err = False
+            conn.commit()
         except BrokenPipeError as e:
             conn = get_conn()
             raise e
@@ -326,7 +325,6 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             c_id = gene_id()
         sql = "insert into ec_comment(c_id, ec_type, ec_id, u_id, c_text, c_date, c_like)\
          values(%s,%r,%s,%s,%r,now(),0);"%(c_id, ec_type, ec_id, u_id, c_text)
-        # print('sql.py 145',sql)
         try:
             if cursor.execute(sql) == 1:
                 if cursor.rowcount == 1:
@@ -449,6 +447,29 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
         return err, res
 
 
+    def reputation_user_change(self,u_id,score):
+        '''change user reputation score'''
+        conn = socket_pool.pop()
+        cursor = conn.cursor()
+        err = True
+        sql = 'update ec_user set u_reputation=u_reputation+%s where u_id=%s;'%(score, u_id)
+        try:
+            rv = cursor.execute(sql)
+            err = False
+            conn.commit()
+        except BrokenPipeError as e:
+            conn = get_conn()
+            raise e
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            cursor.close()
+            socket_pool.append(conn)
+        return err
+
+
+
     def question_insert(self,u_id,q_title,q_tags,q_text):
         '''add a new question'''
         conn = socket_pool.pop()
@@ -546,7 +567,6 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             a_id = gene_id()
         sql = "insert into ec_answer(a_id, u_id, a_text, a_date, a_like, a_comments, a_star, a_date_latest, q_id)\
          values(%s,%s,%r,now(),0,'',0,now(),%s);"%(a_id, u_id, a_text, q_id)
-        # print('sql.py 145',sql)
         try:
             if cursor.execute(sql) == 1:
                 if cursor.rowcount == 1:
@@ -595,6 +615,3 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             cursor.close()
             socket_pool.append(conn)
         return err
-
- 
-     

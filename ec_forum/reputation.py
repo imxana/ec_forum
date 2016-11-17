@@ -63,9 +63,9 @@ def event_translator(r_type,ec_type,ec_id,u_id,ua_id,ua_rep,ub_id,ub_rep):
         else:
             return ub_rep, '您的%s%s被用户%s评论了'%(ch[ec_type],' *'+title+'* ',ua[1])
     elif r_type == 'comment_like':
-        return 0,'sorry'  
+        return 0,'sorry'
     elif r_type == 'comment_dislike':
-        return 0,'sorry'  
+        return 0,'sorry'
     elif r_type == 'article_star':
         title = sc(res[2])
         if u_id == ua_id:
@@ -80,6 +80,3 @@ def event_translator(r_type,ec_type,ec_id,u_id,ua_id,ua_rep,ub_id,ub_rep):
             return ub_rep, '您的文章 *%s* 被用户%s推荐了'%(title,ua[1])
     else:
         return 0,'sorry, this is not done..'
-
-
-

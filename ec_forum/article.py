@@ -72,7 +72,9 @@ def run(app):
         err,r_id = sqlQ.reputation_add(r_type, 'article', t_id, u_id, ev[0], u_id, ev[0])
         if err:
             return jsonify(error.serverError)
-
+        '''u_rep'''
+        if sqlQ.reputation_user_change(u_id, ev[0]):
+            return jsonify(error.serverError)
 
         return jsonify({'code':'1','t_id':t_id})
 
@@ -256,10 +258,15 @@ def run(app):
 
 
         '''rep'''
-        err, rep_event = sqlQ.reputation_select('article_add', 'article', t_id, u_id, u_id)
+        r_type = 'article_add'
+        ev = event[r_type]
+        err, rep_event = sqlQ.reputation_select(r_type, 'article', t_id, u_id, u_id)
         if err:
             return jsonify(error.articleNotExisted)
         if sqlQ.id_delete(rep_event[0], table='ec_reputation'):
+            return jsonify(error.serverError)
+        '''u_rep sub'''
+        if sqlQ.reputation_user_change(u_id, -ev[0]):
             return jsonify(error.serverError)
 
         return jsonify({'code':'1','t_id':t_id})
@@ -293,7 +300,7 @@ def run(app):
                 # 0 t_id int, 5 like int, 9 star int, 8 date, the date type is datetime.datetime, i shock
                 t_id,like,star,timestamp = t_tuple[0], int(t_tuple[5]), int(t_tuple[9]), t_tuple[8].timestamp()
                 origin_ids.add((t_id,like,star,timestamp))
-            
+
         for tag in t_tags_set:
             err,res = sqlQ.article_select_tag([tag])
             for t_tuple in res:
@@ -467,6 +474,11 @@ def run(app):
                 if err:
                     return jsonify(error.serverError)
 
+                '''u_rep'''
+                if sqlQ.reputation_user_change(u_id, ev[0]):
+                    return jsonify(error.serverError)
+                if sqlQ.reputation_user_change(ub_id, ev[1]):
+                    return jsonify(error.serverError)
             '''update article_info'''
             if sqlQ.article_update(t_id, {'t_star':int(t_star)+1}):
                 return jsonify(error.serverError)
@@ -495,13 +507,16 @@ def run(app):
             '''del rep_event'''
             if sqlQ.id_delete(rep_event[0], table='ec_reputation'):
                 return jsonify(error.serverError)
+
+            '''u_rep sub'''
+            if sqlQ.reputation_user_change(u_id, -ev[0]):
+                return jsonify(error.serverError)
+            if sqlQ.reputation_user_change(ub_id, -ev[1]):
+                return jsonify(error.serverError)
+
             return jsonify({'code':'1'})
         else:
             return jsonify(error.argsIllegal)
-
-
-        return jsonify({'code':'1', 'r_id':r_id})
-
 
 
 
@@ -620,6 +635,13 @@ def run(app):
                 err,r_id = sqlQ.reputation_add(r_type, ec_type, t_id, u_id, ev[0], ub_id, ev[1])
                 if err:
                     return jsonify(error.serverError)
+
+                '''u_rep'''
+                if sqlQ.reputation_user_change(u_id, ev[0]):
+                    return jsonify(error.serverError)
+                if sqlQ.reputation_user_change(ub_id, ev[1]):
+                    return jsonify(error.serverError)
+
             if sqlQ.article_update(t_id, {'t_like':int(t_like)+1}):
                 return jsonify(error.serverError)
             return jsonify({'code':'1', 'r_id':r_id})
@@ -630,9 +652,12 @@ def run(app):
                 return jsonify(error.serverError)
             if sqlQ.id_delete(rep_event[0], table='ec_reputation'):
                 return jsonify(error.serverError)
+
+            '''u_rep sub'''
+            if sqlQ.reputation_user_change(u_id, -ev[0]):
+                return jsonify(error.serverError)
+            if sqlQ.reputation_user_change(ub_id, -ev[1]):
+                return jsonify(error.serverError)
             return jsonify({'code':'1'})
         else:
             return jsonify(error.argsIllegal)
-
-
-

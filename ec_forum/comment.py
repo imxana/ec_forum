@@ -82,8 +82,6 @@ def run(app):
             a_comments[0].append(c_id)
             #if sqlQ.answer_update(ec_id, {'a_comments':pack_id(a_comments)}):
             #    return jsonify(error.serverError)
-            
-
 
 
         '''rep'''
@@ -92,7 +90,11 @@ def run(app):
         err,r_id = sqlQ.reputation_add(r_type, ec_type, ec_id, u_id, ev[0], ub_id, ev[1])
         if err:
             return jsonify(error.serverError)
-
+        '''u_rep'''
+        if sqlQ.reputation_user_change(u_id, ev[0]):
+            return jsonify(error.serverError)
+        if sqlQ.reputation_user_change(ub_id, ev[1]):
+            return jsonify(error.serverError)
 
         return jsonify({'code':'1','c_id':c_id})
 
@@ -162,7 +164,12 @@ def run(app):
             return jsonify(error.commentNotExisted)
         if sqlQ.id_delete(rep_event[0], table='ec_reputation'):
             return jsonify(error.serverError)
-
+        '''u_rep sub'''
+        ev=event['comment_add']
+        if sqlQ.reputation_user_change(co_id, -ev[0]):
+            return jsonify(error.serverError)
+        if sqlQ.reputation_user_change(eo_id, -ev[1]):
+            return jsonify(error.serverError)
         return jsonify({'code':'1','c_id':c_id})
 
 
@@ -200,7 +207,7 @@ def run(app):
         })
 
 
-   
+
     @app.route('/c/like', methods=['POST'])
     def comment_like():
         if request.method != 'POST':
@@ -302,6 +309,3 @@ def run(app):
             return jsonify({'code':'1', 'r_id':r_id})
         else:
             return jsonify(error.argsIllegal)
-
-
- 

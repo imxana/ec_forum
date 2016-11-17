@@ -24,5 +24,4 @@ class TempDevelopmentConfig(Config):
 
 CLASS_ARRAY = [TestingConfig, DevelopmentConfig, ProductionConfig, TempDevelopmentConfig]
 
-MyConfig = CLASS_ARRAY[1]
-
+MyConfig = CLASS_ARRAY[0]

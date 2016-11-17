@@ -178,6 +178,9 @@ def run(app):
         err,r_id = sqlQ.reputation_add(r_type, 'user', u_id, u_id, ev[0], u_id, ev[0])
         if err:
             return jsonify(error.serverError)
+        '''u_rep'''
+        if sqlQ.reputation_user_change(u_id, ev[0]):
+            return jsonify(error.serverError)
 
         return jsonify({'code':'1'})
 
@@ -228,16 +231,13 @@ def run(app):
         if err:
             return jsonify(error.serverError)
 
-        # '''rep'''
-        # r_type = 'email_confirm_change'
-        # ev = event[r_type]
-        # err,r_id = sqlQ.reputation_add(r_type, 'user', u_id, u_id, ev[0], u_id, ev[0])
-        # if err:
-        #     return jsonify(error.serverError)
         '''rep, if not confirm, do nothing'''
         err, rep_event = sqlQ.reputation_select('email_confirm_pass', 'user', u_id, u_id, u_id)
         if bool(rep_event):
             if sqlQ.id_delete(rep_event[0], table='ec_reputation'):
+                return jsonify(error.serverError)
+            '''u_rep sub'''
+            if sqlQ.reputation_user_change(u_id, -event['email_confirm_pass'][0]):
                 return jsonify(error.serverError)
 
 
@@ -432,4 +432,9 @@ def run(app):
             sum_score += score
             rep_history.append({'rep':score,'action':text,'date':int(e[8].timestamp())})
 
-        return jsonify({'code':'1', 'history':list(rep_history), 'score':sum_score})
+        '''update user reputation'''
+        if sqlQ.user_update(u_id,{'u_reputation':sum_score}):
+            print('ui err 443\n')
+            return jsonify(error.serverError)
+
+        return jsonify({'code':'1', 'history':list(rep_history)})
