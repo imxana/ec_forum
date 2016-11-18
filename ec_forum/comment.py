@@ -165,7 +165,7 @@ def run(app):
         if sqlQ.id_delete(rep_event[0], table='ec_reputation'):
             return jsonify(error.serverError)
         '''u_rep sub'''
-        ev=event['comment_add']
+        ev = event['comment_add']
         if sqlQ.reputation_user_change(co_id, -ev[0]):
             return jsonify(error.serverError)
         if sqlQ.reputation_user_change(eo_id, -ev[1]):
@@ -233,13 +233,14 @@ def run(app):
         if not sqlQ.id_search(c_id, table='ec_comment'):
             return jsonify(error.commentNotExisted)
 
-        '''psw'''
+        '''psw, get repu'''
         err,res = sqlQ.signin_select(u_id, method='u_id')
         if err:
             return jsonify(error.serverError)
         decrypt_psw = decrypt(res[2].encode('utf8'))
         if decrypt_psw != u_psw:
             return jsonify(error.pswWrong)
+        u_repu = res[6]
 
         '''get comment_info'''
         err,res = sqlQ.id_select(c_id, table='ec_comment')
@@ -264,6 +265,8 @@ def run(app):
                 return jsonify(error.commentLikeAlready)
             if u_id == ub_id:
                 return jsonify(error.commentSelfAction)
+            if MyConfig.DEBUG and u_repu < rule['comment_like']:
+                return jsonify(error.reputationNotEnough)
             '''if dislike, del it'''
             err,r_id = sqlQ.reputation_add(r_type, ec_type, c_id, u_id, ev[0], ub_id, ev[1])
             if err:

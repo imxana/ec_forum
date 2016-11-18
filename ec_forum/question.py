@@ -625,12 +625,24 @@ def run(app):
             err,r_id = sqlQ.reputation_add(r_type, ec_type, q_id, u_id, ev[0], ub_id, ev[1])
             if err:
                 return jsonify(error.serverError)
+
+            '''u_rep'''
+            if sqlQ.reputation_user_change(u_id, ev[0]):
+                return jsonify(error.serverError)
+            if sqlQ.reputation_user_change(ub_id, ev[1]):
+                return jsonify(error.serverError)
+
             if sqlQ.question_update(q_id, {'q_like':int(q_like)-1}):
                 return jsonify(error.serverError)
             if bool(rep_event2):
                 if sqlQ.id_delete(rep_event2[0], table='ec_reputation'):
                     return jsonify(error.serverError)
                 if sqlQ.question_update(q_id, {'q_like':int(q_like)+1}):
+                    return jsonify(error.serverError)
+                '''u_rep'''
+                if sqlQ.reputation_user_change(u_id, -ev2[0]):
+                    return jsonify(error.serverError)
+                if sqlQ.reputation_user_change(ub_id, -ev2[1]):
                     return jsonify(error.serverError)
             return jsonify({'code':'1', 'r_id':r_id})
         elif u_act =='0':
@@ -639,11 +651,21 @@ def run(app):
                     return jsonify(error.serverError)
                 if sqlQ.question_update(q_id, {'q_like':int(q_like)-1}):
                     return jsonify(error.serverError)
+                '''u_rep sub'''
+                if sqlQ.reputation_user_change(u_id, -ev[0]):
+                    return jsonify(error.serverError)
+                if sqlQ.reputation_user_change(ub_id, -ev[1]):
+                    return jsonify(error.serverError)
                 return jsonify({'code':'1','message':'like cancel'})
             if bool(rep_event2):
                 if sqlQ.id_delete(rep_event2[0], table='ec_reputation'):
                     return jsonify(error.serverError)
                 if sqlQ.question_update(q_id, {'q_like':int(q_like)+1}):
+                    return jsonify(error.serverError)
+                '''u_rep sub'''
+                if sqlQ.reputation_user_change(u_id, -ev2[0]):
+                    return jsonify(error.serverError)
+                if sqlQ.reputation_user_change(ub_id, -ev2[1]):
                     return jsonify(error.serverError)
                 return jsonify({'code':'1','message':'dislike cancel'})
             return jsonify({'code':'1','message':'nothing happended'})
@@ -656,12 +678,23 @@ def run(app):
             err,r_id = sqlQ.reputation_add(r_type2, ec_type, q_id, u_id, ev2[0], ub_id, ev2[1])
             if err:
                 return jsonify(error.serverError)
+
+            '''u_rep'''
+            if sqlQ.reputation_user_change(u_id, ev2[0]):
+                return jsonify(error.serverError)
+            if sqlQ.reputation_user_change(ub_id, ev2[1]):
+                return jsonify(error.serverError)
             if sqlQ.question_update(q_id, {'q_like':int(q_like)-1}):
                 return jsonify(error.serverError)
             if bool(rep_event):
                 if sqlQ.id_delete(rep_event[0], table='ec_reputation'):
                     return jsonify(error.serverError)
                 if sqlQ.question_update(q_id, {'q_like':int(q_like)+1}):
+                    return jsonify(error.serverError)
+                '''u_rep sub'''
+                if sqlQ.reputation_user_change(u_id, -ev[0]):
+                    return jsonify(error.serverError)
+                if sqlQ.reputation_user_change(ub_id, -ev[1]):
                     return jsonify(error.serverError)
             return jsonify({'code':'1', 'r_id':r_id})
         else:
