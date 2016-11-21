@@ -6,6 +6,7 @@ from ec_forum.salt import encrypt, decrypt
 from ec_forum.id_dealer import pack_id, unpack_id
 from ec_forum.public import default_tags
 from ec_forum.reputation import event, rule
+from config import MyConfig
 sqlQ = sqlQ()
 
 def run(app):
@@ -78,6 +79,76 @@ def run(app):
 
 
 
+    @app.route('/q/del', methods=['POST'])
+    def question_del():
+        u_id = request.values.get('u_id', '')
+        u_psw = request.values.get('u_psw', '')
+        q_id = request.values.get('q_id', '')
+
+        '''empty'''
+        if u_id == '':
+            return jsonify(error.useridEmpty)
+        if u_psw == '':
+            return jsonify(error.pswEmpty)
+        if q_id == '':
+            return jsonify(error.questionidEmpty)
+
+        '''exist'''
+        if not sqlQ.id_search(u_id):
+            return jsonify(error.userNotExisted)
+        if not sqlQ.id_search(q_id, table='ec_question'):
+            return jsonify(error.questionNotExisted)
+
+        '''psw'''
+        err,res = sqlQ.signin_select(u_id, method='u_id')
+        if err:
+            return jsonify(error.serverError)
+        decrypt_psw = decrypt(res[2].encode('utf8'))
+        if decrypt_psw != u_psw:
+            return jsonify(error.pswWrong)
+
+        '''question owner'''
+        err,res = sqlQ.id_select(q_id, table='ec_question')
+        if err:
+            return jsonify(error.serverError)
+        # print('_%s_%s_'%(res[1],u_id), res[1]==int(u_id),type(res[1]),type(u_id))
+        if res[1] != int(u_id):
+            return jsonify(error.questionAccess)
+
+        '''db'''
+        err = sqlQ.id_delete(q_id, table='ec_question')
+        if err:
+            return jsonify(error.serverError)
+
+
+        '''update userinfo'''
+        err,res = sqlQ.id_select(u_id, table='ec_user')
+        if err:
+            return jsonify(error.serverError)
+        u_questions = unpack_id(res[11])
+        if q_id in u_questions[0]:
+            u_questions[0].remove(q_id)
+        if sqlQ.user_update(u_id, {'u_questions':pack_id(u_questions)}):
+            return jsonify(error.serverError)
+
+
+        '''rep'''
+        r_type = 'question_add'
+        ev = event[r_type]
+        err, rep_event = sqlQ.reputation_select(r_type, 'question', q_id, u_id, u_id)
+        if err:
+            return jsonify(error.questionNotExisted)
+        if sqlQ.id_delete(rep_event[0], table='ec_reputation'):
+            return jsonify(error.serverError)
+        '''u_rep sub'''
+        if sqlQ.reputation_user_change(u_id, -ev[0]):
+            return jsonify(error.serverError)
+
+
+        return jsonify({'code':'1','q_id':q_id})
+
+
+
 
     @app.route('/q/query', methods=['POST'])
     def question_query():
@@ -116,8 +187,6 @@ def run(app):
             'q_date_latest':int(res[11].timestamp()),
             'q_star':res[12]
         })
-
-
 
 
 
@@ -195,6 +264,7 @@ def run(app):
 
 
 
+
     @app.route('/q/display', methods=['POST'])
     def question_display():
         if request.method != 'POST':
@@ -232,87 +302,11 @@ def run(app):
             show_ids[0].append(str(q_tuple[0]))
         for q_tuple in origin_ids_sorted_by_date:
             show_ids[1].append(str(q_tuple[0]))
-        # for tag in q_tags_set:
-        #     err,res = sqlQ.question_select_tag([tag])
-        #     for t_tuple in res:
-        #         show_ids.add(t_tuple[8])
-        #print('ar 184: ', show_ids)
+
         return jsonify({'code':'1','q_ids':pack_id(show_ids)})
 
 
 
-
-
-
-
-
-    @app.route('/q/del', methods=['POST'])
-    def question_del():
-        u_id = request.values.get('u_id', '')
-        u_psw = request.values.get('u_psw', '')
-        q_id = request.values.get('q_id', '')
-
-        '''empty'''
-        if u_id == '':
-            return jsonify(error.useridEmpty)
-        if u_psw == '':
-            return jsonify(error.pswEmpty)
-        if q_id == '':
-            return jsonify(error.questionidEmpty)
-
-        '''exist'''
-        if not sqlQ.id_search(u_id):
-            return jsonify(error.userNotExisted)
-        if not sqlQ.id_search(q_id, table='ec_question'):
-            return jsonify(error.questionNotExisted)
-
-        '''psw'''
-        err,res = sqlQ.signin_select(u_id, method='u_id')
-        if err:
-            return jsonify(error.serverError)
-        decrypt_psw = decrypt(res[2].encode('utf8'))
-        if decrypt_psw != u_psw:
-            return jsonify(error.pswWrong)
-
-        '''question owner'''
-        err,res = sqlQ.id_select(q_id, table='ec_question')
-        if err:
-            return jsonify(error.serverError)
-        # print('_%s_%s_'%(res[1],u_id), res[1]==int(u_id),type(res[1]),type(u_id))
-        if res[1] != int(u_id):
-            return jsonify(error.questionAccess)
-
-        '''db'''
-        err = sqlQ.id_delete(q_id, table='ec_question')
-        if err:
-            return jsonify(error.serverError)
-
-
-        '''update userinfo'''
-        err,res = sqlQ.id_select(u_id, table='ec_user')
-        if err:
-            return jsonify(error.serverError)
-        u_questions = unpack_id(res[11])
-        if q_id in u_questions[0]:
-            u_questions[0].remove(q_id)
-        if sqlQ.user_update(u_id, {'u_questions':pack_id(u_questions)}):
-            return jsonify(error.serverError)
-
-
-        '''rep'''
-        r_type = 'question_add'
-        ev = event[r_type]
-        err, rep_event = sqlQ.reputation_select(r_type, 'question', q_id, u_id, u_id)
-        if err:
-            return jsonify(error.questionNotExisted)
-        if sqlQ.id_delete(rep_event[0], table='ec_reputation'):
-            return jsonify(error.serverError)
-        '''u_rep sub'''
-        if sqlQ.reputation_user_change(u_id, -ev[0]):
-            return jsonify(error.serverError)
-
-
-        return jsonify({'code':'1','q_id':q_id})
 
 
 
@@ -357,13 +351,21 @@ def run(app):
         decrypt_psw = decrypt(res[2].encode('utf8'))
         if decrypt_psw != u_psw:
             return jsonify(error.pswWrong)
+        u_repu = res[6]
 
         '''Question owner'''
         err,res = sqlQ.id_select(q_id, table='ec_question')
         if err:
             return jsonify(error.serverError)
         if res[1] != int(u_id):
-            return jsonify(error.questionAccess)
+            '''rep request'''
+            if u_repu < rule['question_edit']:
+                ej = error.reputationNotEnough
+                ej['request_repu'] = rule['question_edit']
+                ej['now_repu'] = u_repu
+                return jsonify(ej)
+            # return jsonify(error.questionAccess)
+
 
         '''db'''
         err = sqlQ.question_update(q_id, q_info, modify=True)
@@ -595,6 +597,7 @@ def run(app):
         decrypt_psw = decrypt(res[2].encode('utf8'))
         if decrypt_psw != u_psw:
             return jsonify(error.pswWrong)
+        u_repu = res[6]
 
         '''get question_info'''
         err,res = sqlQ.id_select(q_id, table='ec_question')
@@ -621,6 +624,12 @@ def run(app):
                 return jsonify(error.questionLikeAlready)
             if u_id == ub_id:
                 return jsonify(error.questionSelfAction)
+            '''rep request'''
+            if not MyConfig.TESTING and u_repu < rule[r_type]:
+                ej = error.reputationNotEnough
+                ej['request_repu'] = rule[r_type]
+                ej['now_repu'] = u_repu
+                return jsonify(ej)
             '''if dislike, del it'''
             err,r_id = sqlQ.reputation_add(r_type, ec_type, q_id, u_id, ev[0], ub_id, ev[1])
             if err:
@@ -674,6 +683,12 @@ def run(app):
                 return jsonify(error.questionDislikeAlready)
             if u_id == ub_id:
                 return jsonify(error.questionSelfAction)
+            '''rep request'''
+            if not MyConfig.TESTING and u_repu < rule[r_type2]:
+                ej = error.reputationNotEnough
+                ej['request_repu'] = rule[r_type2]
+                ej['now_repu'] = u_repu
+                return jsonify(ej)
             '''if like, del it'''
             err,r_id = sqlQ.reputation_add(r_type2, ec_type, q_id, u_id, ev2[0], ub_id, ev2[1])
             if err:

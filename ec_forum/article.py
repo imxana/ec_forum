@@ -179,16 +179,6 @@ def run(app):
 
         return jsonify({
             'code':'1',
-            # 't_id':res[0],
-            # 'u_id':res[1],
-            # 't_title':res[2],
-            # 't_text':res[3],
-            # 't_date':int(res[4].timestamp()),
-            # 't_like':res[5],
-            # 't_comments':res[6],
-            # 't_tags':res[7],
-            # 't_date_latest':int(res[8].timestamp()),
-            # 't_star':res[9],
             't_recommend_bool':t_recommend_bool,
             't_star_bool':t_star_bool
         })
@@ -607,6 +597,7 @@ def run(app):
         decrypt_psw = decrypt(res[2].encode('utf8'))
         if decrypt_psw != u_psw:
             return jsonify(error.pswWrong)
+        u_repu = res[6]
 
         '''get article_info'''
         err,res = sqlQ.id_select(t_id, table='ec_article')
@@ -627,20 +618,25 @@ def run(app):
         if u_act =='1':
             if bool(rep_event):
                 return jsonify(error.articleRecommended)
-            if u_id == ub_id:
-                err,r_id = sqlQ.reputation_add(r_type, ec_type, t_id, u_id, 0, ub_id, 0)
-                if err:
-                    return jsonify(error.serverError)
-            else:
-                err,r_id = sqlQ.reputation_add(r_type, ec_type, t_id, u_id, ev[0], ub_id, ev[1])
-                if err:
-                    return jsonify(error.serverError)
+            '''rep request'''
+            if not MyConfig.TESTING and u_repu < rule[r_type]:
+                ej = error.reputationNotEnough
+                ej['request_repu'] = rule[r_type]
+                ej['now_repu'] = u_repu
+                return jsonify(ej)
 
-                '''u_rep'''
-                if sqlQ.reputation_user_change(u_id, ev[0]):
-                    return jsonify(error.serverError)
-                if sqlQ.reputation_user_change(ub_id, ev[1]):
-                    return jsonify(error.serverError)
+            if u_id == ub_id:
+                return jsonify(error.articleSelfAction)
+
+            err,r_id = sqlQ.reputation_add(r_type, ec_type, t_id, u_id, ev[0], ub_id, ev[1])
+            if err:
+                return jsonify(error.serverError)
+
+            '''u_rep'''
+            if sqlQ.reputation_user_change(u_id, ev[0]):
+                return jsonify(error.serverError)
+            if sqlQ.reputation_user_change(ub_id, ev[1]):
+                return jsonify(error.serverError)
 
             if sqlQ.article_update(t_id, {'t_like':int(t_like)+1}):
                 return jsonify(error.serverError)

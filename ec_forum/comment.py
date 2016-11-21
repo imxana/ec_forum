@@ -4,6 +4,7 @@ import ec_forum.sql as sql
 from ec_forum.salt import encrypt, decrypt
 from ec_forum.id_dealer import pack_id, unpack_id
 from ec_forum.reputation import event, rule
+from config import MyConfig
 sqlQ = sql.sqlQ()
 
 def run(app):
@@ -265,8 +266,11 @@ def run(app):
                 return jsonify(error.commentLikeAlready)
             if u_id == ub_id:
                 return jsonify(error.commentSelfAction)
-            if MyConfig.DEBUG and u_repu < rule['comment_like']:
-                return jsonify(error.reputationNotEnough)
+            if not MyConfig.TESTING and u_repu < rule[r_type]:
+                ej = error.reputationNotEnough
+                ej['request_repu'] = rule[r_type]
+                ej['now_repu'] = u_repu
+                return jsonify(ej)
             '''if dislike, del it'''
             err,r_id = sqlQ.reputation_add(r_type, ec_type, c_id, u_id, ev[0], ub_id, ev[1])
             if err:
@@ -298,6 +302,11 @@ def run(app):
                 return jsonify(error.commentDislikeAlready)
             if u_id == ub_id:
                 return jsonify(error.commentSelfAction)
+            if not MyConfig.TESTING and u_repu < rule[r_type2]:
+                ej = error.reputationNotEnough
+                ej['request_repu'] = rule[r_type2]
+                ej['now_repu'] = u_repu
+                return jsonify(ej)
             '''if like, del it'''
             err,r_id = sqlQ.reputation_add(r_type2, ec_type, c_id, u_id, ev2[0], ub_id, ev2[1])
             if err:

@@ -607,37 +607,30 @@ for a specific version of pydoc, for example, use
 
 
 
-    def test_article_starlike_and_querypro(self):
-        '''rep test'''
+    def test_article_star_recommend(self):
         rv = self.reputation_history(self.u_id,'222222')
         assert bool(json.loads(rv.data).get('history',''))
-
+        '''recommend'''
         rv = self.article_recommend(self.ua_id, '222222', self.t_id, '0')
         assert 'article not recommend' in json.loads(rv.data).get('codeState','')
         rv = self.article_recommend(self.ua_id, '222222', self.t_id, '1')
         assert '1' == json.loads(rv.data).get('code','')
-        '''query_pro test'''
         rv = self.article_query_pro(self.t_id, self.ua_id, '222222')
         assert '0' == json.loads(rv.data).get('t_star_bool','')
         assert '1' == json.loads(rv.data).get('t_recommend_bool','')
-        '''rep test'''
         rv = self.reputation_history(self.u_id,'222222')
         assert len(json.loads(rv.data).get('history','')) == 2
-        '''test end'''
         rv = self.article_recommend(self.ua_id, '222222', self.t_id, '0')
         assert '1' == json.loads(rv.data).get('code','')
 
+        '''star'''
         rv = self.article_star(self.ua_id, '222222', self.t_id, '0')
         assert 'article not star' in json.loads(rv.data).get('codeState','')
         rv = self.article_star(self.ua_id, '222222', self.t_id, '1')
         assert '1' == json.loads(rv.data).get('code','')
-
-        '''query_pro test'''
         rv = self.article_query_pro(self.t_id, self.ua_id, '222222')
         assert '1' == json.loads(rv.data).get('t_star_bool','')
         assert '0' == json.loads(rv.data).get('t_recommend_bool','')
-
-        '''test end'''
         rv = self.article_star(self.ua_id, '222222', self.t_id, '0')
         assert '1' == json.loads(rv.data).get('code','')
 
@@ -650,6 +643,8 @@ for a specific version of pydoc, for example, use
         '''update'''
         rv = self.question_update(self.u_id, '222222', self.q_id, 'Who am I?', 'RT', 'node.js')
         assert '1' == json.loads(rv.data).get('code','')
+        rv = self.question_update(self.ua_id, '222222', self.q_id, 'Who am I?', 'RT', 'node.js')
+        assert 'reputation not enough' == json.loads(rv.data).get('codeState','')
         '''star'''
         rv = self.question_query_pro(self.q_id, self.u_id, '222222')
         assert '0' == json.loads(rv.data).get('q_star_bool','')
@@ -707,7 +702,7 @@ for a specific version of pydoc, for example, use
         self.a_id = json.loads(rv.data).get('a_id','')
         '''update'''
         rv = self.answer_update(self.u_id, '222222', self.a_id, 'I don\'t know...')
-        assert 'no access to modify answer' in json.loads(rv.data).get('codeState','')
+        assert 'reputation not enough' in json.loads(rv.data).get('codeState','')
         rv = self.answer_update(self.ua_id, '222222', self.a_id, 'I don\'t know...')
         assert '1' == json.loads(rv.data).get('code','')
         '''star'''

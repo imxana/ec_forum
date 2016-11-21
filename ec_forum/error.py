@@ -40,6 +40,7 @@ articleStarAlready   = { 'code': '-67', 'codeState': 'article star already'    }
 articleNotStar       = { 'code': '-68', 'codeState': 'article not star'        }
 articleRecommended   = { 'code': '-69', 'codeState': 'article recommend already'}
 articleNotRecommend  = { 'code': '-6A', 'codeState': 'article not recommend'   }
+articleSelfAction    = { 'code': '-6B', 'codeState': 'article self action'     }
 
 verifyEmpty          = { 'code': '-70', 'codeState': 'verify code empty'       }
 verifyWrong          = { 'code': '-71', 'codeState': 'verify code wrong'       }
@@ -82,4 +83,5 @@ answerLikeAlready    = { 'code': '-A7', 'codeState': 'answer like already'     }
 answerDislikeAlready = { 'code': '-A8', 'codeState': 'answer dislike already'  }
 answerSelfAction     = { 'code': '-A9', 'codeState': 'answer self action'      }
 
-reputationNotEnough  = { 'code': '-B0', 'codeState': 'reputation not enough'   }
+reputationNotEnough  = { 'code': '-B0', 'codeState': 'reputation not enough',
+                         'now_repu': 0, 'request_repu': 99999                  }

@@ -271,9 +271,9 @@ def run(app):
             return jsonify(error.serverError)
 
         '''u_rep sub'''
-        if sqlQ.reputation_user_change(u_id, -ev[0]):
+        if sqlQ.reputation_user_change(ao_id, -ev[0]):
             return jsonify(error.serverError)
-        if sqlQ.reputation_user_change(ub_id, -ev[1]):
+        if sqlQ.reputation_user_change(qo_id, -ev[1]):
             return jsonify(error.serverError)
 
         return jsonify({'code':'1','a_id':a_id})
@@ -315,13 +315,20 @@ def run(app):
         decrypt_psw = decrypt(res[2].encode('utf8'))
         if decrypt_psw != u_psw:
             return jsonify(error.pswWrong)
+        u_repu = res[6]
 
         '''answer owner'''
         err,res = sqlQ.id_select(a_id, table='ec_answer')
         if err:
             return jsonify(error.serverError)
         if res[1] != int(u_id):
-            return jsonify(error.answerAccess)
+            '''rep request'''
+            if u_repu < rule['answer_edit']:
+                ej = error.reputationNotEnough
+                ej['request_repu'] = rule['answer_edit']
+                ej['now_repu'] = u_repu
+                return jsonify(ej)
+            # return jsonify(error.answerAccess)
 
         '''db'''
         err = sqlQ.answer_update(a_id, {'a_text':a_text}, modify=True)
@@ -546,6 +553,7 @@ def run(app):
         decrypt_psw = decrypt(res[2].encode('utf8'))
         if decrypt_psw != u_psw:
             return jsonify(error.pswWrong)
+        u_repu = res[6]
 
         '''get answer_info'''
         err,res = sqlQ.id_select(a_id, table='ec_answer')
@@ -572,6 +580,13 @@ def run(app):
                 return jsonify(error.answerLikeAlready)
             if u_id == ub_id:
                 return jsonify(error.answerSelfAction)
+            '''rep request'''
+            if not MyConfig.TESTING and u_repu < rule[r_type]:
+                ej = error.reputationNotEnough
+                ej['request_repu'] = rule[r_type]
+                ej['now_repu'] = u_repu
+                return jsonify(ej)
+
             '''if dislike, del it'''
             err,r_id = sqlQ.reputation_add(r_type, ec_type, a_id, u_id, ev[0], ub_id, ev[1])
             if err:
@@ -625,6 +640,13 @@ def run(app):
                 return jsonify(error.answerDislikeAlready)
             if u_id == ub_id:
                 return jsonify(error.answerSelfAction)
+            '''rep request'''
+            if not MyConfig.TESTING and u_repu < rule[r_type2]:
+                ej = error.reputationNotEnough
+                ej['request_repu'] = rule[r_type2]
+                ej['now_repu'] = u_repu
+                return jsonify(ej)
+
             '''if like, del it'''
             err,r_id = sqlQ.reputation_add(r_type2, ec_type, a_id, u_id, ev2[0], ub_id, ev2[1])
             if err:
