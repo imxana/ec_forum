@@ -150,12 +150,12 @@ def run(app):
 
 
 
-    @app.route('/q/query', methods=['POST'])
+    @app.route('/q/query')
     def question_query():
         '''query a question by its q_id'''
-        if request.method != 'POST':
+        if request.method != 'GET':
             return jsonify(error.requestError)
-        q_id = request.values.get('q_id','')
+        q_id = request.args.get('q_id','')
 
         '''empty'''
         if q_id == '':
@@ -265,13 +265,13 @@ def run(app):
 
 
 
-    @app.route('/q/display', methods=['POST'])
+    @app.route('/q/display')
     def question_display():
-        if request.method != 'POST':
+        if request.method != 'GET':
             return jsonify(error.requestError)
 
-        q_tags = request.values.get('q_tags', '')
-        show_count = request.values.get('show_count', '30')
+        q_tags = request.args.get('q_tags', '')
+        show_count = request.args.get('show_count', '30')
 
         '''expr'''
         if not expr.validPack(q_tags):

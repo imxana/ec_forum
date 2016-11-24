@@ -92,12 +92,12 @@ def run(app):
 
 
 
-    @app.route('/a/query', methods=['POST'])
+    @app.route('/a/query')
     def answer_query():
         '''query a answer by its a_id'''
-        if request.method != 'POST':
+        if request.method != 'GET':
             return jsonify(error.requestError)
-        a_id = request.values.get('a_id','')
+        a_id = request.args.get('a_id','')
 
         '''empty'''
         if a_id == '':

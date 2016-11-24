@@ -77,9 +77,10 @@ servers.''', 'node.js')
         ),follow_redirects=True)
 
     def user_query_info(self, uid):
-        return self.app.post('/u/query',data=dict(
-            u_id=uid
-        ),follow_redirects=True)
+        return self.app.get('/u/query?u_id=%s'%uid)
+        # return self.app.post('/u/query',data=dict(
+        #     u_id=uid
+        # ),follow_redirects=True)
 
     def user_psw_change(self,uid,psw_before,psw):
         return self.app.post('/u/psw/change',data=dict(
@@ -111,9 +112,10 @@ servers.''', 'node.js')
         ),follow_redirects=True)
 
     def article_query(self, tid):
-        return self.app.post('/t/query',data=dict(
-            t_id=tid
-        ),follow_redirects=True)
+        return self.app.get('/t/query?t_id=%s'%tid)
+        # return self.app.post('/t/query',data=dict(
+        #     t_id=tid
+        # ),follow_redirects=True)
 
     def article_query_pro(self, tid, uid, psw):
         return self.app.post('/t/query_pro',data=dict(
@@ -140,9 +142,10 @@ servers.''', 'node.js')
         ),follow_redirects=True)
 
     def article_display(self, tags):
-        return self.app.post('/t/display', data=dict(
-            t_tags=tags
-        ),follow_redirects=True)
+        return self.app.get('/t/display?tags=%s'%tags)
+        # return self.app.post('/t/display', data=dict(
+        #     t_tags=tags
+        # ),follow_redirects=True)
 
 
     def article_star(self,uid,psw,tid,act):
@@ -208,9 +211,10 @@ servers.''', 'node.js')
         ),follow_redirects=True)
 
     def comment_query(self, cid):
-        return self.app.post('/c/query', data=dict(
-            c_id = cid,
-        ),follow_redirects=True)
+        return self.app.get('/c/query?c_id=%s'%cid)
+        # return self.app.post('/c/query', data=dict(
+        #     c_id = cid,
+        # ),follow_redirects=True)
 
     def comment_del(self, uid, psw, cid):
         return self.app.post('/c/del',data=dict(
@@ -243,9 +247,10 @@ servers.''', 'node.js')
         ),follow_redirects=True)
 
     def question_query(self, qid):
-        return self.app.post('/q/query',data=dict(
-            q_id=qid
-        ),follow_redirects=True)
+        return self.app.get('/q/query?q_id=%s'%qid)
+        # return self.app.post('/q/query',data=dict(
+        #     q_id=qid
+        # ),follow_redirects=True)
 
     def question_query_pro(self, qid, uid, psw):
         return self.app.post('/q/query_pro',data=dict(
@@ -272,9 +277,10 @@ servers.''', 'node.js')
         ),follow_redirects=True)
 
     def question_display(self, tags):
-        return self.app.post('/q/display', data=dict(
-            q_tags=tags
-        ),follow_redirects=True)
+        return self.app.get('/q/display?q_tags=%s'%tags)
+        # return self.app.post('/q/display', data=dict(
+        #     q_tags=tags
+        # ),follow_redirects=True)
 
 
     def question_star(self,uid,psw,qid,act):
@@ -310,9 +316,10 @@ servers.''', 'node.js')
         ),follow_redirects=True)
 
     def answer_query(self, aid):
-        return self.app.post('/a/query',data=dict(
-            a_id=aid
-        ),follow_redirects=True)
+        return self.app.get('/a/query?a_id=%s'%aid)
+        # return self.app.post('/a/query',data=dict(
+        #     a_id=aid
+        # ),follow_redirects=True)
 
     def answer_query_pro(self, aid, uid, psw):
         return self.app.post('/a/query_pro',data=dict(

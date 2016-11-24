@@ -81,12 +81,12 @@ def run(app):
 
 
 
-    @app.route('/t/query', methods=['POST'])
+    @app.route('/t/query')
     def article_query():
         '''query an article by its t_id'''
-        if request.method != 'POST':
+        if request.method != 'GET':
             return jsonify(error.requestError)
-        t_id = request.values.get('t_id','')
+        t_id = request.args.get('t_id','')
 
         '''empty'''
         if t_id == '':
@@ -265,13 +265,13 @@ def run(app):
 
 
 
-    @app.route('/t/display', methods=['POST'])
+    @app.route('/t/display')
     def article_show():
-        if request.method != 'POST':
+        if request.method != 'GET':
             return jsonify(error.requestError)
 
-        t_tags = request.values.get('t_tags', '')
-        show_count = request.values.get('show_count', '30')
+        t_tags = request.args.get('t_tags', '')
+        show_count = request.args.get('show_count', '30')
 
         '''expr'''
         if not expr.validPack(t_tags):

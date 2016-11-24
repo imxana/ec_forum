@@ -615,3 +615,28 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             cursor.close()
             socket_pool.append(conn)
         return err
+
+    def item_select(self, item, value, table):
+        '''universal select, for global str query'''
+        conn = socket_pool.pop()
+        cursor = conn.cursor()
+        err,res = False, ()
+        sql = 'select * from %s where %s like "%%%s%%";'%(table,item,value)
+        try:
+            cursor.execute(sql)
+            res = cursor.fetchall()
+        except BrokenPipeError as e:
+            conn = get_conn()
+            err = True
+            raise e
+        except Exception as e:
+            conn.rollback()
+            err = True
+            raise e
+        finally:
+            cursor.close()
+            socket_pool.append(conn)
+        return err, res
+ 
+
+

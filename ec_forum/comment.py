@@ -176,12 +176,12 @@ def run(app):
 
 
 
-    @app.route('/c/query', methods=['POST'])
+    @app.route('/c/query')
     def comment_query():
         '''query a comment by its c_id'''
-        if request.method != 'POST':
+        if request.method != 'GET':
             return jsonify(error.requestError)
-        c_id = request.values.get('c_id','')
+        c_id = request.args.get('c_id','')
 
         '''empty'''
         if c_id == '':

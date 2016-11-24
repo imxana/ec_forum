@@ -16,12 +16,12 @@ sqlQ = sqlQ()
 
 def run(app):
 
-    @app.route('/u/query', methods=['POST'])
+    @app.route('/u/query')
     def user_query():
-        if request.method != 'POST':
+        if request.method != 'GET':
             return jsonify(error.requestError)
 
-        u_id = request.values.get('u_id', '')
+        u_id = request.args.get('u_id', '')
         '''empty'''
         if u_id == '':
             return jsonify(error.useridEmpty)

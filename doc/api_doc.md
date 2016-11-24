@@ -115,7 +115,7 @@ codeState | str
 
 ## 查询用户信息 ./u/query
 
-method:post
+method:get
 
 字段|类型|要求
 ------------ | ------------- | ------------
@@ -459,7 +459,7 @@ codeState | str
 ## 获取展示文章列表 ./t/display
 
 
-method:post
+method:get
 
 字段|类型
 ------------ | -------------
@@ -482,7 +482,7 @@ codeState | str
 
 ## 查询文章信息 ./t/query
 
-method:post
+method:get
 
 字段|类型
 ------------ | -------------
@@ -667,7 +667,7 @@ codeState | str
 
 ## 查询评论信息 ./c/query
 
-method:post
+method:get
 
 字段|类型
 ------------ | -------------
@@ -806,7 +806,7 @@ codeState | str
 ## 获取问题展示列表 ./q/display
 
 
-method:post
+method:get
 
 字段|类型
 ------------ | -------------
@@ -829,7 +829,7 @@ codeState | str
 
 ## 查询问题信息 ./q/query
 
-method:post
+method:get
 
 字段|类型
 ------------ | -------------
@@ -1052,7 +1052,7 @@ codeState | str
 
 ## 查询回答信息 ./a/query
 
-method:post
+method:get
 
 字段|类型
 ------------ | -------------
@@ -1180,4 +1180,3 @@ fail:
 ------------ | -------------
 code | !1
 codeState | str
-

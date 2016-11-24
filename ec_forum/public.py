@@ -1,6 +1,6 @@
 import os, sys
 import smtplib
-from flask import jsonify
+from flask import jsonify, request
 from smtplib import SMTP_SSL
 from email.header import Header
 from email.mime.text import MIMEText
@@ -27,6 +27,8 @@ default_tags = (
 # question
 # eclipse,node.js
 
+
+
 def run(app):
     @app.route('/public/tags')
     def get_public_tags():
@@ -35,6 +37,12 @@ def run(app):
     @app.route('/public/get_verify')
     def get_verify():
         return gene_id(num=5,letter=True).upper()
+
+    @app.route('/public/search')
+    def search_all():
+        word = request.args.get('word','')
+        return 'your word is: %s'%word
+        
 
 
 def mail_sender(mail_to, mail_title, mail_subject):
