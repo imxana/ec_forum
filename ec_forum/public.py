@@ -4,7 +4,12 @@ from flask import jsonify, request
 from smtplib import SMTP_SSL
 from email.header import Header
 from email.mime.text import MIMEText
-from ec_forum.id_dealer import gene_id
+from ec_forum.id_dealer import gene_id,pack_id,unpack_id
+from ec_forum.sql import sqlQ
+import ec_forum.error as error
+
+sqlQ = sqlQ()
+
 default_tags = (
         'ios','objective-c','sqlite','safari','xcode','phonegap','cocoa','javascript','macos','iphone','ipad','swift',
         'java','c','c++','php','perl','python','javascript','c#','ruby','objective-c','go','lua','node.js','erlang','scala','bash','actionscript',
@@ -38,10 +43,58 @@ def run(app):
     def get_verify():
         return gene_id(num=5,letter=True).upper()
 
-    @app.route('/public/search')
+    @app.route('/search')
     def search_all():
         word = request.args.get('word','')
-        return 'your word is: %s'%word
+        show_count = request.args.get('show_count','30')
+        u_dic,t_dic,q_dic,a_dic = {0:[]},{0:[]},{0:[]},{0:[]}
+
+        'user name search'
+        err,res = sqlQ.item_select('u_name',word,'ec_user')
+        if err:
+            return jsonify(error.serverError)
+        for t in res:
+            u_dic[0].append(str(t[0]))
+        u_dic[0] = u_dic[0][:show_count]
+        u_ids = pack_id(u_dic)
+
+        'article title search'
+        err,res = sqlQ.item_select('t_title',word,'ec_article')
+        if err:
+            return jsonify(error.serverError)
+        for t in res:
+            t_dic[0].append(str(t[0]))
+        t_dic[0] = t_dic[0][:show_count]
+        t_ids = pack_id(t_dic)
+            
+        'question title search'    
+        err,res = sqlQ.item_select('q_title',word,'ec_question')
+        if err:
+            return jsonify(error.serverError)
+        for t in res:
+            q_dic[0].append(str(t[0]))
+        q_dic[0] = q_dic[0][:show_count]
+        q_ids = pack_id(q_dic)
+            
+        'answer text search'
+        err,res = sqlQ.item_select('a_text',word,'ec_answer')
+        if err:
+            return jsonify(error.serverError)
+        for t in res:
+            a_dic[0].append(str(t[0]))
+        a_dic[0] = a_dic[0][:show_count]
+        a_ids = pack_id(a_dic)
+        
+
+        
+
+        return jsonify({
+            'code':'1',
+            'u_ids':u_ids,
+            't_ids':t_ids,
+            'q_ids':q_ids,
+            'a_ids':a_ids
+        })
         
 
 
