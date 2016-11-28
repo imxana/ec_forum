@@ -18,6 +18,27 @@ method:get
 
 return: str
 
+## 全局搜索 ./search
+
+method:get
+
+字段|类型|要求
+------------ | ------------- | ------------
+word | str | 
+
+return
+
+字段|类型|备注
+------------ | ------------- | ------------
+code | 1 |-
+u_ids|str|按照名字搜索
+t_ids|str|按照标题搜索
+q_ids|str|按照标题搜索
+a_ids|str|按照回答内容搜索
+
+
+
+
 # Acount
 
 ## 注册 ./sign_up
@@ -26,9 +47,9 @@ method:post
 
 字段|类型|要求
 ------------ | ------------- | ------------
-u_email| str|[A-Za-z0-9\_\.]+@[A-Za-z0-9\.]+\.[A-Za-z]{2,4}
-u_name| str|[a-z][a-z0-9\.]{2,20}
-u_psw| str|6<=len(psw)<=16
+u_email|str|[ A-Za-z0-9\_\.]+@[A-Za-z0-9\.]+\.[A-Za-z]{2,4}
+u_name|str| [a-z][a-z0-9\.]{2,20}
+u_psw|str|[6,16]
 
 
 suc:
@@ -146,7 +167,7 @@ fail:
 
 字段|类型或值
 ------------ | -------------
-code|<=0
+code|!1
 codeState| str
 
 ## 更新用户信息 ./u/update
@@ -174,7 +195,7 @@ fail:
 
 字段|类型或值
 ------------ | -------------
-code|<=0
+code|!1
 codeState| str
 
 ## 关注用户 ./u/follow
@@ -199,7 +220,7 @@ fail:
 
 字段|类型或值
 ------------ | -------------
-code|<=0
+code|!1
 codeState| str
 
 
@@ -240,7 +261,7 @@ fail:
 
 字段|类型或值
 ------------ | -------------
-code|<=0
+code|!1
 codeState| str
 
 
@@ -266,7 +287,7 @@ fail:
 
 字段|类型或值
 ------------ | -------------
-code|<=0
+code|!1
 codeState| str
 
 ## 根据旧密码修改用户密码 ./u/psw/change
@@ -289,7 +310,7 @@ fail:
 
 字段|类型或值
 ------------ | -------------
-code|<=0
+code|!1
 codeState| str
 
 ## 发送修改密码验证邮件 ./u/psw/verify
@@ -311,7 +332,7 @@ fail:
 
 字段|类型或值
 ------------ | -------------
-code|<=0
+code|!1
 codeState| str
 
 ## 重设用户密码 ./u/psw/reset
@@ -333,7 +354,7 @@ fail:
 
 字段|类型或值
 ------------ | -------------
-code|<=0
+code|!1
 codeState| str
 
 ## 查询声望记录 ./u/rep/history
@@ -369,7 +390,7 @@ fail:
 
 字段|类型或值
 ------------ | -------------
-code|<=0
+code|!1
 codeState| str
 
 
@@ -401,7 +422,7 @@ fail:
 
 字段|类型或值
 ------------ | -------------
-code|<=0
+code|!1
 codeState| str
 
 ## 更新文章 ./t/update
@@ -636,7 +657,7 @@ fail:
 
 字段|类型或值
 ------------ | -------------
-code|<=0
+code|!1
 codeState| str
 
 
@@ -747,7 +768,7 @@ fail:
 
 字段|类型或值
 ------------ | -------------
-code|<=0
+code|!1
 codeState| str
 
 
@@ -993,7 +1014,7 @@ fail:
 
 字段|类型或值
 ------------ | -------------
-code|<=0
+code|!1
 codeState| str
 
 
