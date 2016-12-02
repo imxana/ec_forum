@@ -279,8 +279,8 @@ def run(app):
 
         q_tags_set = set(unpack_id(q_tags)[0])
 
-        if not set(default_tags).issuperset(q_tags_set):
-            return jsonify(error.tagNotExisted)
+        #if not set(default_tags).issuperset(q_tags_set):
+        #    return jsonify(error.tagNotExisted)
 
         '''note: empty is not an error'''
         origin_ids = set()
