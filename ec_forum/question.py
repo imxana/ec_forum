@@ -279,6 +279,7 @@ def run(app):
 
         q_tags_set = set(unpack_id(q_tags)[0])
 
+        # note: some tag not existing is ok
         #if not set(default_tags).issuperset(q_tags_set):
         #    return jsonify(error.tagNotExisted)
 
@@ -286,6 +287,8 @@ def run(app):
         origin_ids = set()
         for tag in q_tags_set:
             err,res = sqlQ.question_select_tag([tag])
+            if err:
+                return jsonify(error.serverError)
             for q_tuple in res:
                 # 0 q_id int, 6 like int, 12 star int, 5 data, 11 last_date
                 q_id,like,star,timestamp = q_tuple[0], int(q_tuple[6]), int(q_tuple[12]), q_tuple[11].timestamp()
@@ -333,6 +336,8 @@ def run(app):
             return jsonify(error.useridEmpty)
         if u_psw == '':
             return jsonify(error.pswEmpty)
+        if q_id == '':
+            return jsonify(error,questionidEmpty)
         if q_info['q_title'] == '':
             return jsonify(error.questionTitleEmpty)
         if q_info['q_text'] == '':
