@@ -62,27 +62,24 @@ def run(app):
         if ec_type == 'article':
             ub_id = res[1]
             t_comments = unpack_id(res[6])
-            if int(c_id) in t_comments[0]:
-                return jsonify(error.commentExsited)
-            t_comments[0].append(c_id)
+            if int(c_id) not in t_comments[0]:
+                t_comments[0].append(c_id)
             if sqlQ.article_update(ec_id, {'t_comments':pack_id(t_comments)}):
                 return jsonify(error.serverError)
         elif ec_type == 'question':
             ub_id = res[1]
             q_comments = unpack_id(res[10])
-            if int(c_id) in q_comments[0]:
-                return jsonify(error.commentExsited)
-            q_comments[0].append(c_id)
+            if int(c_id) not in q_comments[0]:
+                q_comments[0].append(c_id)
             if sqlQ.question_update(ec_id, {'q_comments':pack_id(q_comments)}):
                 return jsonify(error.serverError)
         elif ec_type == 'answer':
             ub_id = res[1]
             a_comments = unpack_id(res[5])
-            if int(c_id) in a_comments[0]:
-                return jsonify(error.commentExsited)
-            a_comments[0].append(c_id)
-            #if sqlQ.answer_update(ec_id, {'a_comments':pack_id(a_comments)}):
-            #    return jsonify(error.serverError)
+            if int(c_id) not in a_comments[0]:
+                a_comments[0].append(c_id)
+            if sqlQ.answer_update(ec_id, {'a_comments':pack_id(a_comments)}):
+               return jsonify(error.serverError)
 
 
         '''rep'''

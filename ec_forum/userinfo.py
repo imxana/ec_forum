@@ -321,6 +321,21 @@ def run(app):
         u_psw_before = request.values.get('u_psw_before', '')
         u_psw = request.values.get('u_psw','')
 
+        '''empty'''
+        if u_id == '':
+            return jsonify(error.useridEmpty)
+        if '' in (u_psw, u_psw_before):
+            return jsonify(error.pswEmpty)
+
+        '''exist'''
+        if not sqlQ.id_search(u_id):
+            return jsonify(error.userNotExisted)
+
+        '''formate legal'''
+        if not expr.validPsw(u_psw):
+            return jsonify(error.pswIllegal)
+
+
         '''psw'''
         err,res = sqlQ.signin_select(u_id, method='u_id')
         if err:
@@ -396,6 +411,21 @@ def run(app):
 
         u_id = request.values.get('u_id', '')
         u_psw = request.values.get('u_psw','')
+  
+        '''empty'''
+        if u_id == '':
+            return jsonify(error.useridEmpty)
+        if u_psw == '':
+            return jsonify(error.pswEmpty)
+
+        '''exist'''
+        if not sqlQ.id_search(u_id):
+            return jsonify(error.userNotExisted)
+
+        '''formate legal'''
+        if not expr.validPsw(u_psw):
+            return jsonify(error.pswIllegal)
+
 
         '''set new password'''
         encrypt_psw = str(encrypt(u_psw), encoding='utf8')
@@ -403,6 +433,9 @@ def run(app):
             return jsonify(error.serverError)
 
         return jsonify({'code':'1'})
+
+
+
 
 
     @app.route('/u/rep/history', methods=['POST'])
@@ -413,6 +446,16 @@ def run(app):
 
         u_id = request.values.get('u_id', '')
         u_psw = request.values.get('u_psw','')
+
+        '''empty'''
+        if u_id == '':
+            return jsonify(error.useridEmpty)
+        if u_psw == '':
+            return jsonify(error.pswEmpty)
+
+        '''exist'''
+        if not sqlQ.id_search(u_id):
+            return jsonify(error.userNotExisted)
 
         '''psw'''
         err,res = sqlQ.signin_select(u_id, method='u_id')
