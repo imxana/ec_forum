@@ -1,3 +1,94 @@
+# Error
+
+ErrorType|code|codeState
+------------ | ------------- | ------------
+normalError          | -10 | something bad happended 
+safeError            | -11 | unsafe attempt, who R U 
+requestError         | -12 | method not allowed      
+serverError          | -13 | server error            
+methodAbort          | -14 | method already aborted  
+- | - | -
+userNotExisted       | -20 | user not existed        
+usernameEmpty        | -21 | username empty          
+usernameExisted      | -22 | username exists         
+usernameIllegal      | -23 | username illegal        
+useridEmpty          | -24 | userid empty            
+watchuserNotExisted  | -25 | watch user not existed  
+userAlreadyWatched   | -26 | user already watched    
+userAlreadyUnwatched | -27 | user already unwatched  
+- | - | -
+pswEmpty             | -30 | password empty          
+pswWrong             | -31 | wrong password          
+pswIllegal           | -32 | psw illegal             
+- | - | -
+emailNotExisted      | -40 | email not existed       
+emailEmpty           | -41 | email empty             
+emailExisted         | -42 | email is existed        
+emailIllegal         | -43 | email illegal           
+emailNotConfirmed    | -44 | email not confirmed     
+emailConfirmed       | -45 | email confirmed already 
+emailNotChanged      | -46 | email not changed       
+- | - | -
+loginNameNotExisted  | -50 | login name not existed  
+loginNameEmpty       | -51 | login name empty        
+loginNameIllegal     | -52 | login name illegal      
+- | - | -
+articleTitleEmpty    | -60 | article title empty     
+articleTitleIllegal  | -61 | article title illegal   
+articleTextEmpty     | -62 | article text empty      
+articleNotExisted    | -63 | article not existed     
+articleidEmpty       | -64 | article id empty        
+articleAccess        | -65 | no access to modify article
+articleExist         | -66 | article exists          
+articleStarAlready   | -67 | article star already    
+articleNotStar       | -68 | article not star        
+articleRecommended   | -69 | article recommend already
+articleNotRecommend  | -6A | article not recommend   
+articleSelfAction    | -6B | article self action     
+- | - | -
+verifyEmpty          | -70 | verify code empty       
+verifyWrong          | -71 | verify code wrong       
+argsIllegal          | -72 | illegal arguments value 
+argsEmpty            | -73 | empty arguments value   
+tagNotExisted        | -74 | some tag not existed    
+tagNotIllegal        | -75 | tags not illegal        
+- | - | -
+commentTextEmpty     | -80 | comment text empty      
+commentEventNotExsited|-81 | comment event not exists
+commentidEmpty       | -82 | comment id empty        
+commentNotExisted    | -83 | comment not existed     
+commentExsited       | -84 | comment exists in event 
+commentAccess        | -85 | no access to modify comment
+commentLikeAlready   | -86 | comment like already    
+commentDislikeAlready| -87 | comment dislike already 
+commentSelfAction    | -88 | comment self action     
+- | - | -
+questionTitleEmpty   | -90 | question title empty    
+questionTitleIllegal | -91 | question title illegal  
+questionTextEmpty    | -92 | question text empty     
+questionNotExisted   | -93 | question not existed    
+questionidEmpty      | -94 | question id empty       
+questionAccess       | -95 | no access to modify question
+questionExist        | -96 | question exists         
+questionStarAlready  | -97 | question star already   
+questionNotStar      | -98 | question not star       
+questionLikeAlready  | -99 | question like already   
+questionDislikeAlready|-9B | question dislike already
+questionSelfAction   | -9D | question self action    
+- | - | -
+answerTextEmpty      | -A0 | answer text empty       
+answerNotExisted     | -A1 | answer not existed      
+answeridEmpty        | -A2 | answer id empty         
+answerAccess         | -A3 | no access to modify answer
+answerExist          | -A4 | answer exists           
+answerStarAlready    | -A5 | answer star already     
+answerNotStar        | -A6 | answer not star         
+answerLikeAlready    | -A7 | answer like already     
+answerDislikeAlready | -A8 | answer dislike already  
+answerSelfAction     | -A9 | answer self action      
+- | - | -
+reputationNotEnough  | -B0 | reputation not enough [ now_repu: 0, request_repu: 99999 ]
+
 # Public
 
 ## 获取所有基础tag ./public/tags
@@ -12,7 +103,7 @@ method:get
 
 return: str
 
-## 获取密钥 ./safe/secret_key (之后将隐藏此API)
+## 获取密钥 ./safe/secret_key (上线之后文档将不显示此API)
 
 method:get
 
@@ -39,7 +130,7 @@ a_ids|str|按照回答内容搜索
 
 
 
-# Acount
+# 账户接口 Acount 
 
 ## 注册 ./sign_up
 
@@ -64,7 +155,7 @@ fail:
 
 字段|类型或值
 ------------ | -------------
-code|!1
+code| 21/30/41 23/32/43 22/42 12/13
 codeState| str
 
 
@@ -103,7 +194,7 @@ fail:
 
 字段|类型或值
 ------------ | -------------
-code|!1
+code| 51/30 52  12/13
 codeState| str
 
 
@@ -243,6 +334,8 @@ code|1
 
 
 ## 邮箱验证通过 ./u/email/confirm
+
+『这个方法将直接后台修改验证状态为 「已验证」，所以需要前台验证码判断，以最新收到的验证码为准』
 
 method:post
 
