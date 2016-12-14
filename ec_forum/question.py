@@ -285,11 +285,15 @@ def run(app):
 
         '''note: empty is not an error'''
         origin_ids = set()
+        if not bool(q_tags_set):
+            err,res = sqlQ.question_select_tag()
+            for q_tuple in res:
+                # 0 q_id int, 6 like int, 12 star int, 5 data, 11 last_date
+                q_id,like,star,timestamp = q_tuple[0], int(q_tuple[6]), int(q_tuple[12]), q_tuple[11].timestamp()
+                origin_ids.add((q_id,like,star,timestamp))
+
         for tag in q_tags_set:
             err,res = sqlQ.question_select_tag([tag])
-            #note: empty is ok
-            # if err:
-                # return jsonify(error.serverError)
             for q_tuple in res:
                 # 0 q_id int, 6 like int, 12 star int, 5 data, 11 last_date
                 q_id,like,star,timestamp = q_tuple[0], int(q_tuple[6]), int(q_tuple[12]), q_tuple[11].timestamp()

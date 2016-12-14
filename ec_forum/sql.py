@@ -638,5 +638,30 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             socket_pool.append(conn)
         return err, res
  
+    def image_insert(self, i_id, i_url):
+    # def article_insert(self, u_id, t_title, t_text, t_tags):
+        '''insert the image url without check'''
+        conn = socket_pool.pop()
+        cursor = conn.cursor()
+        err,i_id = True,gene_id()
+        while self.id_search(i_id, table='ec_image'):
+            i_id = gene_id()
+        sql = "insert into ec_image(i_id, i_url) values(%s,%r);"%(i_id, i_url)
+        try:
+            if cursor.execute(sql) == 1:
+                if cursor.rowcount == 1:
+                    conn.commit()
+                    err = False
+        except BrokenPipeError as e:
+            conn = get_conn()
+            raise e
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            cursor.close()
+            socket_pool.append(conn)
+        return err,i_id
+
 
 

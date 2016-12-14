@@ -91,4 +91,12 @@ create table ec_reputation
     r_date datetime comment '事件日期'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+create table ec_image
+(
+    i_id integer primary key comment '图片id',
+    i_url text comment '图片路径',
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ 
+
 /* comment '(.*)' */
