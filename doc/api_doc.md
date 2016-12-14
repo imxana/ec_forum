@@ -103,7 +103,7 @@ method:get
 
 return: str
 
-## 获取密钥 ./safe/secret_key (上线之后文档将不显示此API)
+## 获取密钥 ./xxx (上线之后文档将不显示此API)
 
 method:get
 
@@ -1306,16 +1306,18 @@ codeState | str
 
 ## 上传图片 
 
-使用对应七牛sdk，[下载地址](http://developer.qiniu.com/resource/official.html#sdk)
-将上传图片名和回调服务器作为参数发给七牛服务器，七牛服务器上传成功后返回回调，
+使用对应七牛sdk，[下载地址](http://developer.qiniu.com/resource/official.html#sdk)。将上传图片名和回调服务器作为参数发给七牛服务器，七牛服务器上传成功后返回回调给业务处理服务器，验证后再由业务服务器返回给前端发送成功消息。
+
+前端 => 七牛 => 后端 => 前端
+
 
 参数|类型或值
 ------------ | -------------
-'access_key' | 'iQ3ndG5uRpwdeln_gcrH3iiZ7E3KbMdJVkdYV9Im'
-'secret_key' | 'AGsp6K7fu1NsH2DnsPi7hW3qa3JXb4dtfeGvkm-A'
-'bucket_name' | 'image'
-'bucket_domain' | 'https://oi3qt7c8d.qnssl.com/'
-'callbakUrl' | 'http://139.129.24.151/image/upload'
+'access_key' | xxxxxx
+'secret_key' | xxxxxx
+'bucket_name' | image
+'bucket_domain' | https://oi3qt7c8d.qnssl.com/
+'callbakUrl' | http://139.129.24.151/image/upload
 'callbackBody' | 'filename:$(fname)&secret_key:$(secret_key)'
 
 ## 下载图片
