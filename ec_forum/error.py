@@ -85,3 +85,8 @@ answerSelfAction     = { 'code': '-A9', 'codeState': 'answer self action'      }
 
 reputationNotEnough  = { 'code': '-B0', 'codeState': 'reputation not enough',
                          'now_repu': 0, 'request_repu': 99999                  }
+
+
+imageNotExisted      = { 'code': '-C0', 'codeState': 'image not existed'       }
+imageidEmpty         = { 'code': '-C1', 'codeState': 'image id empty'          }
+

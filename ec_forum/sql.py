@@ -638,7 +638,7 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
             socket_pool.append(conn)
         return err, res
  
-    def image_insert(self, i_id, i_url):
+    def image_insert(self, i_url):
     # def article_insert(self, u_id, t_title, t_text, t_tags):
         '''insert the image url without check'''
         conn = socket_pool.pop()
