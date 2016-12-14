@@ -44,17 +44,9 @@ if not MyConfig.TESTING:
 class sqlQ(object):
 
     def get_query_name(self, table, ext='id'):
-        query_name = 'u'
+        query_name = table[3]
         if table == 'ec_article':
             query_name = 't'
-        elif table == 'ec_question':
-            query_name = 'q'
-        elif table == 'ec_comment':
-            query_name = 'c'
-        elif table == 'ec_answer':
-            query_name = 'a'
-        elif table == 'ec_reputation':
-            query_name = 'r'
         return '%s_%s'%(query_name,ext)
 
 
@@ -647,6 +639,7 @@ values(%r,%r,%r,%s,0,2,0,'&','&','&','&');" % (name,email,psw,u_id)
         while self.id_search(i_id, table='ec_image'):
             i_id = gene_id()
         sql = "insert into ec_image(i_id, i_url) values(%s,%r);"%(i_id, i_url)
+        print('sql 650',sql)
         try:
             if cursor.execute(sql) == 1:
                 if cursor.rowcount == 1:

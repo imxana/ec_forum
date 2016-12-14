@@ -1300,3 +1300,30 @@ fail:
 ------------ | -------------
 code | 12/13 24/30/A2/73 20/A1 31 A7/A8/A9
 codeState | str
+
+
+# Image
+
+## 上传图片 
+
+使用对应七牛sdk，[下载地址](http://developer.qiniu.com/resource/official.html#sdk)
+
+参数|类型或值
+------------ | -------------
+'access_key' | 'iQ3ndG5uRpwdeln_gcrH3iiZ7E3KbMdJVkdYV9Im',
+'secret_key' | 'AGsp6K7fu1NsH2DnsPi7hW3qa3JXb4dtfeGvkm-A',
+'bucket_name' | 'image',
+'bucket_domain' | 'https|//oi3qt7c8d.qnssl.com/',
+'callbakUrl' | 'http|//139.129.24.151/image/upload',
+'callbackBody' | 'filename:$(fname)&secret_key:$(secret_key)'
+
+## 下载图片
+
+get
+
+bucket_domain + filename
+
+
+
+
+

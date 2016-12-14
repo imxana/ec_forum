@@ -1,6 +1,6 @@
-import flask
-from ec_forum.sql import sqlQ
+from flask import request, jsonify
 import ec_forum.error as error
+from ec_forum.sql import sqlQ
 
 sqlQ = sqlQ()
 
@@ -15,7 +15,7 @@ qiniu_setting = {
 
 def run(app):
 
-    @app.route('/image/upload', method=['POST'])
+    @app.route('/image/upload', methods=['POST'])
     def image_upload():
         """
         'callbackBody':'filename=$(fname)&filesize=$(fsize)'
@@ -35,7 +35,7 @@ def run(app):
 
 
 
-    @app.route('/image/query', method=['GET'])
+    @app.route('/image/query', methods=['GET'])
     def image_query():
         i_id = request.args.get('i_id', '')
         
