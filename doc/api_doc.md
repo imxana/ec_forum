@@ -1307,23 +1307,54 @@ codeState | str
 ## 上传图片 
 
 使用对应七牛sdk，[下载地址](http://developer.qiniu.com/resource/official.html#sdk)
+将上传图片名和回调服务器作为参数发给七牛服务器，七牛服务器上传成功后返回回调，
 
 参数|类型或值
 ------------ | -------------
-'access_key' | 'iQ3ndG5uRpwdeln_gcrH3iiZ7E3KbMdJVkdYV9Im',
-'secret_key' | 'AGsp6K7fu1NsH2DnsPi7hW3qa3JXb4dtfeGvkm-A',
-'bucket_name' | 'image',
-'bucket_domain' | 'https|//oi3qt7c8d.qnssl.com/',
-'callbakUrl' | 'http|//139.129.24.151/image/upload',
+'access_key' | 'iQ3ndG5uRpwdeln_gcrH3iiZ7E3KbMdJVkdYV9Im'
+'secret_key' | 'AGsp6K7fu1NsH2DnsPi7hW3qa3JXb4dtfeGvkm-A'
+'bucket_name' | 'image'
+'bucket_domain' | 'https://oi3qt7c8d.qnssl.com/'
+'callbakUrl' | 'http://139.129.24.151/image/upload'
 'callbackBody' | 'filename:$(fname)&secret_key:$(secret_key)'
 
 ## 下载图片
 
-get
+method: get
 
-bucket_domain + filename
+url = bucket_domain + filename
+
+suc:
+
+图片文件
+
+fail:
+
+{"error":"Document not found")
+
+## 图片查询 ./image/query
 
 
+method:get
+
+字段|类型
+------------ | -------------
+i_id | int
+
+suc:
+
+字段|类型或值
+------------ | -------------
+code | 1
+i_id | int
+i_url | str
+
+fail:
+
+字段|类型或值
+------------ | -------------
+code | 12/13 C0 C1
+codeState | str
 
 
 

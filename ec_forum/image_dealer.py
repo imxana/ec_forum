@@ -22,10 +22,12 @@ def run(app):
         """
         i_name = request.values.get('filename', '')
         # i_size = request.values.get('filesize', '')
+        if i_name == '':
+            return jsonify(error.argsEmpty)
         i_url = qiniu_setting['bucket_domain'] + i_name
         err,i_id = sqlQ.image_insert(i_url)
         if err:
-            return error.argsEmpty
+            return jsonify(error.serverError)
      
         return jsonify({
             'code': '1',
@@ -41,11 +43,11 @@ def run(app):
         
         'empty'
         if i_id == '':
-            return error.imageidEmpty
+            return jsonify(error.imageidEmpty)
 
         err, res = sqlQ.id_search(i_id, table='ec_image')
         if err:
-            return error.imageNotExisted
+            return jsonify(error.imageNotExisted)
 
         return jsonify({
             'code':'1', 
@@ -56,6 +58,3 @@ def run(app):
 
 
 
-
-
-        return jsonify({'code': '1'})
