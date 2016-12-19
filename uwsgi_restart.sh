@@ -1,12 +1,14 @@
 # I don't konw why `service uwsgi restart` doesn't work, so I use `kill` to end them and restart
+#pids=`ps -le | grep uwsgi | awk '{print $4}'`|xargs kill -9
 
-#pids=`ps -le | grep uwsgi | awk '{print $4}'`
-
-#for i in $pids
-#do
-    #kill -9 $i
-#done
 
 killall -9 uwsgi
-supervisorctl restart ec
-service nginx restart
+# wait
+
+# note: autorestart:true
+# supervisorctl start ec
+# wait
+
+# nginx no need restart
+#service nginx restart
+
