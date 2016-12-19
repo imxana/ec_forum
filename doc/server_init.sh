@@ -35,5 +35,5 @@ echo 'server {
         root   /usr/share/nginx/html;
     }
 
-}' > $nginx_conf_path/ec.ini
+}' > $nginx_conf_path/ec.conf
 
