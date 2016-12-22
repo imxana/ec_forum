@@ -530,6 +530,8 @@ def run(app):
         '''if star_article be deleted, remove it from my_star'''
         if request.method != 'POST':
             return jsonify(error.requestError)
+        if not MyConfig.DEBUG:
+            return jsonify(error.methodAbort)
 
         u_id = request.values.get('u_id', '')
         u_psw = request.values.get('u_psw', '')

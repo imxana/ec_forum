@@ -543,6 +543,8 @@ def run(app):
     def question_star_unlink():
         if request.method != 'POST':
             return jsonify(error.requestError)
+        if not MyConfig.DEBUG:
+            return jsonify(error.methodAbort)
 
         u_id = request.values.get('u_id', '')
         u_psw = request.values.get('u_psw', '')
