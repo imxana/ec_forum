@@ -525,7 +525,7 @@ def run(app):
 
 
 
-    @app.route('/t/star_unlink')
+    @app.route('/t/star_unlink', methods=['POST'])
     def article_star_unlink():
         '''if star_article be deleted, remove it from my_star'''
         if request.method != 'POST':

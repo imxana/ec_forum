@@ -1,6 +1,6 @@
 ## Experimental_Class_Forum Backend
 
-Python3+Flask+Mysql, A forum of experimental class. ;)
+Python3 + Flask + Mysql, A forum of experimental class. ;)
 
 ### quick start
 
@@ -20,7 +20,7 @@ run server:
 
 ### deploy
 
-Nginx+uWSGI+supervisor to deploy would be strongly recommended.
+Nginx + uWSGI + supervisor to deploy Flask application would be strongly recommended.
 
 read `doc/server_init.sh` as an example.
 
@@ -33,6 +33,10 @@ and to restart:
     ./uwsgi_restart.sh
 
 ### global config
+
+open the `config.py` file, `USRENAME` and `PASSWORD` are for the mysql user account, default value `root` and null. if you don't want to connect mysql by localhost, locate the `mysqld.sock` file and set it to the `UNIX_SOCKET`.
+
+
 
 
 

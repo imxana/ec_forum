@@ -1,16 +1,29 @@
+# the script to init your ubuntu server, just for reference
+# Don't run this script! Though it is executable.
+
+# install supervisord
 sudo pip install supervisord
-echo_supervisord_conf > /etc/supervisord.conf
+
+# set supervisord args
+sv_conf_path=/etc/supervisor.conf
+
+if [ ! -e $sv_conf_path ]; then
+    echo_supervisord_conf > $sv_conf_path
+fi
+
 echo '[program:ec]
 command=uwsgi /root/workspace/service/ec_forum/uwsgi.ini
 autostart=true
 autorestart=true
 stdout_logfile=/root/workspace/service/ec_forum/logs/uwsgi_stdout.log
 stderr_logfile=/root/workspace/service/ec_forum/logs/uwsgi_stderr.log
-' >> /etc/supervisord.conf
+' >> $sv_conf_path
 
-nginx_conf_path="/etc/nginx/conf.d"
 
-if [ -d $nginx_conf_path  ]; then
+# set nginx args
+nginx_conf_path=/etc/nginx/conf.d
+
+if [ ! -d $nginx_conf_path  ]; then
     mkdir -p $nginx_conf_path
 fi
 

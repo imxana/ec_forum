@@ -682,7 +682,9 @@ fail:
 code | 12/13 24/30/64/73/72 20/63 31 67/68
 codeState | str
 
-## 静默移除失效文章 ./t/star_unlink
+## 静默移除失效文章 ./t/star_unlink（方法已废弃
+
+
 
 method:post
 
@@ -1033,7 +1035,8 @@ fail:
 code | 12/13 24/30/94/73/72 20/93 31 97/98
 codeState | str
 
-## 静默移除失效收藏问题 ./q/star_unlink
+## 静默移除失效收藏问题 ./q/star_unlink（方法已废弃
+
 
 method:post
 
@@ -1251,7 +1254,8 @@ fail:
 code | 12/13 24/30/A2/73 20/A1 31 A5/A6
 codeState | str
 
-## 静默移除失效收藏回答 ./a/star_unlink
+## 静默移除失效收藏回答 ./a/star_unlink（方法已废弃
+
 
 method:post
 
