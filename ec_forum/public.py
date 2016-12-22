@@ -46,7 +46,7 @@ def run(app):
     @app.route('/search')
     def search_all():
         word = request.args.get('word','')
-        show_count = request.args.get('show_count','30')
+        show_count = int(request.args.get('show_count','30'))
         u_dic,t_dic,q_dic,a_dic = {0:[]},{0:[]},{0:[]},{0:[]}
 
         'user name search'

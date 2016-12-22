@@ -250,15 +250,28 @@ def run(app):
             return jsonify(error.serverError)
 
 
-        '''update userinfo'''
-        err,res = sqlQ.id_select(u_id, table='ec_user')
+        # '''update userinfo'''
+        # err,res = sqlQ.id_select(u_id, table='ec_user')
+        # if err:
+            # return jsonify(error.serverError)
+        # u_answers = unpack_id(res[12])
+        # if a_id in u_answers[0]:
+            # u_answers[0].remove(a_id)
+        # if sqlQ.user_update(ao_id, {'u_answers':pack_id(u_answers)}):
+            # return jsonify(error.serverError)
+
+        '''note: update user info ---- my_answer_del & answer_star_unlink'''
+        err, res = sqlQ.item_select('u_answers', a_id, 'ec_user')
         if err:
             return jsonify(error.serverError)
-        u_answers = unpack_id(res[12])
-        if a_id in u_answers[0]:
-            u_answers[0].remove(a_id)
-        if sqlQ.user_update(ao_id, {'u_answers':pack_id(u_answers)}):
-            return jsonify(error.serverError)
+        for item in res:
+            u_answers = unpack_id(item[12])
+            if a_id in u_answers[0]:
+                u_answers[0].remove(a_id)
+            if a_id in u_answers[1]:
+                u_answers[1].remove(a_id)
+            if sqlQ.user_update(u_id, {'u_answers':pack_id(u_answers)}):
+                return jsonify(error.serverError)
 
 
         '''rep'''
