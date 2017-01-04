@@ -2,7 +2,7 @@
 
 Python3 + Flask + Mysql, A forum of experimental class. ;)
 
-### quick start
+### Quick start
 
 install denpendences:
 
@@ -18,7 +18,7 @@ run server:
 
     python3 app.py
 
-### deploy
+### Deploy
 
 Nginx + uWSGI + supervisor to deploy Flask application would be strongly recommended.
 
@@ -32,11 +32,17 @@ and to restart:
 
     ./uwsgi_restart.sh
 
-### global config
+### Global config
 
 open the `config.py` file, `USRENAME` and `PASSWORD` are for the mysql user account, default value `root` and null. if you don't want to connect mysql by localhost, locate the `mysqld.sock` file and set it to the `UNIX_SOCKET`.
 
+### Component
 
+* [Frontend](https://github.com/yuxlan/forum) by [yuxlan](https://github.com/yuxlan) 
 
+* [Backend](https://github.com/imxana/ec_forum) by [imxana](https://github.com/imxana)
 
+### LICENSE
+
+MIT
 
