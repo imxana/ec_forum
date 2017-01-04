@@ -34,12 +34,11 @@ and to restart:
 
 ### Global config
 
-open the `config.py` file, `USRENAME` and `PASSWORD` are for the mysql user account, default value `root` and null. if you don't want to connect mysql by localhost, locate the `mysqld.sock` file and set it to the `UNIX_SOCKET`.
+To change the `config.py` file, `USRENAME` and `PASSWORD` are for the mysql user account, default value `root` and empty. if you can't connect mysql by `localhost`, locate the `mysqld.sock` file and set it to the `UNIX_SOCKET`.
 
 ### Component
 
 * [Frontend](https://github.com/yuxlan/forum) by [yuxlan](https://github.com/yuxlan) 
-
 * [Backend](https://github.com/imxana/ec_forum) by [imxana](https://github.com/imxana)
 
 ### LICENSE
